@@ -22,4 +22,7 @@ Please add...
   
 
 # Branching
-Please add...
+- master
+- release
+- testing
+- develop
