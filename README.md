@@ -1,8 +1,8 @@
 # Project Information
-Name: Carlos Alvaro Arroyos 
+Name: Carlos Álvaro Arroyo
 Project Code:   
-Contractor:  
-Subcontractor:   
+Contractor: European Space Agency (ESA)
+Subcontractor: Elecnor Deimos
 
 
 # Project Description
