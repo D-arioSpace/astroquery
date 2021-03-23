@@ -192,8 +192,8 @@
 <span class="c1"># Define the base URL for NEOCC</span>
 <span class="n">BASE_URL</span> <span class="o">=</span> <span class="s1">&#39;http://neo.ssa.esa.int/PSDB-portlet/download?file=&#39;</span>
 <span class="c1"># Define specific URLs for parsing HTMLs and for ephemerides</span>
-<span class="n">PROPERTIES_URL</span> <span class="o">=</span> <span class="s1">&#39;http://neo.ssa.esa.int/search-for-asteroids?&#39;</span>\
-    <span class="s1">&#39;tab=physprops&amp;des=&#39;</span>
+<span class="n">PROPERTIES_URL</span> <span class="o">=</span> <span class="s1">&#39;https://neo.ssa.esa.int/&#39;</span>\
+                 <span class="s1">&#39;search-for-asteroids?tab=physprops&amp;des=&#39;</span>
 <span class="n">EPHEM_URL</span> <span class="o">=</span> <span class="s1">&#39;http://neo.ssa.esa.int/PSDB-portlet/ephemerides?des=&#39;</span>
 <span class="n">SUMMARY_URL</span> <span class="o">=</span> <span class="s1">&#39;https://neo.ssa.esa.int/search-for-asteroids?sum=1&amp;des=&#39;</span>
 
@@ -563,34 +563,9 @@
 
 <span class="sd">        Attributes</span>
 <span class="sd">        ---------</span>
-<span class="sd">        rotation_period : DataFrame</span>
-<span class="sd">            Data structure containing value, units and source</span>
-<span class="sd">        quality : DataFrame</span>
-<span class="sd">            Data structure containing value, units and source</span>
-<span class="sd">        amplitude : DataFrame</span>
-<span class="sd">            Data structure containing value, units and source</span>
-<span class="sd">        rotation_direction : DataFrame</span>
-<span class="sd">            Data structure containing value, units and source</span>
-<span class="sd">        spinvector_l : DataFrame</span>
-<span class="sd">            Data structure containing value, units and source</span>
-<span class="sd">        spinvector_b : DataFrame</span>
-<span class="sd">            Data structure containing value, units and source</span>
-<span class="sd">        taxonomy : DataFrame</span>
-<span class="sd">            Data structure containing value, units and source</span>
-<span class="sd">        taxonomy_all : DataFrame</span>
-<span class="sd">            Data structure containing value, units and source</span>
-<span class="sd">        absolute_magnitude : DataFrame</span>
-<span class="sd">            Data structure containing value, units and source</span>
-<span class="sd">        slope_parameter : DataFrame</span>
-<span class="sd">            Data structure containing value, units and source</span>
-<span class="sd">        albedo : DataFrame</span>
-<span class="sd">            Data structure containing value, units and source</span>
-<span class="sd">        diameter : DataFrame</span>
-<span class="sd">            Data structure containing value, units and source</span>
-<span class="sd">        color_index : DataFrame</span>
-<span class="sd">            Data structure containing value, units and source</span>
-<span class="sd">        sightings : DataFrame</span>
-<span class="sd">            Data structure containing value, units and source</span>
+<span class="sd">        physical_properties : DataFrame</span>
+<span class="sd">            Data structure containing property, value, units and source</span>
+<span class="sd">            from the complete set of physical properties</span>
 <span class="sd">        sources : DataFrame</span>
 <span class="sd">            Data structure containing source number, name and</span>
 <span class="sd">            additional information</span>
@@ -604,135 +579,110 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Initialization of class attributes</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Rotational properties</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rotation_period</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">quality</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">amplitude</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rotation_direction</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">spinvector_l</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">spinvector_b</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="c1"># Taxonomy</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">taxonomy</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">taxonomy_all</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="c1"># H/G</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">absolute_magnitude</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">slope_parameter</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="c1"># Size and albedo</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">albedo</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">diameter</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="c1"># Color index information</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">color_index</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="c1"># Sightings</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sightings</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># Physical properties</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">physical_properties</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="c1"># Sources</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_multivar_prop</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">dfobj</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Get the data and location of the possible multivariable</span>
-<span class="sd">            properties</span>
-
-<span class="sd">            Parameters</span>
-<span class="sd">            ----------</span>
-<span class="sd">            var : string</span>
-<span class="sd">                Name of the variable</span>
-<span class="sd">            dfobj : Data structure</span>
-<span class="sd">                Data structure containing object properties</span>
-
-<span class="sd">            Returns</span>
-<span class="sd">            -------</span>
-<span class="sd">            df_n : Data structure</span>
-<span class="sd">                Data structure containing property multiple values</span>
-
-<span class="sd">            Raises</span>
-<span class="sd">            ------</span>
-<span class="sd">            ValueError</span>
-<span class="sd">                If the variable name is not a multivar property</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Determine location indexes for multivar properties</span>
-        <span class="n">mag_loc</span> <span class="o">=</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">dfobj</span><span class="p">,</span> <span class="s1">&#39;Absolute Magnitude (H)&#39;</span><span class="p">)</span>
-        <span class="n">slope_loc</span> <span class="o">=</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">dfobj</span><span class="p">,</span> <span class="s1">&#39;Slope Parameter (G)&#39;</span><span class="p">)</span>
-        <span class="n">albedo_loc</span> <span class="o">=</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">dfobj</span><span class="p">,</span> <span class="s1">&#39;Albedo&#39;</span><span class="p">)</span>
-        <span class="n">color_loc</span> <span class="o">=</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">dfobj</span><span class="p">,</span> <span class="s1">&#39;Color Index Information&#39;</span><span class="p">)</span>
-        <span class="n">sight_loc</span> <span class="o">=</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">dfobj</span><span class="p">,</span> <span class="s1">&#39;Sightings&#39;</span><span class="p">)</span>
-        <span class="n">source_loc</span> <span class="o">=</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">dfobj</span><span class="p">,</span> <span class="s1">&#39;Sources&#39;</span><span class="p">)</span>
-        <span class="n">tab_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Value&#39;</span><span class="p">,</span> <span class="s1">&#39;Unit&#39;</span><span class="p">,</span> <span class="s1">&#39;Source&#39;</span><span class="p">]</span>
-        <span class="c1"># Switch for different variable input</span>
-        <span class="c1"># Initialize switch variables</span>
-        <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">df_new</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
-        <span class="c1"># Absolute magnitude</span>
-        <span class="k">if</span> <span class="n">var</span> <span class="o">==</span> <span class="s1">&#39;Magnitude&#39;</span><span class="p">:</span>
-            <span class="n">diff</span> <span class="o">=</span> <span class="n">slope_loc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">mag_loc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="p">((</span><span class="n">diff</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">):</span>
-                <span class="n">df_old</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([[</span><span class="n">dfobj</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">mag_loc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="p">],</span>
-                                      <span class="n">dfobj</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">mag_loc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="p">],</span>
-                                      <span class="n">dfobj</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">mag_loc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="p">]]],</span>
-                                      <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="n">tab_cols</span><span class="p">)</span>
-                <span class="n">df_new</span> <span class="o">=</span> <span class="n">df_new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df_old</span><span class="p">)</span>
-                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="c1"># Slope parameters</span>
-        <span class="k">elif</span> <span class="n">var</span> <span class="o">==</span> <span class="s1">&#39;Slope&#39;</span><span class="p">:</span>
-            <span class="n">diff</span> <span class="o">=</span> <span class="n">albedo_loc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">slope_loc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="p">((</span><span class="n">diff</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">):</span>
-                <span class="n">df_old</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([[</span><span class="n">dfobj</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">slope_loc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="p">],</span>
-                                        <span class="n">dfobj</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">slope_loc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="p">],</span>
-                                        <span class="n">dfobj</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">slope_loc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="p">]]],</span>
-                                        <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="n">tab_cols</span><span class="p">)</span>
-                <span class="n">df_new</span> <span class="o">=</span> <span class="n">df_new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df_old</span><span class="p">)</span>
-                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="c1"># Color index</span>
-        <span class="k">elif</span> <span class="n">var</span> <span class="o">==</span> <span class="s1">&#39;Color&#39;</span><span class="p">:</span>
-            <span class="n">diff</span> <span class="o">=</span> <span class="n">sight_loc</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">color_loc</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="p">((</span><span class="n">diff</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">):</span>
-                <span class="n">df_old</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([[</span><span class="n">dfobj</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">color_loc</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="p">],</span>
-                                        <span class="n">dfobj</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">color_loc</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="p">],</span>
-                                        <span class="n">dfobj</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">color_loc</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="p">]]],</span>
-                                        <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="n">tab_cols</span><span class="p">)</span>
-                <span class="n">df_new</span> <span class="o">=</span> <span class="n">df_new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df_old</span><span class="p">)</span>
-                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="c1"># Sightings</span>
-        <span class="k">elif</span> <span class="n">var</span> <span class="o">==</span> <span class="s1">&#39;Sight&#39;</span><span class="p">:</span>
-            <span class="n">diff</span> <span class="o">=</span> <span class="n">source_loc</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">sight_loc</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="p">((</span><span class="n">diff</span><span class="o">-</span><span class="mi">5</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">):</span>
-                <span class="n">df_old</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([[</span><span class="n">dfobj</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">sight_loc</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="p">],</span>
-                                        <span class="n">dfobj</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">sight_loc</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="p">],</span>
-                                        <span class="n">dfobj</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">sight_loc</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="p">]]],</span>
-                                        <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="n">tab_cols</span><span class="p">)</span>
-                <span class="n">df_new</span> <span class="o">=</span> <span class="n">df_new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df_old</span><span class="p">)</span>
-                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Check variable name. Valid names are: &#39;</span>
-                             <span class="s1">&#39;Magnitude, Slope, Color and Sight&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">df_new</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_prop_sources</span><span class="p">(</span><span class="n">df_d</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_prop_sources</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Obtain the sources parsed</span>
 
 <span class="sd">            Parameters</span>
 <span class="sd">            ----------</span>
-<span class="sd">            df_d : Data structure</span>
-<span class="sd">                Data structure containing object properties</span>
+<span class="sd">            url : str</span>
+<span class="sd">                Complete url for physical properties</span>
 
 <span class="sd">            Returns</span>
 <span class="sd">            -------</span>
 <span class="sd">            sources : Data structure</span>
 <span class="sd">                Data structure containing all property sources</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Set column names for sources</span>
-        <span class="n">sources_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;No.&#39;</span><span class="p">,</span> <span class="s1">&#39;Name&#39;</span><span class="p">,</span> <span class="s1">&#39;Additional&#39;</span><span class="p">]</span>
-        <span class="c1"># Sources are located in last rows. Keyword Sources is located</span>
-        <span class="n">sources_loc</span> <span class="o">=</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">df_d</span><span class="p">,</span> <span class="s1">&#39;Sources&#39;</span><span class="p">)</span>
-        <span class="c1"># Compute number of rows that shape the sources</span>
-        <span class="n">sources</span> <span class="o">=</span> <span class="n">df_d</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_d</span><span class="p">)</span><span class="o">-</span><span class="n">sources_loc</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">4</span><span class="p">)</span>
-        <span class="c1"># Rename columns and reset indexes</span>
-        <span class="n">sources</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">sources_cols</span>
-        <span class="n">sources</span> <span class="o">=</span> <span class="n">sources</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># Read html for obtaining different tables from the portal</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">df_p</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_html</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">keep_default_na</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">df_p</span><span class="o">.</span><span class="n">DoesNotExist</span> <span class="k">as</span> <span class="n">df_not_exist</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Object not found: the name of the &#39;</span>
+                            <span class="s1">&#39;object is wrong or misspelt&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Object not found: the name of the &#39;</span>
+                             <span class="s1">&#39;object is wrong or misspelt&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">df_not_exist</span>
+
+        <span class="c1"># The obtaining data frame contains a list of different data</span>
+        <span class="c1"># frames so the required is extracted</span>
+        <span class="n">sources</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">df_p</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
 
         <span class="k">return</span> <span class="n">sources</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_physical_props</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+
+        <span class="c1"># Get contents from url</span>
+        <span class="n">contents</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
+        <span class="c1"># Parse html using BS</span>
+        <span class="n">parsed_html</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">contents</span><span class="p">,</span> <span class="s1">&#39;lxml&#39;</span><span class="p">)</span>
+        <span class="c1"># Search for property names using div and class</span>
+        <span class="n">props_names</span> <span class="o">=</span> <span class="n">parsed_html</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">,</span>
+                                        <span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;col-lg-3 font-weight-bold&quot;</span>
+                                            <span class="s2">&quot; d-none d-lg-block&quot;</span><span class="p">})</span>
+        <span class="c1"># Create DataFrame with the obtained properties</span>
+        <span class="n">df_names</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">props_names</span><span class="p">)</span>
+        <span class="c1"># Since the parsing gets properties from other tabs it is</span>
+        <span class="c1"># necessary to select the properties associated to Physical</span>
+        <span class="c1"># Properties tab</span>
+        <span class="n">df_names</span> <span class="o">=</span> <span class="n">df_names</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">13</span><span class="p">:</span><span class="mi">27</span><span class="p">]</span>
+        <span class="c1"># Reindex and drop old indexes</span>
+        <span class="n">df_names</span> <span class="o">=</span> <span class="n">df_names</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># Search for property values, units and sources</span>
+        <span class="n">props_value</span> <span class="o">=</span> <span class="n">parsed_html</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">,</span>
+                                        <span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;col-12&quot;</span><span class="p">})</span>
+        <span class="c1"># Convert to DataFrame and specify string type to avoid bad</span>
+        <span class="c1"># object parsing</span>
+        <span class="n">df_values</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">props_value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;string&#39;</span><span class="p">)</span>
+        <span class="c1"># Since the parsing is not as precises as needed remove/replace</span>
+        <span class="c1"># unnecessary data</span>
+        <span class="n">df_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&lt;div class=&quot;col-12&quot;&gt;&#39;</span><span class="p">,</span>
+                                                <span class="s1">&#39;&#39;</span><span class="p">)</span>\
+                    <span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&lt;/div&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>\
+                    <span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="c1"># Since the parsing gets properties from other tabs it is</span>
+        <span class="c1"># necessary to select the properties associated to Physical</span>
+        <span class="c1"># Properties tab</span>
+        <span class="n">df_values</span> <span class="o">=</span> <span class="n">df_values</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="mi">42</span><span class="p">]</span>
+        <span class="c1"># Diameter property is an exception, it is required to</span>
+        <span class="c1"># introduce an additional parsing step searching for the</span>
+        <span class="c1"># specific property</span>
+        <span class="n">diameter</span> <span class="o">=</span> <span class="n">parsed_html</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;span&quot;</span><span class="p">,</span>
+                                        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;_NEOSearch_WAR_PSDBportlet_:&quot;</span>
+                                        <span class="s2">&quot;j_idt10:j_idt639:diameter-value&quot;</span><span class="p">})</span>
+        <span class="c1"># Get the value from BS attribute</span>
+        <span class="n">diameter_parsed</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">diameter</span><span class="p">),</span> <span class="s1">&#39;html.parser&#39;</span><span class="p">)</span><span class="o">.</span>\
+                          <span class="n">span</span><span class="o">.</span><span class="n">text</span>
+        <span class="c1"># Drop-down units needs to be specify. It has been chosen the</span>
+        <span class="c1"># default unit</span>
+        <span class="n">df_values</span> <span class="o">=</span> <span class="n">df_values</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">df_values</span><span class="p">[</span><span class="mi">13</span><span class="p">],</span> <span class="s1">&#39;deg&#39;</span><span class="p">)</span><span class="o">.</span>\
+                            <span class="n">replace</span><span class="p">(</span><span class="n">df_values</span><span class="p">[</span><span class="mi">16</span><span class="p">],</span> <span class="s1">&#39;deg&#39;</span><span class="p">)</span><span class="o">.</span>\
+                            <span class="n">replace</span><span class="p">(</span><span class="n">df_values</span><span class="p">[</span><span class="mi">33</span><span class="p">],</span> <span class="n">diameter_parsed</span><span class="p">)</span><span class="o">.</span>\
+                            <span class="n">replace</span><span class="p">(</span><span class="n">df_values</span><span class="p">[</span><span class="mi">34</span><span class="p">],</span> <span class="s1">&#39;m&#39;</span><span class="p">)</span>
+        <span class="c1"># Create lists to used as columns for final frame</span>
+        <span class="c1"># Initialize list</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">units</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">sources</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_values</span><span class="p">),</span> <span class="mi">3</span><span class="p">):</span>
+            <span class="c1"># Append values for the lists</span>
+            <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df_values</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">units</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df_values</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">sources</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df_values</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="p">])</span>
+        <span class="c1"># Create frame structure for pandas</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Property&#39;</span><span class="p">:</span> <span class="n">df_names</span><span class="p">,</span>
+                <span class="s1">&#39;Values&#39;</span><span class="p">:</span> <span class="n">values</span><span class="p">,</span>
+                <span class="s1">&#39;Unit&#39;</span><span class="p">:</span> <span class="n">units</span><span class="p">,</span>
+                <span class="s1">&#39;Source&#39;</span><span class="p">:</span> <span class="n">sources</span><span class="p">}</span>
+        <span class="c1"># Create DataFrame using pandas</span>
+        <span class="n">physical_properties</span> <span class="o">=</span>  <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">physical_properties</span>
 
     <span class="k">def</span> <span class="nf">_phys_prop_parser</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -751,86 +701,10 @@
         <span class="c1"># Final url = PROPERTIES_URL + desig in which white spaces,</span>
         <span class="c1"># if any, are replaced by %20 to complete the designator</span>
         <span class="n">url</span> <span class="o">=</span> <span class="n">PROPERTIES_URL</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;%20&#39;</span><span class="p">)</span>
-        <span class="c1"># Read the url as html</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">df_p</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_html</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s1">&#39;Physical properties&#39;</span><span class="p">,</span>
-                              <span class="n">keep_default_na</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">df_p</span><span class="o">.</span><span class="n">DoesNotExist</span> <span class="k">as</span> <span class="n">df_not_exist</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Object not found: the name of the &#39;</span>
-                            <span class="s1">&#39;object is wrong or misspelt&#39;</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Object not found: the name of the &#39;</span>
-                             <span class="s1">&#39;object is wrong or misspelt&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">df_not_exist</span>
-        <span class="c1"># Properties Data structure. Note that read_html provides several</span>
-        <span class="c1"># Data structures with repeated information.</span>
-        <span class="n">df_prop</span> <span class="o">=</span> <span class="n">df_p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="c1"># Replace degrad and mkm, from drop-down unit menus</span>
-        <span class="n">df_prop</span> <span class="o">=</span> <span class="n">df_p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;degrad&#39;</span><span class="p">,</span> <span class="s1">&#39;deg&#39;</span><span class="p">)</span><span class="o">.</span>\
-            <span class="n">replace</span><span class="p">(</span><span class="s1">&#39;mkm&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;raddeg&#39;</span><span class="p">,</span> <span class="s1">&#39;rad&#39;</span><span class="p">)</span><span class="o">.</span>\
-            <span class="n">replace</span><span class="p">(</span><span class="s1">&#39;kmm&#39;</span><span class="p">,</span> <span class="s1">&#39;km&#39;</span><span class="p">)</span>
-        <span class="c1"># Drop five last blank rows</span>
-        <span class="n">df_prop</span> <span class="o">=</span> <span class="n">df_prop</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="o">-</span><span class="mi">5</span><span class="p">]</span>
-        <span class="c1"># For other objects it must be removed 3 additional rows</span>
-        <span class="n">txt</span> <span class="o">=</span> <span class="s1">&#39;*Estimated from the absolute magnitude using&#39;</span>
-        <span class="k">if</span> <span class="n">df_prop</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">txt</span><span class="p">:</span>
-            <span class="n">df_prop</span> <span class="o">=</span> <span class="n">df_prop</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span>
-        <span class="c1"># Drop last column (useless or duplicate information)</span>
-        <span class="n">df_prop</span> <span class="o">=</span> <span class="n">df_prop</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">df_prop</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="c1"># Set column names for physical properties</span>
-        <span class="n">tab_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Value&#39;</span><span class="p">,</span> <span class="s1">&#39;Unit&#39;</span><span class="p">,</span> <span class="s1">&#39;Source&#39;</span><span class="p">]</span>
-        <span class="c1"># Rotational properties</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rotation_period</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([[</span><span class="n">df_prop</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">8</span><span class="p">],</span>
-                                            <span class="n">df_prop</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">8</span><span class="p">],</span>
-                                            <span class="n">df_prop</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">8</span><span class="p">]]],</span>
-                                            <span class="n">columns</span><span class="o">=</span><span class="n">tab_cols</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">quality</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([[</span><span class="n">df_prop</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">11</span><span class="p">],</span> <span class="n">df_prop</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">11</span><span class="p">],</span>
-                                    <span class="n">df_prop</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">11</span><span class="p">]]],</span> <span class="n">columns</span><span class="o">=</span><span class="n">tab_cols</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">amplitude</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([[</span><span class="n">df_prop</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">14</span><span class="p">],</span> <span class="n">df_prop</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">14</span><span class="p">],</span>
-                                      <span class="n">df_prop</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">14</span><span class="p">]]],</span>
-                                      <span class="n">columns</span><span class="o">=</span><span class="n">tab_cols</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rotation_direction</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([[</span><span class="n">df_prop</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">17</span><span class="p">],</span>
-                                               <span class="n">df_prop</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">17</span><span class="p">],</span>
-                                               <span class="n">df_prop</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">17</span><span class="p">]]],</span>
-                                               <span class="n">columns</span><span class="o">=</span><span class="n">tab_cols</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">spinvector_l</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([[</span><span class="n">df_prop</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">20</span><span class="p">],</span>
-                                         <span class="n">df_prop</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">20</span><span class="p">],</span>
-                                         <span class="n">df_prop</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">20</span><span class="p">]]],</span>
-                                         <span class="n">columns</span><span class="o">=</span><span class="n">tab_cols</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">spinvector_b</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([[</span><span class="n">df_prop</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">23</span><span class="p">],</span>
-                                         <span class="n">df_prop</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">23</span><span class="p">],</span>
-                                         <span class="n">df_prop</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">23</span><span class="p">]]],</span>
-                                         <span class="n">columns</span><span class="o">=</span><span class="n">tab_cols</span><span class="p">)</span>
-        <span class="c1"># Taxonomy</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">taxonomy</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([[</span><span class="n">df_prop</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">29</span><span class="p">],</span> <span class="n">df_prop</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">29</span><span class="p">],</span>
-                                     <span class="n">df_prop</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">29</span><span class="p">]]],</span>
-                                     <span class="n">columns</span><span class="o">=</span><span class="n">tab_cols</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">taxonomy_all</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([[</span><span class="n">df_prop</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">32</span><span class="p">],</span>
-                                         <span class="n">df_prop</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">32</span><span class="p">],</span>
-                                         <span class="n">df_prop</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">32</span><span class="p">]]],</span>
-                                         <span class="n">columns</span><span class="o">=</span><span class="n">tab_cols</span><span class="p">)</span>
-        <span class="c1"># H / G</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">absolute_magnitude</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_multivar_prop</span><span class="p">(</span><span class="s1">&#39;Magnitude&#39;</span><span class="p">,</span>
-                                                         <span class="n">df_prop</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">slope_parameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_multivar_prop</span><span class="p">(</span><span class="s1">&#39;Slope&#39;</span><span class="p">,</span> <span class="n">df_prop</span><span class="p">)</span>
-        <span class="c1"># Size and Albedo</span>
-        <span class="c1"># Get location indexes after magnitude and slope which can be</span>
-        <span class="c1"># different for different objects</span>
-        <span class="n">albedo_loc</span> <span class="o">=</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">df_prop</span><span class="p">,</span> <span class="s1">&#39;Albedo&#39;</span><span class="p">)</span>
-        <span class="n">diam_loc</span> <span class="o">=</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">df_prop</span><span class="p">,</span> <span class="s1">&#39;Diameter&#39;</span><span class="p">)</span>
-        <span class="c1"># Assign attributes</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">albedo</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([[</span><span class="n">df_prop</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">albedo_loc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">2</span><span class="p">],</span>
-                                   <span class="n">df_prop</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">albedo_loc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">2</span><span class="p">],</span>
-                                   <span class="n">df_prop</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">albedo_loc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">2</span><span class="p">]]],</span>
-                                   <span class="n">columns</span><span class="o">=</span><span class="n">tab_cols</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">diameter</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([[</span><span class="n">df_prop</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">diam_loc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">2</span><span class="p">],</span>
-                                     <span class="n">df_prop</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">diam_loc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">2</span><span class="p">],</span>
-                                     <span class="n">df_prop</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="n">diam_loc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">2</span><span class="p">]]],</span>
-                                     <span class="n">columns</span><span class="o">=</span><span class="n">tab_cols</span><span class="p">)</span>
-        <span class="c1"># Color Index Information</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">color_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_multivar_prop</span><span class="p">(</span><span class="s1">&#39;Color&#39;</span><span class="p">,</span> <span class="n">df_prop</span><span class="p">)</span>
-        <span class="c1"># Sightings</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sightings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_multivar_prop</span><span class="p">(</span><span class="s1">&#39;Sight&#39;</span><span class="p">,</span> <span class="n">df_prop</span><span class="p">)</span>
+
         <span class="c1"># Sources</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_prop_sources</span><span class="p">(</span><span class="n">df_prop</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">physical_properties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_physical_props</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_prop_sources</span><span class="p">(</span><span class="n">url</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="AsteroidObservations"><a class="viewcode-back" href="../../index.html#ESANEOCC.tabs.AsteroidObservations">[docs]</a><span class="k">class</span> <span class="nc">AsteroidObservations</span><span class="p">:</span>
@@ -2054,6 +1928,10 @@
         <span class="c1"># In this code only the location of Absolute Magnitude is obtained</span>
         <span class="n">index</span> <span class="o">=</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">props_df</span><span class="p">,</span> <span class="s1">&#39;Absolute Magnitude (H)&#39;</span><span class="p">)</span>
         <span class="n">index</span> <span class="o">=</span> <span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># Adding a second index for Rotation Period since diameter can</span>
+        <span class="c1"># change the dimensions of the line</span>
+        <span class="n">red_index</span> <span class="o">=</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">props_df</span><span class="p">,</span> <span class="s1">&#39;Rotation period (T)&#39;</span><span class="p">)</span>
+        <span class="n">red_index</span> <span class="o">=</span> <span class="n">red_index</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">physical_properties</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Physical Properties&#39;</span><span class="p">:</span>
                                 <span class="p">[</span><span class="s1">&#39;Absolute Magnitude (H)&#39;</span><span class="p">,</span>
                                  <span class="s1">&#39;Diameter&#39;</span><span class="p">,</span> <span class="s1">&#39;Taxonomic Type&#39;</span><span class="p">,</span>
@@ -2061,18 +1939,18 @@
                                <span class="s1">&#39;Value&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">props_df</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span>
                                         <span class="n">diam_p</span><span class="p">,</span>
                                         <span class="n">props_df</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">index</span><span class="o">+</span><span class="mi">9</span><span class="p">],</span>
-                                        <span class="n">props_df</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">index</span><span class="o">+</span><span class="mi">12</span><span class="p">]],</span>
+                                        <span class="n">props_df</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">red_index</span><span class="o">+</span><span class="mi">1</span><span class="p">]],</span>
                                <span class="s1">&#39;Units&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">props_df</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">index</span><span class="o">+</span><span class="mi">2</span><span class="p">],</span>
                                         <span class="n">props_df</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">index</span><span class="o">+</span><span class="mi">7</span><span class="p">],</span>
                                         <span class="s1">&#39; &#39;</span><span class="p">,</span>
-                                        <span class="n">props_df</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">index</span><span class="o">+</span><span class="mi">13</span><span class="p">]]}</span>
+                                        <span class="n">props_df</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">red_index</span><span class="o">+</span><span class="mi">2</span><span class="p">]]}</span>
         <span class="c1"># Create DataFrame</span>
         <span class="n">physical_properties_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">physical_properties</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">physical_properties</span> <span class="o">=</span> <span class="n">physical_properties_df</span>
         <span class="c1"># Assign attributes for discovery date and observatory</span>
-        <span class="n">discovery_date</span> <span class="o">=</span> <span class="n">props_df</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">index</span><span class="o">+</span><span class="mi">15</span><span class="p">]</span>
+        <span class="n">discovery_date</span> <span class="o">=</span> <span class="n">props_df</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">red_index</span><span class="o">+</span><span class="mi">4</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">discovery_date</span> <span class="o">=</span> <span class="n">discovery_date</span>
-        <span class="n">observatory</span> <span class="o">=</span> <span class="n">props_df</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">index</span><span class="o">+</span><span class="mi">17</span><span class="p">]</span>
+        <span class="n">observatory</span> <span class="o">=</span> <span class="n">props_df</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">red_index</span><span class="o">+</span><span class="mi">6</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">observatory</span> <span class="o">=</span> <span class="n">observatory</span></div>
 </pre></div>
 
