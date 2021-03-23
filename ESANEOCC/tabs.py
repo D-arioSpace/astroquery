@@ -409,34 +409,9 @@ class PhysicalProperties:
 
         Attributes
         ---------
-        rotation_period : DataFrame
-            Data structure containing value, units and source
-        quality : DataFrame
-            Data structure containing value, units and source
-        amplitude : DataFrame
-            Data structure containing value, units and source
-        rotation_direction : DataFrame
-            Data structure containing value, units and source
-        spinvector_l : DataFrame
-            Data structure containing value, units and source
-        spinvector_b : DataFrame
-            Data structure containing value, units and source
-        taxonomy : DataFrame
-            Data structure containing value, units and source
-        taxonomy_all : DataFrame
-            Data structure containing value, units and source
-        absolute_magnitude : DataFrame
-            Data structure containing value, units and source
-        slope_parameter : DataFrame
-            Data structure containing value, units and source
-        albedo : DataFrame
-            Data structure containing value, units and source
-        diameter : DataFrame
-            Data structure containing value, units and source
-        color_index : DataFrame
-            Data structure containing value, units and source
-        sightings : DataFrame
-            Data structure containing value, units and source
+        physical_properties : DataFrame
+            Data structure containing property, value, units and source
+            from the complete set of physical properties
         sources : DataFrame
             Data structure containing source number, name and
             additional information
@@ -450,26 +425,8 @@ class PhysicalProperties:
         """
             Initialization of class attributes
         """
-        # Rotational properties
-        self.rotation_period = []
-        self.quality = []
-        self.amplitude = []
-        self.rotation_direction = []
-        self.spinvector_l = []
-        self.spinvector_b = []
-        # Taxonomy
-        self.taxonomy = []
-        self.taxonomy_all = []
-        # H/G
-        self.absolute_magnitude = []
-        self.slope_parameter = []
-        # Size and albedo
-        self.albedo = []
-        self.diameter = []
-        # Color index information
-        self.color_index = []
-        # Sightings
-        self.sightings = []
+        # Physical properties
+        self.physical_properties = []
         # Sources
         self.sources = []
 
@@ -503,6 +460,88 @@ class PhysicalProperties:
 
         return sources
 
+    @staticmethod
+    def _get_physical_props(url):
+        """
+            Obtain the physical properties from the portal
+
+            Parameters
+            ----------
+            url : str
+                Complete url for physical properties
+
+            Returns
+            -------
+            physical_properties : Data structure
+                Data structure containing the physical properties
+        """
+        # Get contents from url
+        contents = requests.get(url).content
+        # Parse html using BS
+        parsed_html = BeautifulSoup(contents, 'lxml')
+        # Search for property names using div and class
+        props_names = parsed_html.find_all("div",
+                                        {"class": "col-lg-3 font-weight-bold"
+                                            " d-none d-lg-block"})
+        # Create DataFrame with the obtained properties
+        df_names = pd.DataFrame(props_names)
+        # Since the parsing gets properties from other tabs it is
+        # necessary to select the properties associated to Physical
+        # Properties tab
+        df_names = df_names[0][13:27]
+        # Reindex and drop old indexes
+        df_names = df_names.reset_index(drop=True)
+        # Search for property values, units and sources
+        props_value = parsed_html.find_all("div",
+                                        {"class": "col-12"})
+        # Convert to DataFrame and specify string type to avoid bad
+        # object parsing
+        df_values = pd.DataFrame(props_value, dtype='string')
+        # Since the parsing is not as precises as needed remove/replace
+        # unnecessary data
+        df_values[0] = df_values[0].str.replace('<div class="col-12">',
+                                                '')\
+                    .str.replace('</div>', '').str.replace('\n', '')\
+                    .str.strip()
+        # Since the parsing gets properties from other tabs it is
+        # necessary to select the properties associated to Physical
+        # Properties tab
+        df_values = df_values[0][0:42]
+        # Diameter property is an exception, it is required to
+        # introduce an additional parsing step searching for the
+        # specific property
+        diameter = parsed_html.find_all("span",
+                                        {"id": "_NEOSearch_WAR_PSDBportlet_:"
+                                        "j_idt10:j_idt639:diameter-value"})
+        # Get the value from BS attribute
+        diameter_parsed = BeautifulSoup(str(diameter), 'html.parser').\
+                          span.text
+        # Drop-down units needs to be specify. It has been chosen the
+        # default unit
+        df_values = df_values.replace(df_values[13], 'deg').\
+                            replace(df_values[16], 'deg').\
+                            replace(df_values[33], diameter_parsed).\
+                            replace(df_values[34], 'm')
+        # Create lists to used as columns for final frame
+        # Initialize list
+        values = []
+        units = []
+        sources = []
+        for i in range(0, len(df_values), 3):
+            # Append values for the lists
+            values.append(df_values[i])
+            units.append(df_values[i+1])
+            sources.append(df_values[i+2])
+        # Create frame structure for pandas
+        frame = {'Property': df_names,
+                'Values': values,
+                'Unit': units,
+                'Source': sources}
+        # Create DataFrame using pandas
+        physical_properties =  pd.DataFrame(frame)
+
+        return physical_properties
+
     def _phys_prop_parser(self, name):
         """
             Parse and arrange the physical properties data
@@ -522,6 +561,7 @@ class PhysicalProperties:
         url = PROPERTIES_URL + str(name).replace(' ', '%20')
 
         # Sources
+        self.physical_properties = self._get_physical_props(url)
         self.sources = self._get_prop_sources(url)
 
 
@@ -1746,7 +1786,7 @@ class Summary:
         # In this code only the location of Absolute Magnitude is obtained
         index = get_indexes(props_df, 'Absolute Magnitude (H)')
         index = index[0][0]
-        # Adding a second index for Rotation Period since diameter can 
+        # Adding a second index for Rotation Period since diameter can
         # change the dimensions of the line
         red_index = get_indexes(props_df, 'Rotation period (T)')
         red_index = red_index[0][0]
