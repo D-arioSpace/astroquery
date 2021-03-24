@@ -104,7 +104,9 @@ def query_list(list_name):
     145          2017CX1  2022.145205  ...                 5.0
     [146 rows x 10 columns]
 
-    The information of the columns can be accessed through:
+    The information of the columns can be accessed through (see
+    `pandas <https://pandas.pydata.org/pandas-docs/stable/index.html>`_
+    for further information about data access):
 
     >>> list_data['Object Name']
     0               2021DE
@@ -276,11 +278,10 @@ def query_object(name, tab, **kwargs):
 
     Note
     ----
-        The current library is prepared to process the information related to
-        the physical properties through the old portal version
-        (http://neo.ssa.esa.int/). This will need to be modified once the new
-        portal is activated and some needed fixes to its physical properties
-        tab are done.
+        Some physical properties (e.g. *Absolute Mangnitude (H)*, *Slope
+        Parameter (G)*, etc) may have several values which come from different
+        sources. Currently, the library will only show one value as it is done
+        in the NEOCC portal.
 
     Note
     ----
