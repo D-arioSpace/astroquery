@@ -222,7 +222,7 @@ portal: <a class="reference external" href="https://neo.ssa.esa.int/">https://ne
 <li><p>Author: C. Álvaro Arroyo Parejo</p></li>
 <li><p>Issue: 1.0</p></li>
 <li><p>Date: 26-02-2021</p></li>
-<li><p>Purpose: Main module which gets NEAs data from <a class="reference external" href="http://neo.ssa.esa.int/">http://neo.ssa.esa.int/</a></p></li>
+<li><p>Purpose: Main module which gets NEAs data from <a class="reference external" href="https://neo.ssa.esa.int/">https://neo.ssa.esa.int/</a></p></li>
 <li><p>Module: neocc.py</p></li>
 <li><p>History:</p></li>
 </ul>
@@ -261,7 +261,7 @@ All rights reserved</p>
 <li><p>Priotiry list (normal): <em>priority_list</em></p></li>
 <li><p>Priority list (faint): <em>priority_list_faint</em></p></li>
 </ul>
-<p>These lists are referenced in <a class="reference external" href="http://neo.ssa.esa.int/automated-data-access">http://neo.ssa.esa.int/automated-data-access</a></p>
+<p>These lists are referenced in <a class="reference external" href="https://neo.ssa.esa.int/computer-access">https://neo.ssa.esa.int/computer-access</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>list_name</strong> (<em>str</em>) – Name of the requested list. Valid names are: <em>nea_list,
@@ -278,7 +278,8 @@ close_appr_recent, priority_list, priority_list_faint</em>.</p>
 <p class="rubric">Examples</p>
 <p><strong>NEA list:</strong> The output of this list is a <em>pandas.Series</em> which
 contains the list of all NEAs currently considered in the NEOCC system.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">list_data</span> <span class="o">=</span> <span class="n">neocc</span><span class="o">.</span><span class="n">query_list</span><span class="p">(</span><span class="n">list_name</span><span class="o">=</span><span class="s1">&#39;nea_list&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ESANEOCC</span> <span class="kn">import</span> <span class="n">neocc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_data</span> <span class="o">=</span> <span class="n">neocc</span><span class="o">.</span><span class="n">query_list</span><span class="p">(</span><span class="n">list_name</span><span class="o">=</span><span class="s1">&#39;nea_list&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">list_data</span>
 <span class="go">0            433 Eros</span>
 <span class="go">1          719 Albert</span>
@@ -302,24 +303,27 @@ be used as input for <em>query_object</em> method.</p>
 </div>
 <p><strong>Other lists:</strong>  The output of this list is a <em>pandas.DataFrame</em> which
 contains the information of the requested list.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">list_data</span> <span class="o">=</span> <span class="n">neocc</span><span class="o">.</span><span class="n">query_list</span><span class="p">(</span><span class="n">list_name</span><span class="o">=</span><span class="s1">&#39;close_appr_upcoming&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ESANEOCC</span> <span class="kn">import</span> <span class="n">neocc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_data</span> <span class="o">=</span> <span class="n">neocc</span><span class="o">.</span><span class="n">query_list</span><span class="p">(</span><span class="n">list_name</span><span class="o">=</span><span class="s1">&#39;close_appr_upcoming&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">list_data</span>
-<span class="go">        Object Name         Date   ...   Rel. vel in km/s</span>
-<span class="go">0             2021DE  2021.156164  ...              26.0</span>
-<span class="go">1             2021DM  2021.158904  ...              10.2</span>
-<span class="go">2             2011DW  2021.161644  ...              13.6</span>
-<span class="go">3           2011EH17  2021.161644  ...              16.8</span>
-<span class="go">4            2016DV1  2021.164384  ...              18.6</span>
-<span class="go">..               ...          ...  ...               ...</span>
-<span class="go">141           2020DF  2022.120548  ...               8.6</span>
-<span class="go">142          2018CW2  2022.131507  ...              10.8</span>
-<span class="go">143          2020CX1  2022.131507  ...               8.2</span>
-<span class="go">144  455176 1999VF22  2022.142466  ...              25.1</span>
-<span class="go">145          2017CX1  2022.145205  ...               5.0</span>
+<span class="go">         Object Name         Date   ...   Rel. vel in km/s</span>
+<span class="go">0             2021DE  2021.156164  ...                26.0</span>
+<span class="go">1             2021DM  2021.158904  ...                10.2</span>
+<span class="go">2             2011DW  2021.161644  ...                13.6</span>
+<span class="go">3           2011EH17  2021.161644  ...                16.8</span>
+<span class="go">4            2016DV1  2021.164384  ...                18.6</span>
+<span class="go">..               ...          ...  ...                 ...</span>
+<span class="go">141           2020DF  2022.120548  ...                 8.6</span>
+<span class="go">142          2018CW2  2022.131507  ...                10.8</span>
+<span class="go">143          2020CX1  2022.131507  ...                 8.2</span>
+<span class="go">144  455176 1999VF22  2022.142466  ...                25.1</span>
+<span class="go">145          2017CX1  2022.145205  ...                 5.0</span>
 <span class="go">[146 rows x 10 columns]</span>
 </pre></div>
 </div>
-<p>The information of the columns can be accessed through:</p>
+<p>The information of the columns can be accessed through (see
+<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/index.html">pandas</a>
+for further information about data access):</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">list_data</span><span class="p">[</span><span class="s1">&#39;Object Name&#39;</span><span class="p">]</span>
 <span class="go">0               2021DE</span>
 <span class="go">1               2021DM</span>
@@ -354,7 +358,7 @@ contains the information of the requested list.</p>
 <p class="admonition-title">Note</p>
 <p>If the contents request fails the following message will be printed:</p>
 <p><em>Initial attempt to obtain list failed. Reattempting…</em></p>
-<p>Then a second request will be automatically sent to the NEOCC portal</p>
+<p>Then a second request will be automatically sent to the NEOCC portal.</p>
 </div>
 </dd></dl>
 
@@ -411,7 +415,8 @@ the object and the requested tab.</p>
 <p>The information can be obtained introducing directly the name of
 the object, but it can be also added from the output of a
 <em>query_list</em> search:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ast_impacts</span> <span class="o">=</span> <span class="n">neocc</span><span class="o">.</span><span class="n">query_object</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;99942 Apophis&#39;</span><span class="p">,</span> <span class="n">tab</span><span class="o">=</span><span class="s1">&#39;impacts&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ESANEOCC</span> <span class="kn">import</span> <span class="n">neocc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ast_impacts</span> <span class="o">=</span> <span class="n">neocc</span><span class="o">.</span><span class="n">query_object</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;99942 Apophis&#39;</span><span class="p">,</span> <span class="n">tab</span><span class="o">=</span><span class="s1">&#39;impacts&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>or</p>
@@ -428,7 +433,7 @@ the object, but it can be also added from the output of a
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ast_impacts</span> <span class="o">=</span> <span class="n">neocc</span><span class="o">.</span><span class="n">query_object</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">risk_list</span><span class="p">[</span><span class="mi">8</span><span class="p">],</span> <span class="n">tab</span><span class="o">=</span><span class="s1">&#39;impacts&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The output provide an object with the different attributes:</p>
+<p>The output provides an object with the different attributes:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ast_impacts</span><span class="o">.</span>
 <span class="go">ast.additional_note       ast.impacts</span>
 <span class="go">ast.arc_end               ast.info</span>
@@ -438,7 +443,7 @@ the object, but it can be also added from the output of a
 </div>
 <p>By adding the attribute its information can be accessed:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ast_impacts</span><span class="o">.</span><span class="n">impacts</span>
-<span class="go">                date        MJD  sigma  ...  Exp. Energy in MT    PS  TS</span>
+<span class="go">             date        MJD  sigma     ...  Exp. Energy in MT    PS  TS</span>
 <span class="go">0  2056-04-13.094  72101.094  2.221     ...           0.000129 -4.55   0</span>
 <span class="go">1  2065-04-13.131  75388.131  2.430     ...           0.000044 -5.10   0</span>
 <span class="go">2  2068-04-12.634  76483.634  2.723     ...           0.000830 -3.86   0</span>
@@ -450,13 +455,38 @@ the object, but it can be also added from the output of a
 <span class="go">[8 rows x 11 columns]</span>
 </pre></div>
 </div>
+<p>Another example is shown to obtain the physical properties:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ESANEOCC</span> <span class="kn">import</span> <span class="n">neocc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">properties</span> <span class="o">=</span> <span class="n">neocc</span><span class="o">.</span><span class="n">query_object</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;433&#39;</span><span class="p">,</span> <span class="n">tab</span><span class="o">=</span><span class="s1">&#39;physical_properties&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Again, the output provides an object with different attributes:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">properties</span><span class="o">.</span>
+<span class="go">properties.physical_properties  properties.sources</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">properties</span><span class="o">.</span><span class="n">physical_properties</span>
+<span class="go">                   Property     Values Unit Source</span>
+<span class="go">0           Rotation Period       5.27    h    [4]</span>
+<span class="go">1                   Quality          4    -    [4]</span>
+<span class="go">2                 Amplitude  0.04-1.49  mag    [4]</span>
+<span class="go">3        Rotation Direction        PRO    -    [1]</span>
+<span class="go">4              Spinvector L         16  deg    [1]</span>
+<span class="go">5              Spinvector B          9  deg    [1]</span>
+<span class="go">6                  Taxonomy         Sq    -    [2]</span>
+<span class="go">7            Taxonomy (all)          S    -    [3]</span>
+<span class="go">8    Absolute Magnitude (H)      10.31  mag    [5]</span>
+<span class="go">9       Slope Parameter (G)     0.46**  mag    [6]</span>
+<span class="go">10                   Albedo       0.24    -    [9]</span>
+<span class="go">11                 Diameter      23300    m   [10]</span>
+<span class="go">12  Color Index Information       0.39  R-I   [11]</span>
+<span class="go">13                Sightings   Visual S    -   [13]</span>
+</pre></div>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The current library is prepared to process the information related to
-the physical properties through the old portal version
-(<a class="reference external" href="http://neo.ssa.esa.int/">http://neo.ssa.esa.int/</a>). This will need to be modified once the new
-portal is activated and some needed fixes to its physical properties
-tab are done.</p>
+<p>Some physical properties (e.g. <em>Absolute Mangnitude (H)</em>, <em>Slope
+Parameter (G)</em>, etc) may have several values which come from different
+sources. Currently, the library will only show one value as it is done
+in the NEOCC portal.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -469,8 +499,8 @@ the data frame
 In order to solve this problem those second lines
 have been extracted in another attribute (e.g. sat_observations or
 roving_observations) to make the data more readable.</p>
-<p>Since, the information can be requested in pairs, i.e. it is needed
-to read both lines of data. This can be made using the date of the
+<p>Since this information can be requested in pairs, i.e. it is needed
+to access both lines of data, this can be made using the date of the
 observations which will be the same for both attributes:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ast_observations</span> <span class="o">=</span> <span class="n">neocc</span><span class="o">.</span><span class="n">query_object</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;99942&#39;</span><span class="p">,</span>
 <span class="go">tab=&#39;observations&#39;)</span>
@@ -497,8 +527,8 @@ obtained by directly introducing the name of the object or from a
 previous <em>query_list</em> search.</p>
 <p>In this particular case, there are no attributes and the data obtained is
 a DataFrame which contains the information for close approaches:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ast_close_appr</span> <span class="o">=</span> <span class="n">neocc</span><span class="o">.</span><span class="n">query_object</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;99942&#39;</span><span class="p">,</span> <span class="n">tab</span><span class="o">=</span><span class="s1">&#39;close_approaches&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ast_close_appr</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">close_appr</span> <span class="o">=</span> <span class="n">neocc</span><span class="o">.</span><span class="n">query_object</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;99942&#39;</span><span class="p">,</span> <span class="n">tab</span><span class="o">=</span><span class="s1">&#39;close_approaches&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">close_appr</span>
 <span class="go">    BODY     CALENDAR-TIME  ...         WIDTH  PROBABILITY</span>
 <span class="go">0   EARTH  1957/04/01.13908  ...  1.318000e-08        1.000</span>
 <span class="go">1   EARTH  1964/10/24.90646  ...  1.119000e-08        1.000</span>

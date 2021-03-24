@@ -190,11 +190,11 @@
 
 
 <span class="c1"># Define the base URL for NEOCC</span>
-<span class="n">BASE_URL</span> <span class="o">=</span> <span class="s1">&#39;http://neo.ssa.esa.int/PSDB-portlet/download?file=&#39;</span>
+<span class="n">BASE_URL</span> <span class="o">=</span> <span class="s1">&#39;https://neo.ssa.esa.int/PSDB-portlet/download?file=&#39;</span>
 <span class="c1"># Define specific URLs for parsing HTMLs and for ephemerides</span>
 <span class="n">PROPERTIES_URL</span> <span class="o">=</span> <span class="s1">&#39;https://neo.ssa.esa.int/&#39;</span>\
                  <span class="s1">&#39;search-for-asteroids?tab=physprops&amp;des=&#39;</span>
-<span class="n">EPHEM_URL</span> <span class="o">=</span> <span class="s1">&#39;http://neo.ssa.esa.int/PSDB-portlet/ephemerides?des=&#39;</span>
+<span class="n">EPHEM_URL</span> <span class="o">=</span> <span class="s1">&#39;https://neo.ssa.esa.int/PSDB-portlet/ephemerides?des=&#39;</span>
 <span class="n">SUMMARY_URL</span> <span class="o">=</span> <span class="s1">&#39;https://neo.ssa.esa.int/search-for-asteroids?sum=1&amp;des=&#39;</span>
 
 <div class="viewcode-block" id="get_object_url"><a class="viewcode-back" href="../../index.html#ESANEOCC.tabs.get_object_url">[docs]</a><span class="k">def</span> <span class="nf">get_object_url</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tab</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -616,7 +616,19 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_get_physical_props</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Obtain the physical properties from the portal</span>
 
+<span class="sd">            Parameters</span>
+<span class="sd">            ----------</span>
+<span class="sd">            url : str</span>
+<span class="sd">                Complete url for physical properties</span>
+
+<span class="sd">            Returns</span>
+<span class="sd">            -------</span>
+<span class="sd">            physical_properties : Data structure</span>
+<span class="sd">                Data structure containing the physical properties</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Get contents from url</span>
         <span class="n">contents</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
         <span class="c1"># Parse html using BS</span>

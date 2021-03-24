@@ -165,7 +165,7 @@
 <span class="sd">* Author: C. Álvaro Arroyo Parejo</span>
 <span class="sd">* Issue: 1.0</span>
 <span class="sd">* Date: 26-02-2021</span>
-<span class="sd">* Purpose: Main module which gets NEAs data from http://neo.ssa.esa.int/</span>
+<span class="sd">* Purpose: Main module which gets NEAs data from https://neo.ssa.esa.int/</span>
 <span class="sd">* Module: neocc.py</span>
 <span class="sd">* History:</span>
 
@@ -197,7 +197,7 @@
 <span class="sd">    * Priotiry list (normal): *priority_list*</span>
 <span class="sd">    * Priority list (faint): *priority_list_faint*</span>
 
-<span class="sd">    These lists are referenced in http://neo.ssa.esa.int/automated-data-access</span>
+<span class="sd">    These lists are referenced in https://neo.ssa.esa.int/computer-access</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -216,6 +216,7 @@
 <span class="sd">    **NEA list:** The output of this list is a *pandas.Series* which</span>
 <span class="sd">    contains the list of all NEAs currently considered in the NEOCC system.</span>
 
+<span class="sd">    &gt;&gt;&gt; from ESANEOCC import neocc</span>
 <span class="sd">    &gt;&gt;&gt; list_data = neocc.query_list(list_name=&#39;nea_list&#39;)</span>
 <span class="sd">    &gt;&gt;&gt; list_data</span>
 <span class="sd">    0            433 Eros</span>
@@ -240,23 +241,26 @@
 <span class="sd">    **Other lists:**  The output of this list is a *pandas.DataFrame* which</span>
 <span class="sd">    contains the information of the requested list.</span>
 
+<span class="sd">    &gt;&gt;&gt; from ESANEOCC import neocc</span>
 <span class="sd">    &gt;&gt;&gt; list_data = neocc.query_list(list_name=&#39;close_appr_upcoming&#39;)</span>
 <span class="sd">    &gt;&gt;&gt; list_data</span>
-<span class="sd">            Object Name         Date   ...   Rel. vel in km/s</span>
-<span class="sd">    0             2021DE  2021.156164  ...              26.0</span>
-<span class="sd">    1             2021DM  2021.158904  ...              10.2</span>
-<span class="sd">    2             2011DW  2021.161644  ...              13.6</span>
-<span class="sd">    3           2011EH17  2021.161644  ...              16.8</span>
-<span class="sd">    4            2016DV1  2021.164384  ...              18.6</span>
-<span class="sd">    ..               ...          ...  ...               ...</span>
-<span class="sd">    141           2020DF  2022.120548  ...               8.6</span>
-<span class="sd">    142          2018CW2  2022.131507  ...              10.8</span>
-<span class="sd">    143          2020CX1  2022.131507  ...               8.2</span>
-<span class="sd">    144  455176 1999VF22  2022.142466  ...              25.1</span>
-<span class="sd">    145          2017CX1  2022.145205  ...               5.0</span>
+<span class="sd">             Object Name         Date   ...   Rel. vel in km/s</span>
+<span class="sd">    0             2021DE  2021.156164  ...                26.0</span>
+<span class="sd">    1             2021DM  2021.158904  ...                10.2</span>
+<span class="sd">    2             2011DW  2021.161644  ...                13.6</span>
+<span class="sd">    3           2011EH17  2021.161644  ...                16.8</span>
+<span class="sd">    4            2016DV1  2021.164384  ...                18.6</span>
+<span class="sd">    ..               ...          ...  ...                 ...</span>
+<span class="sd">    141           2020DF  2022.120548  ...                 8.6</span>
+<span class="sd">    142          2018CW2  2022.131507  ...                10.8</span>
+<span class="sd">    143          2020CX1  2022.131507  ...                 8.2</span>
+<span class="sd">    144  455176 1999VF22  2022.142466  ...                25.1</span>
+<span class="sd">    145          2017CX1  2022.145205  ...                 5.0</span>
 <span class="sd">    [146 rows x 10 columns]</span>
 
-<span class="sd">    The information of the columns can be accessed through:</span>
+<span class="sd">    The information of the columns can be accessed through (see</span>
+<span class="sd">    `pandas &lt;https://pandas.pydata.org/pandas-docs/stable/index.html&gt;`_</span>
+<span class="sd">    for further information about data access):</span>
 
 <span class="sd">    &gt;&gt;&gt; list_data[&#39;Object Name&#39;]</span>
 <span class="sd">    0               2021DE</span>
@@ -293,7 +297,7 @@
 
 <span class="sd">    *Initial attempt to obtain list failed. Reattempting...*</span>
 
-<span class="sd">    Then a second request will be automatically sent to the NEOCC portal</span>
+<span class="sd">    Then a second request will be automatically sent to the NEOCC portal.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Get URL to obtain the data from NEOCC</span>
@@ -361,6 +365,7 @@
 <span class="sd">    the object, but it can be also added from the output of a</span>
 <span class="sd">    *query_list* search:</span>
 
+<span class="sd">    &gt;&gt;&gt; from ESANEOCC import neocc</span>
 <span class="sd">    &gt;&gt;&gt; ast_impacts = neocc.query_object(name=&#39;99942 Apophis&#39;, tab=&#39;impacts&#39;)</span>
 
 <span class="sd">    or</span>
@@ -377,7 +382,7 @@
 <span class="sd">    &#39;99942 Apophis&#39;</span>
 <span class="sd">    &gt;&gt;&gt; ast_impacts = neocc.query_object(name=risk_list[8], tab=&#39;impacts&#39;)</span>
 
-<span class="sd">    The output provide an object with the different attributes:</span>
+<span class="sd">    The output provides an object with the different attributes:</span>
 
 <span class="sd">    &gt;&gt;&gt; ast_impacts.</span>
 <span class="sd">    ast.additional_note       ast.impacts</span>
@@ -388,7 +393,7 @@
 <span class="sd">    By adding the attribute its information can be accessed:</span>
 
 <span class="sd">    &gt;&gt;&gt; ast_impacts.impacts</span>
-<span class="sd">                    date        MJD  sigma  ...  Exp. Energy in MT    PS  TS</span>
+<span class="sd">                 date        MJD  sigma     ...  Exp. Energy in MT    PS  TS</span>
 <span class="sd">    0  2056-04-13.094  72101.094  2.221     ...           0.000129 -4.55   0</span>
 <span class="sd">    1  2065-04-13.131  75388.131  2.430     ...           0.000044 -5.10   0</span>
 <span class="sd">    2  2068-04-12.634  76483.634  2.723     ...           0.000830 -3.86   0</span>
@@ -399,13 +404,38 @@
 <span class="sd">    7  2103-04-14.311  89267.311  2.706     ...           0.000041 -5.38   0</span>
 <span class="sd">    [8 rows x 11 columns]</span>
 
+<span class="sd">    Another example is shown to obtain the physical properties:</span>
+
+<span class="sd">    &gt;&gt;&gt; from ESANEOCC import neocc</span>
+<span class="sd">    &gt;&gt;&gt; properties = neocc.query_object(name=&#39;433&#39;, tab=&#39;physical_properties&#39;)</span>
+
+<span class="sd">    Again, the output provides an object with different attributes:</span>
+
+<span class="sd">    &gt;&gt;&gt; properties.</span>
+<span class="sd">    properties.physical_properties  properties.sources</span>
+<span class="sd">    &gt;&gt;&gt; properties.physical_properties</span>
+<span class="sd">                       Property     Values Unit Source</span>
+<span class="sd">    0           Rotation Period       5.27    h    [4]</span>
+<span class="sd">    1                   Quality          4    -    [4]</span>
+<span class="sd">    2                 Amplitude  0.04-1.49  mag    [4]</span>
+<span class="sd">    3        Rotation Direction        PRO    -    [1]</span>
+<span class="sd">    4              Spinvector L         16  deg    [1]</span>
+<span class="sd">    5              Spinvector B          9  deg    [1]</span>
+<span class="sd">    6                  Taxonomy         Sq    -    [2]</span>
+<span class="sd">    7            Taxonomy (all)          S    -    [3]</span>
+<span class="sd">    8    Absolute Magnitude (H)      10.31  mag    [5]</span>
+<span class="sd">    9       Slope Parameter (G)     0.46**  mag    [6]</span>
+<span class="sd">    10                   Albedo       0.24    -    [9]</span>
+<span class="sd">    11                 Diameter      23300    m   [10]</span>
+<span class="sd">    12  Color Index Information       0.39  R-I   [11]</span>
+<span class="sd">    13                Sightings   Visual S    -   [13]</span>
+
 <span class="sd">    Note</span>
 <span class="sd">    ----</span>
-<span class="sd">        The current library is prepared to process the information related to</span>
-<span class="sd">        the physical properties through the old portal version</span>
-<span class="sd">        (http://neo.ssa.esa.int/). This will need to be modified once the new</span>
-<span class="sd">        portal is activated and some needed fixes to its physical properties</span>
-<span class="sd">        tab are done.</span>
+<span class="sd">        Some physical properties (e.g. *Absolute Mangnitude (H)*, *Slope</span>
+<span class="sd">        Parameter (G)*, etc) may have several values which come from different</span>
+<span class="sd">        sources. Currently, the library will only show one value as it is done</span>
+<span class="sd">        in the NEOCC portal.</span>
 
 <span class="sd">    Note</span>
 <span class="sd">    ----</span>
@@ -419,8 +449,8 @@
 <span class="sd">        have been extracted in another attribute (e.g. sat_observations or</span>
 <span class="sd">        roving_observations) to make the data more readable.</span>
 
-<span class="sd">        Since, the information can be requested in pairs, i.e. it is needed</span>
-<span class="sd">        to read both lines of data. This can be made using the date of the</span>
+<span class="sd">        Since this information can be requested in pairs, i.e. it is needed</span>
+<span class="sd">        to access both lines of data, this can be made using the date of the</span>
 <span class="sd">        observations which will be the same for both attributes:</span>
 
 <span class="sd">        &gt;&gt;&gt; ast_observations = neocc.query_object(name=&#39;99942&#39;,</span>
@@ -448,8 +478,8 @@
 <span class="sd">    In this particular case, there are no attributes and the data obtained is</span>
 <span class="sd">    a DataFrame which contains the information for close approaches:</span>
 
-<span class="sd">    &gt;&gt;&gt; ast_close_appr = neocc.query_object(name=&#39;99942&#39;, tab=&#39;close_approaches&#39;)</span>
-<span class="sd">    &gt;&gt;&gt; ast_close_appr</span>
+<span class="sd">    &gt;&gt;&gt; close_appr = neocc.query_object(name=&#39;99942&#39;, tab=&#39;close_approaches&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; close_appr</span>
 <span class="sd">        BODY     CALENDAR-TIME  ...         WIDTH  PROBABILITY</span>
 <span class="sd">    0   EARTH  1957/04/01.13908  ...  1.318000e-08        1.000</span>
 <span class="sd">    1   EARTH  1964/10/24.90646  ...  1.119000e-08        1.000</span>
@@ -495,7 +525,6 @@
 <span class="sd">    ast_ephemerides.ephemerides  ast_ephemerides.tinit</span>
 <span class="sd">    ast_ephemerides.observatory  ast_ephemerides.tstep</span>
 <span class="sd">    ast_ephemerides.tfinal</span>
-
 <span class="sd">&quot;&quot;&quot;</span>
     <span class="c1"># Define a list with all possible tabs to be requested</span>
     <span class="n">tab_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;impacts&#39;</span><span class="p">,</span> <span class="s1">&#39;close_approaches&#39;</span><span class="p">,</span> <span class="s1">&#39;observations&#39;</span><span class="p">,</span>
