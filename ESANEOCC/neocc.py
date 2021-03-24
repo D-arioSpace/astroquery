@@ -62,6 +62,7 @@ def query_list(list_name):
     **NEA list:** The output of this list is a *pandas.Series* which
     contains the list of all NEAs currently considered in the NEOCC system.
 
+    >>> from ESANEOCC import neocc
     >>> list_data = neocc.query_list(list_name='nea_list')
     >>> list_data
     0            433 Eros
@@ -86,20 +87,21 @@ def query_list(list_name):
     **Other lists:**  The output of this list is a *pandas.DataFrame* which
     contains the information of the requested list.
 
+    >>> from ESANEOCC import neocc
     >>> list_data = neocc.query_list(list_name='close_appr_upcoming')
     >>> list_data
-            Object Name         Date   ...   Rel. vel in km/s
-    0             2021DE  2021.156164  ...              26.0
-    1             2021DM  2021.158904  ...              10.2
-    2             2011DW  2021.161644  ...              13.6
-    3           2011EH17  2021.161644  ...              16.8
-    4            2016DV1  2021.164384  ...              18.6
-    ..               ...          ...  ...               ...
-    141           2020DF  2022.120548  ...               8.6
-    142          2018CW2  2022.131507  ...              10.8
-    143          2020CX1  2022.131507  ...               8.2
-    144  455176 1999VF22  2022.142466  ...              25.1
-    145          2017CX1  2022.145205  ...               5.0
+             Object Name         Date   ...   Rel. vel in km/s
+    0             2021DE  2021.156164  ...                26.0
+    1             2021DM  2021.158904  ...                10.2
+    2             2011DW  2021.161644  ...                13.6
+    3           2011EH17  2021.161644  ...                16.8
+    4            2016DV1  2021.164384  ...                18.6
+    ..               ...          ...  ...                 ...
+    141           2020DF  2022.120548  ...                 8.6
+    142          2018CW2  2022.131507  ...                10.8
+    143          2020CX1  2022.131507  ...                 8.2
+    144  455176 1999VF22  2022.142466  ...                25.1
+    145          2017CX1  2022.145205  ...                 5.0
     [146 rows x 10 columns]
 
     The information of the columns can be accessed through:
@@ -139,7 +141,7 @@ def query_list(list_name):
 
     *Initial attempt to obtain list failed. Reattempting...*
 
-    Then a second request will be automatically sent to the NEOCC portal
+    Then a second request will be automatically sent to the NEOCC portal.
     """
 
     # Get URL to obtain the data from NEOCC
@@ -207,6 +209,7 @@ def query_object(name, tab, **kwargs):
     the object, but it can be also added from the output of a
     *query_list* search:
 
+    >>> from ESANEOCC import neocc
     >>> ast_impacts = neocc.query_object(name='99942 Apophis', tab='impacts')
 
     or
@@ -223,7 +226,7 @@ def query_object(name, tab, **kwargs):
     '99942 Apophis'
     >>> ast_impacts = neocc.query_object(name=risk_list[8], tab='impacts')
 
-    The output provide an object with the different attributes:
+    The output provides an object with the different attributes:
 
     >>> ast_impacts.
     ast.additional_note       ast.impacts
@@ -234,7 +237,7 @@ def query_object(name, tab, **kwargs):
     By adding the attribute its information can be accessed:
 
     >>> ast_impacts.impacts
-                    date        MJD  sigma  ...  Exp. Energy in MT    PS  TS
+                 date        MJD  sigma     ...  Exp. Energy in MT    PS  TS
     0  2056-04-13.094  72101.094  2.221     ...           0.000129 -4.55   0
     1  2065-04-13.131  75388.131  2.430     ...           0.000044 -5.10   0
     2  2068-04-12.634  76483.634  2.723     ...           0.000830 -3.86   0
@@ -244,6 +247,32 @@ def query_object(name, tab, **kwargs):
     6  2098-10-16.481  87627.481  2.398     ...           0.000058 -5.21   0
     7  2103-04-14.311  89267.311  2.706     ...           0.000041 -5.38   0
     [8 rows x 11 columns]
+
+    Another example is shown to obtain the physical properties:
+
+    >>> from ESANEOCC import neocc
+    >>> properties = neocc.query_object(name='433', tab='physical_properties')
+
+    Again, the output provides an object with different attributes:
+
+    >>> properties.
+    properties.physical_properties  properties.sources
+    >>> properties.physical_properties
+                       Property     Values Unit Source
+    0           Rotation Period       5.27    h    [4]
+    1                   Quality          4    -    [4]
+    2                 Amplitude  0.04-1.49  mag    [4]
+    3        Rotation Direction        PRO    -    [1]
+    4              Spinvector L         16  deg    [1]
+    5              Spinvector B          9  deg    [1]
+    6                  Taxonomy         Sq    -    [2]
+    7            Taxonomy (all)          S    -    [3]
+    8    Absolute Magnitude (H)      10.31  mag    [5]
+    9       Slope Parameter (G)     0.46**  mag    [6]
+    10                   Albedo       0.24    -    [9]
+    11                 Diameter      23300    m   [10]
+    12  Color Index Information       0.39  R-I   [11]
+    13                Sightings   Visual S    -   [13]
 
     Note
     ----
@@ -265,8 +294,8 @@ def query_object(name, tab, **kwargs):
         have been extracted in another attribute (e.g. sat_observations or
         roving_observations) to make the data more readable.
 
-        Since, the information can be requested in pairs, i.e. it is needed
-        to read both lines of data. This can be made using the date of the
+        Since this information can be requested in pairs, i.e. it is needed
+        to access both lines of data, this can be made using the date of the
         observations which will be the same for both attributes:
 
         >>> ast_observations = neocc.query_object(name='99942',
@@ -294,8 +323,8 @@ def query_object(name, tab, **kwargs):
     In this particular case, there are no attributes and the data obtained is
     a DataFrame which contains the information for close approaches:
 
-    >>> ast_close_appr = neocc.query_object(name='99942', tab='close_approaches')
-    >>> ast_close_appr
+    >>> close_appr = neocc.query_object(name='99942', tab='close_approaches')
+    >>> close_appr
         BODY     CALENDAR-TIME  ...         WIDTH  PROBABILITY
     0   EARTH  1957/04/01.13908  ...  1.318000e-08        1.000
     1   EARTH  1964/10/24.90646  ...  1.119000e-08        1.000
