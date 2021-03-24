@@ -371,7 +371,6 @@ def query_object(name, tab, **kwargs):
     ast_ephemerides.ephemerides  ast_ephemerides.tinit
     ast_ephemerides.observatory  ast_ephemerides.tstep
     ast_ephemerides.tfinal
-
 """
     # Define a list with all possible tabs to be requested
     tab_list = ['impacts', 'close_approaches', 'observations',
