@@ -30,7 +30,7 @@ import pandas as pd
 import requests
 
 # Define the base URL for NEOCC
-BASE_URL = 'http://neo.ssa.esa.int/PSDB-portlet/download?file='
+BASE_URL = 'https://neo.ssa.esa.int/PSDB-portlet/download?file='
 
 
 def get_list_url(list_name):

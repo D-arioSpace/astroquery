@@ -11,7 +11,7 @@ portal: https://neo.ssa.esa.int/.
 * Author: C. Álvaro Arroyo Parejo
 * Issue: 1.0
 * Date: 26-02-2021
-* Purpose: Main module which gets NEAs data from http://neo.ssa.esa.int/
+* Purpose: Main module which gets NEAs data from https://neo.ssa.esa.int/
 * Module: neocc.py
 * History:
 
@@ -43,7 +43,7 @@ def query_list(list_name):
     * Priotiry list (normal): *priority_list*
     * Priority list (faint): *priority_list_faint*
 
-    These lists are referenced in http://neo.ssa.esa.int/automated-data-access
+    These lists are referenced in https://neo.ssa.esa.int/computer-access
 
     Parameters
     ----------

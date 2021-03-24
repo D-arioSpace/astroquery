@@ -36,11 +36,11 @@ from bs4 import BeautifulSoup
 
 
 # Define the base URL for NEOCC
-BASE_URL = 'http://neo.ssa.esa.int/PSDB-portlet/download?file='
+BASE_URL = 'https://neo.ssa.esa.int/PSDB-portlet/download?file='
 # Define specific URLs for parsing HTMLs and for ephemerides
 PROPERTIES_URL = 'https://neo.ssa.esa.int/'\
                  'search-for-asteroids?tab=physprops&des='
-EPHEM_URL = 'http://neo.ssa.esa.int/PSDB-portlet/ephemerides?des='
+EPHEM_URL = 'https://neo.ssa.esa.int/PSDB-portlet/ephemerides?des='
 SUMMARY_URL = 'https://neo.ssa.esa.int/search-for-asteroids?sum=1&des='
 
 def get_object_url(name, tab, **kwargs):
