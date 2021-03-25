@@ -20,7 +20,7 @@ within this module.
 Version    Date          Change History
 ========   ===========   =========================================
 1.0        26-02-2021    Initial version
-1.1        24-03-2021    Adding physical properties functionality
+1.1        24-03-2021    Physical properties functionality added
 ========   ===========   =========================================
 
 © Copyright [European Space Agency][2021]
