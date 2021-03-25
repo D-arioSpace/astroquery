@@ -9,8 +9,8 @@ portal: https://neo.ssa.esa.int/.
 * Property: European Space Agency (ESA)
 * Developed by: Elecnor Deimos
 * Author: C. Álvaro Arroyo Parejo
-* Issue: 1.0
-* Date: 26-02-2021
+* Issue: 1.1
+* Date: 24-03-2021
 * Purpose: Main module which gets NEAs data from https://neo.ssa.esa.int/
 * Module: neocc.py
 * History:
@@ -19,6 +19,7 @@ portal: https://neo.ssa.esa.int/.
 Version    Date          Change History
 ========   ===========   ================
 1.0        26-02-2021    Initial version
+1.1        24-03-2021    New docstrings
 ========   ===========   ================
 
 © Copyright [European Space Agency][2021]

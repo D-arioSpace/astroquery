@@ -10,17 +10,18 @@ within this module.
 * Property: European Space Agency (ESA)
 * Developed by: Elecnor Deimos
 * Author: C. Álvaro Arroyo Parejo
-* Issue: 1.0
-* Date: 26-02-2021
+* Issue: 1.1
+* Date: 24-03-2021
 * Purpose: Module which request and parse list data from ESA NEOCC
 * Module: tabs.py
 * History:
 
-========   ===========   ================
+========   ===========   =========================================
 Version    Date          Change History
-========   ===========   ================
+========   ===========   =========================================
 1.0        26-02-2021    Initial version
-========   ===========   ================
+1.1        24-03-2021    Adding physical properties functionality
+========   ===========   =========================================
 
 © Copyright [European Space Agency][2021]
 All rights reserved
