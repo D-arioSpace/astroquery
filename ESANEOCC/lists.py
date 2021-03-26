@@ -7,18 +7,18 @@ obtain it from the ESA NEOCC portal and parse it to show it properly.
 * Property: European Space Agency (ESA)
 * Developed by: Elecnor Deimos
 * Author: C. Álvaro Arroyo Parejo
-* Issue: 1.1
-* Date: 24-03-2021
+* Issue: 1.2
+* Date: 26-03-2021
 * Purpose: Module which request and parse list data from ESA NEOCC
 * Module: lists.py
 * History:
 
-========   ===========   ================
+========   ===========   =========================
 Version    Date          Change History
-========   ===========   ================
+========   ===========   =========================
 1.0        26-02-2021    Initial version
-1.1        24-03-2021    New docstrings
-========   ===========   ================
+1.1        26-03-2021    New docstrings and lists
+========   ===========   =========================
 
 © Copyright [European Space Agency][2021]
 All rights reserved
@@ -57,19 +57,23 @@ def get_list_url(list_name):
     # Define the parameters of each list
     lists_dict = {
         "nea_list": 'allneo.lst',
+        "updated_nea": 'updated_nea.lst',
+        "monthly_update": 'monthly_update.done',
         "risk_list": 'esa_risk_list',
         "risk_list_special": 'esa_special_risk_list',
         "close_appr_upcoming": 'esa_upcoming_close_app',
         "close_appr_recent": 'esa_recent_close_app',
         "priority_list": 'esa_priority_neo_list',
         "priority_list_faint": 'esa_faint_neo_list',
+        "close_encounter" : 'close_encounter2.txt'
         }
     # Raise error is input is not in dictionary
     if list_name not in lists_dict:
-        raise KeyError('Valid list names are nea_list, risk_list, '
-                       'risk_list_special, close_appr_upcoming, '
-                       'close_appr_recent, priority_list, '
-                       'priority_list_faint')
+        raise KeyError('Valid list names are nea_list, updated_nea, '
+                       'monthly_update, risk_list, risk_list_special, '
+                       'close_appr_upcoming, close_appr_recent, '
+                       'priority_list, priority_list_faint and '
+                       'close_encounter')
     # Get url
     url = lists_dict[list_name]
 
@@ -165,7 +169,7 @@ def parse_list(list_name, data_byte_d):
         Data frame with data from the list parsed.
     """
     # Parse data for each type of list
-    if list_name == "nea_list":
+    if list_name in ("nea_list", "updated_nea", "monthly_update"):
         neocc_lst = parse_nea(data_byte_d)
 
     elif list_name in ("risk_list", "risk_list_special"):
@@ -176,12 +180,14 @@ def parse_list(list_name, data_byte_d):
 
     elif list_name in ("priority_list", "priority_list_faint"):
         neocc_lst = parse_pri(data_byte_d)
+    elif list_name == "close_encounter":
+        neocc_lst = parse_encounter(data_byte_d)
 
     return neocc_lst
 
 
 def parse_nea(data_byte_d):
-    """Parse and arrange all NEA list.
+    """Parse and arrange NEA lists.
 
     Parameters
     ----------
@@ -197,7 +203,8 @@ def parse_nea(data_byte_d):
 
     # Remove redundant white spaces
     neocc_lst = neocc_lst[0].str.strip().replace(r'\s+', ' ',
-                                                 regex=True)
+                                                 regex=True)\
+                                        .str.replace('# ', '')
 
     return neocc_lst
 
@@ -239,6 +246,22 @@ def parse_risk(data_byte_d):
     neocc_lst['Date/Time'] = pd.to_datetime(neocc_lst['Date/Time'])
     # Convert from datetime to YYYY.yyyyyy
     neocc_lst['Date/Time'] = neocc_lst['Date/Time'].map(get_dec_year)
+    # Adding metadata
+    neocc_lst.help = ('Risk lists contain a data frame with the '
+                      'following information:\n'
+                      '-Object Name: name of the NEA\n'
+                      '-Diamater in m: approximate diameter in meters\n'
+                      '-*=Y: recording an asterisk if the value has '
+                      'been estimated from the absolute magnitude\n'
+                      '-Date/Time: predicted impact date in YYYY.yyyyyy '
+                      'format\n'
+                      '-IP max: Maximum Impact Probability\n'
+                      '-PS max: Palermo scale rating\n'
+                      '-Vel in km/s: Impact velocity at atmospheric entry'
+                      ' in km/s\n'
+                      '-Years: Time span of detected impacts\n'
+                      '-IP cum: Cumulative Impact Probability\n'
+                      '-PS cum: Cumulative Palermo Scale')
 
     return neocc_lst
 
@@ -283,6 +306,24 @@ def parse_clo(data_byte_d):
     neocc_lst['Date'] = pd.to_datetime(neocc_lst['Date'])
     # Convert from datetime to YYYY.yyyyyy
     neocc_lst['Date'] = neocc_lst['Date'].map(get_dec_year)
+    # Adding metadata
+    neocc_lst.help = ('Close approches lists contain a data frame with'
+                      ' the following information:\n'
+                      '-Object Name: name of the NEA\n'
+                      '-Date: close approach date in YYYY.yyyyyy '
+                      'format\n'
+                      '-Miss distance in km: miss distance in kilometers'
+                      ' with precision of 1 km\n'
+                      '-Miss distance in au: miss distance in astronomical'
+                      ' units (1 au  = 149597870.7 km)\n'
+                      '-Miss distance in LD: miss distance in Lunar '
+                      'Distance (1 LD = 384399 km)\n'
+                      '-Diamater in m: approximate diameter in meters\n'
+                      '-*=Yes: recording an asterisk if the value has '
+                      'been estimated from the absolute magnitude\n'
+                      '-H: Absolute Magnitude\n'
+                      '-Max Bright: Maximum brightness at close approach\n'
+                      '-Rel. vel in km/s: relative velocity in km/s')
 
     return neocc_lst
 
@@ -321,7 +362,6 @@ def parse_pri(data_byte_d):
     neocc_lst[7] = pd.to_datetime(neocc_lst[7])
 
     # Convert from datetime to YYYY.yyyyyy
-    # False positive. pylint: disable=E1101
     neocc_lst[7] = neocc_lst[7].map(get_dec_year)
 
     # Rename columns
@@ -329,5 +369,78 @@ def parse_pri(data_byte_d):
                          'R.A. in arcsec', 'Decl. in deg',
                          'Elong. in deg', 'V in mag', 'Sky uncert.',
                          'End of Visibility']
+    # Adding metadata
+    neocc_lst.help = ('Priority lists contain a data frame with'
+                      ' the following information:\n'
+                      '-Priority: 0=UR: Urgent, 1=NE: Necessary, '
+                      '2=US: Useful, 3=LP: Low Priority\n'
+                      '-Object: designator of the object\n'
+                      '-R.A. in arcsec: current right ascension on '
+                      'the sky, Geocentric equatorial, in arcseconds\n'
+                      '-Decl. in deg: current declination on the sky'
+                      ', in sexagesimal degrees\n'
+                      '-Elong. in deg: current Solar elongation, in '
+                      'sexagesimal degrees\n'
+                      '-V in mag: current observable brightness, V '
+                      'band, in magnitudes\n'
+                      '-Sky uncert.: uncertainty in the plane of the '
+                      'sky, in arcseconds\n'
+                      '-End of Visibility: expected date of end of '
+                      'visibility as YYYY.yyyyyy format')
+
+    return neocc_lst
+
+
+def parse_encounter(data_byte_d):
+    """Parse and arrange close encounter lists.
+
+    Parameters
+    ----------
+    data_byte_d : object
+        Decoded StringIO object.
+    Returns
+    -------
+    neocc_lst : *pandas.Series* or *pandas.DataFrame*
+        Data frame with close approaches list data parsed.
+    """
+    # Read data as csv
+    neocc_lst = pd.read_csv(data_byte_d, sep='|', skiprows=[0,2])
+    # Check if there is server internal error
+    if len(neocc_lst.columns) <= 1:
+        raise ConnectionError('Internal Server Error. Please try '
+                              'again.')
+    # Remove redundant white spaces
+    neocc_lst.columns = neocc_lst.columns.str.strip()
+    neocc_lst = neocc_lst.replace(r'\s+', ' ', regex=True)
+    df_obj = neocc_lst.select_dtypes(['object'])
+    neocc_lst[df_obj.columns] = df_obj.apply(lambda x:
+                                             x.str.strip())
+
+    neocc_lst.help = ('Close encounter list contains a data frame with'
+                      ' the following information:\n'
+                      '-Name/design: designator of the NEA\n'
+                      '-Planet:  planet or massive asteroid is '
+                      'involved in the close approach\n'
+                      '-Date: close encounter date in YYYY.yyyyyy '
+                      'format\n'
+                      '-Time approach: close encounter date in '
+                      'MJD2000\n'
+                      '-Time uncert: time uncertainty in MJD2000\n'
+                      '-Distance: Nominal distance at the close '
+                      'approach in au\n'
+                      '-Minimum distance: minimum possible distance at'
+                      ' the close approach in au\n'
+                      '-Distance uncertainty: distance uncertainty in '
+                      'in au\n'
+                      '-Width: width of the strechin in au\n'
+                      '-Stretch: stretching. It indicates how much the '
+                      'confidence region at the epoch has been '
+                      'stretched by the time of the approach. This is '
+                      'a close cousin of the Lyapounov exponent\n'
+                      '-Probability: close approach probability. A '
+                      'value of 1 indicates a certain close approach\n'
+                      '-Velocity: velocity in km/s\n'
+                      '-Max Mag: maximum brightness magnitude at close'
+                      'approach')
 
     return neocc_lst
