@@ -215,16 +215,18 @@ installed package that <code class="docutils literal notranslate"><span class="p
 </div>
 <p>Another installation method that will install the library and will update
 the dependencies is the follwing:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install --upgrade-strategy eager .
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install . --upgrade-strategy eager
 </pre></div>
 </div>
 <p>In this case, dependencies are upgraded regardless of whether the currently
 installed version satisfies the requirements of the upgraded package(s).</p>
 <p>If you want to make sure none of your existing dependencies get upgraded, you
 can also do:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install astropy --no-deps
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install . --no-deps
 </pre></div>
 </div>
+<p>Note that, in the latter case, it is possible that some library functionalities
+will not work if the dependencies do not satisfy the Requirements.</p>
 </div>
 <div class="section" id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>

@@ -67,7 +67,7 @@ the dependencies is the follwing:
 
 .. code-block:: bash
 
-    $ pip install --upgrade-strategy eager .
+    $ pip install . --upgrade-strategy eager
 
 In this case, dependencies are upgraded regardless of whether the currently
 installed version satisfies the requirements of the upgraded package(s).
@@ -75,7 +75,10 @@ installed version satisfies the requirements of the upgraded package(s).
 If you want to make sure none of your existing dependencies get upgraded, you
 can also do::
 
-   $ pip install astropy --no-deps
+   $ pip install . --no-deps
+
+Note that, in the latter case, it is possible that some library functionalities
+will not work if the dependencies do not satisfy the Requirements.
 
 Requirements
 -------------------
