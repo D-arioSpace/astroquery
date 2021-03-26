@@ -9,18 +9,18 @@ portal: https://neo.ssa.esa.int/.
 * Property: European Space Agency (ESA)
 * Developed by: Elecnor Deimos
 * Author: C. Álvaro Arroyo Parejo
-* Issue: 1.1
-* Date: 24-03-2021
+* Issue: 1.2
+* Date: 26-03-2021
 * Purpose: Main module which gets NEAs data from https://neo.ssa.esa.int/
 * Module: neocc.py
 * History:
 
-========   ===========   ================
+========   ===========   ================================
 Version    Date          Change History
-========   ===========   ================
+========   ===========   ================================
 1.0        26-02-2021    Initial version
-1.1        24-03-2021    New docstrings
-========   ===========   ================
+1.1        26-03-2021    Adding new docstrings
+========   ===========   ================================
 
 © Copyright [European Space Agency][2021]
 All rights reserved
@@ -37,12 +37,15 @@ def query_list(list_name):
     Different lists that can be requested are:
 
     * All NEA list: *nea_list*
+    * Updated NEA list: *updated_nea*
+    * Monthly computation date: *monthly_update*
     * Risk list (normal): *risk_list*
     * Risk list (special): *risk_list_special*
     * Close approaches (upcoming): *close_appr_upcoming*
     * Close approaches (recent): *close_appr_recent*
     * Priotiry list (normal): *priority_list*
     * Priority list (faint): *priority_list_faint*
+    * Close encounter list: *close_encounter*
 
     These lists are referenced in https://neo.ssa.esa.int/computer-access
 
@@ -50,8 +53,9 @@ def query_list(list_name):
     ----------
     list_name : str
         Name of the requested list. Valid names are: *nea_list,
-        risk_list, risk_list_special, close_appr_upcoming,
-        close_appr_recent, priority_list, priority_list_faint*.
+        updated_nea, monthly_update, risk_list, risk_list_special,
+        close_appr_upcoming, close_appr_recent, priority_list,
+        priority_list_faint and close_encounter*.
 
     Returns
     -------
@@ -60,8 +64,9 @@ def query_list(list_name):
 
     Examples
     --------
-    **NEA list:** The output of this list is a *pandas.Series* which
-    contains the list of all NEAs currently considered in the NEOCC system.
+    **NEA list, Updated NEA list, Monthly computation date:** The output
+    of this list is a *pandas.Series* which contains the list of all NEAs
+    currently considered in the NEOCC system.
 
     >>> from ESANEOCC import neocc
     >>> list_data = neocc.query_list(list_name='nea_list')
