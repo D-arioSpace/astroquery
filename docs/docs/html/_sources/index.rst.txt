@@ -35,6 +35,48 @@ The library is contained in ESANEOCC folder. In order to install the library:
 
     $ pip install .
 
+.. note:: 
+
+   Consider installing ``ESANEOCC`` library into a `virtualenv
+   <https://docs.python.org/3/tutorial/venv.html>`_. This will avoid problems
+   with previous installed dependencies.
+
+The previous installation will install the library and its dependencies, but
+the dependencies will not be updated in case they are previously installed.
+In order to asssure that the packages version is the one determined in the
+Requirements the following command must be written:
+
+.. code-block:: bash
+
+    $ pip install -r requirements.txt
+
+This can be done in one command line:
+
+.. code-block:: bash
+
+    $ pip install . && pip install -r requirements.txt
+
+.. warning::
+
+   The previous command will force to install the package version of the
+   requirements. This will upgrade/downgrade the version of any previous
+   installed package that ``ESANEOCC`` library depends on.
+
+Another installation method that will install the library and will update
+the dependencies is the follwing:
+
+.. code-block:: bash
+
+    $ pip install --upgrade-strategy eager .
+
+In this case, dependencies are upgraded regardless of whether the currently
+installed version satisfies the requirements of the upgraded package(s).
+
+If you want to make sure none of your existing dependencies get upgraded, you
+can also do::
+
+   $ pip install astropy --no-deps
+
 Requirements
 -------------------
 ESA NEOCC Portal Python Interface Library works with Python 3.
@@ -42,11 +84,11 @@ ESA NEOCC Portal Python Interface Library works with Python 3.
 The following packages are required for the library installation & use:
 
 * `beautifulsoup4 <https://pypi.org/project/beautifulsoup4/>`_ = 4.9.3
-* `lxml <https://pypi.org/project/lxml/>`_ = 4.6.2
-* `pandas <https://pypi.org/project/pandas/>`_ = 1.2.2
+* `lxml <https://pypi.org/project/lxml/>`_ = 4.6.3
+* `pandas <https://pypi.org/project/pandas/>`_ = 1.2.3
 * `parse <https://pypi.org/project/parse/>`_ = 1.19.0
 * `requests <https://pypi.org/project/requests/>`_ = 2.25.1
-* `scipy <https://pypi.org/project/scipy/>`_ = 1.6.1
+* `scipy <https://pypi.org/project/scipy/>`_ = 1.6.2
 
 For tests the following packages are required:
 

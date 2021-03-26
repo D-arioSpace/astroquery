@@ -191,6 +191,40 @@ provides easily accessible through a Python program.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install .
 </pre></div>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Consider installing <code class="docutils literal notranslate"><span class="pre">ESANEOCC</span></code> library into a <a class="reference external" href="https://docs.python.org/3/tutorial/venv.html">virtualenv</a>. This will avoid problems
+with previous installed dependencies.</p>
+</div>
+<p>The previous installation will install the library and its dependencies, but
+the dependencies will not be updated in case they are previously installed.
+In order to asssure that the packages version is the one determined in the
+Requirements the following command must be written:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install -r requirements.txt
+</pre></div>
+</div>
+<p>This can be done in one command line:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install . <span class="o">&amp;&amp;</span> pip install -r requirements.txt
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The previous command will force to install the package version of the
+requirements. This will upgrade/downgrade the version of any previous
+installed package that <code class="docutils literal notranslate"><span class="pre">ESANEOCC</span></code> library depends on.</p>
+</div>
+<p>Another installation method that will install the library and will update
+the dependencies is the follwing:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install --upgrade-strategy eager .
+</pre></div>
+</div>
+<p>In this case, dependencies are upgraded regardless of whether the currently
+installed version satisfies the requirements of the upgraded package(s).</p>
+<p>If you want to make sure none of your existing dependencies get upgraded, you
+can also do:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install astropy --no-deps
+</pre></div>
+</div>
 </div>
 <div class="section" id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
@@ -198,11 +232,11 @@ provides easily accessible through a Python program.</p>
 <p>The following packages are required for the library installation &amp; use:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://pypi.org/project/beautifulsoup4/">beautifulsoup4</a> = 4.9.3</p></li>
-<li><p><a class="reference external" href="https://pypi.org/project/lxml/">lxml</a> = 4.6.2</p></li>
-<li><p><a class="reference external" href="https://pypi.org/project/pandas/">pandas</a> = 1.2.2</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/lxml/">lxml</a> = 4.6.3</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/pandas/">pandas</a> = 1.2.3</p></li>
 <li><p><a class="reference external" href="https://pypi.org/project/parse/">parse</a> = 1.19.0</p></li>
 <li><p><a class="reference external" href="https://pypi.org/project/requests/">requests</a> = 2.25.1</p></li>
-<li><p><a class="reference external" href="https://pypi.org/project/scipy/">scipy</a> = 1.6.1</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/scipy/">scipy</a> = 1.6.2</p></li>
 </ul>
 <p>For tests the following packages are required:</p>
 <ul class="simple">
@@ -220,17 +254,17 @@ portal: <a class="reference external" href="https://neo.ssa.esa.int/">https://ne
 <li><p>Property: European Space Agency (ESA)</p></li>
 <li><p>Developed by: Elecnor Deimos</p></li>
 <li><p>Author: C. Álvaro Arroyo Parejo</p></li>
-<li><p>Issue: 1.1</p></li>
-<li><p>Date: 24-03-2021</p></li>
+<li><p>Issue: 1.2</p></li>
+<li><p>Date: 26-03-2021</p></li>
 <li><p>Purpose: Main module which gets NEAs data from <a class="reference external" href="https://neo.ssa.esa.int/">https://neo.ssa.esa.int/</a></p></li>
 <li><p>Module: neocc.py</p></li>
 <li><p>History:</p></li>
 </ul>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 23%" />
-<col style="width: 31%" />
-<col style="width: 46%" />
+<col style="width: 16%" />
+<col style="width: 22%" />
+<col style="width: 63%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Version</p></th>
@@ -244,8 +278,8 @@ portal: <a class="reference external" href="https://neo.ssa.esa.int/">https://ne
 <td><p>Initial version</p></td>
 </tr>
 <tr class="row-odd"><td><p>1.1</p></td>
-<td><p>24-03-2021</p></td>
-<td><p>New docstrings</p></td>
+<td><p>26-03-2021</p></td>
+<td><p>Adding new docstrings</p></td>
 </tr>
 </tbody>
 </table>
@@ -258,19 +292,23 @@ All rights reserved</p>
 <p>Different lists that can be requested are:</p>
 <ul class="simple">
 <li><p>All NEA list: <em>nea_list</em></p></li>
+<li><p>Updated NEA list: <em>updated_nea</em></p></li>
+<li><p>Monthly computation date: <em>monthly_update</em></p></li>
 <li><p>Risk list (normal): <em>risk_list</em></p></li>
 <li><p>Risk list (special): <em>risk_list_special</em></p></li>
 <li><p>Close approaches (upcoming): <em>close_appr_upcoming</em></p></li>
 <li><p>Close approaches (recent): <em>close_appr_recent</em></p></li>
 <li><p>Priotiry list (normal): <em>priority_list</em></p></li>
 <li><p>Priority list (faint): <em>priority_list_faint</em></p></li>
+<li><p>Close encounter list: <em>close_encounter</em></p></li>
 </ul>
 <p>These lists are referenced in <a class="reference external" href="https://neo.ssa.esa.int/computer-access">https://neo.ssa.esa.int/computer-access</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>list_name</strong> (<em>str</em>) – Name of the requested list. Valid names are: <em>nea_list,
-risk_list, risk_list_special, close_appr_upcoming,
-close_appr_recent, priority_list, priority_list_faint</em>.</p>
+updated_nea, monthly_update, risk_list, risk_list_special,
+close_appr_upcoming, close_appr_recent, priority_list,
+priority_list_faint and close_encounter</em>.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>neocc_lst</strong> – Data Frame which contains the information of the requested list</p>
@@ -280,8 +318,9 @@ close_appr_recent, priority_list, priority_list_faint</em>.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<p><strong>NEA list:</strong> The output of this list is a <em>pandas.Series</em> which
-contains the list of all NEAs currently considered in the NEOCC system.</p>
+<p><strong>NEA list, Updated NEA list, Monthly computation date:</strong> The output
+of this list is a <em>pandas.Series</em> which contains the list of all NEAs
+currently considered in the NEOCC system.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ESANEOCC</span> <span class="kn">import</span> <span class="n">neocc</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">list_data</span> <span class="o">=</span> <span class="n">neocc</span><span class="o">.</span><span class="n">query_list</span><span class="p">(</span><span class="n">list_name</span><span class="o">=</span><span class="s1">&#39;nea_list&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">list_data</span>
@@ -590,17 +629,17 @@ obtain it from the ESA NEOCC portal and parse it to show it properly.</p>
 <li><p>Property: European Space Agency (ESA)</p></li>
 <li><p>Developed by: Elecnor Deimos</p></li>
 <li><p>Author: C. Álvaro Arroyo Parejo</p></li>
-<li><p>Issue: 1.1</p></li>
-<li><p>Date: 24-03-2021</p></li>
+<li><p>Issue: 1.2</p></li>
+<li><p>Date: 26-03-2021</p></li>
 <li><p>Purpose: Module which request and parse list data from ESA NEOCC</p></li>
 <li><p>Module: lists.py</p></li>
 <li><p>History:</p></li>
 </ul>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 23%" />
-<col style="width: 31%" />
-<col style="width: 46%" />
+<col style="width: 18%" />
+<col style="width: 25%" />
+<col style="width: 57%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Version</p></th>
@@ -614,8 +653,8 @@ obtain it from the ESA NEOCC portal and parse it to show it properly.</p>
 <td><p>Initial version</p></td>
 </tr>
 <tr class="row-odd"><td><p>1.1</p></td>
-<td><p>24-03-2021</p></td>
-<td><p>New docstrings</p></td>
+<td><p>26-03-2021</p></td>
+<td><p>New docstrings and lists</p></td>
 </tr>
 </tbody>
 </table>
@@ -698,6 +737,23 @@ close_appr_recent, priority_list, priority_list_faint</em>.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="ESANEOCC.lists.parse_encounter">
+<code class="sig-prename descclassname">ESANEOCC.lists.</code><code class="sig-name descname">parse_encounter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_byte_d</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ESANEOCC/lists.html#parse_encounter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.lists.parse_encounter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse and arrange close encounter lists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data_byte_d</strong> (<em>object</em>) – Decoded StringIO object.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>neocc_lst</strong> – Data frame with close approaches list data parsed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><em>pandas.Series</em> or <em>pandas.DataFrame</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="ESANEOCC.lists.parse_list">
 <code class="sig-prename descclassname">ESANEOCC.lists.</code><code class="sig-name descname">parse_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">list_name</span></em>, <em class="sig-param"><span class="n">data_byte_d</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ESANEOCC/lists.html#parse_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.lists.parse_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Switch function to select parse method.</p>
@@ -720,7 +776,7 @@ close_appr_recent, priority_list, priority_list_faint</em>.</p>
 <dl class="py function">
 <dt id="ESANEOCC.lists.parse_nea">
 <code class="sig-prename descclassname">ESANEOCC.lists.</code><code class="sig-name descname">parse_nea</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_byte_d</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ESANEOCC/lists.html#parse_nea"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.lists.parse_nea" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parse and arrange all NEA list.</p>
+<dd><p>Parse and arrange NEA lists.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>data_byte_d</strong> (<em>object</em>) – Decoded StringIO object.</p>
@@ -789,9 +845,9 @@ within this module.</p>
 </ul>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 13%" />
-<col style="width: 18%" />
-<col style="width: 68%" />
+<col style="width: 11%" />
+<col style="width: 15%" />
+<col style="width: 74%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Version</p></th>
@@ -805,8 +861,8 @@ within this module.</p>
 <td><p>Initial version</p></td>
 </tr>
 <tr class="row-odd"><td><p>1.1</p></td>
-<td><p>24-03-2021</p></td>
-<td><p>Physical properties functionality added</p></td>
+<td><p>26-03-2021</p></td>
+<td><p>Physical properties and summary funcionalities added</p></td>
 </tr>
 </tbody>
 </table>

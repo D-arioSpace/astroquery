@@ -163,18 +163,18 @@
 <span class="sd">* Property: European Space Agency (ESA)</span>
 <span class="sd">* Developed by: Elecnor Deimos</span>
 <span class="sd">* Author: C. Álvaro Arroyo Parejo</span>
-<span class="sd">* Issue: 1.1</span>
-<span class="sd">* Date: 24-03-2021</span>
+<span class="sd">* Issue: 1.2</span>
+<span class="sd">* Date: 26-03-2021</span>
 <span class="sd">* Purpose: Main module which gets NEAs data from https://neo.ssa.esa.int/</span>
 <span class="sd">* Module: neocc.py</span>
 <span class="sd">* History:</span>
 
-<span class="sd">========   ===========   ================</span>
+<span class="sd">========   ===========   ================================</span>
 <span class="sd">Version    Date          Change History</span>
-<span class="sd">========   ===========   ================</span>
+<span class="sd">========   ===========   ================================</span>
 <span class="sd">1.0        26-02-2021    Initial version</span>
-<span class="sd">1.1        24-03-2021    New docstrings</span>
-<span class="sd">========   ===========   ================</span>
+<span class="sd">1.1        26-03-2021    Adding new docstrings</span>
+<span class="sd">========   ===========   ================================</span>
 
 <span class="sd">© Copyright [European Space Agency][2021]</span>
 <span class="sd">All rights reserved</span>
@@ -191,12 +191,15 @@
 <span class="sd">    Different lists that can be requested are:</span>
 
 <span class="sd">    * All NEA list: *nea_list*</span>
+<span class="sd">    * Updated NEA list: *updated_nea*</span>
+<span class="sd">    * Monthly computation date: *monthly_update*</span>
 <span class="sd">    * Risk list (normal): *risk_list*</span>
 <span class="sd">    * Risk list (special): *risk_list_special*</span>
 <span class="sd">    * Close approaches (upcoming): *close_appr_upcoming*</span>
 <span class="sd">    * Close approaches (recent): *close_appr_recent*</span>
 <span class="sd">    * Priotiry list (normal): *priority_list*</span>
 <span class="sd">    * Priority list (faint): *priority_list_faint*</span>
+<span class="sd">    * Close encounter list: *close_encounter*</span>
 
 <span class="sd">    These lists are referenced in https://neo.ssa.esa.int/computer-access</span>
 
@@ -204,8 +207,9 @@
 <span class="sd">    ----------</span>
 <span class="sd">    list_name : str</span>
 <span class="sd">        Name of the requested list. Valid names are: *nea_list,</span>
-<span class="sd">        risk_list, risk_list_special, close_appr_upcoming,</span>
-<span class="sd">        close_appr_recent, priority_list, priority_list_faint*.</span>
+<span class="sd">        updated_nea, monthly_update, risk_list, risk_list_special,</span>
+<span class="sd">        close_appr_upcoming, close_appr_recent, priority_list,</span>
+<span class="sd">        priority_list_faint and close_encounter*.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -214,8 +218,9 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    **NEA list:** The output of this list is a *pandas.Series* which</span>
-<span class="sd">    contains the list of all NEAs currently considered in the NEOCC system.</span>
+<span class="sd">    **NEA list, Updated NEA list, Monthly computation date:** The output</span>
+<span class="sd">    of this list is a *pandas.Series* which contains the list of all NEAs</span>
+<span class="sd">    currently considered in the NEOCC system.</span>
 
 <span class="sd">    &gt;&gt;&gt; from ESANEOCC import neocc</span>
 <span class="sd">    &gt;&gt;&gt; list_data = neocc.query_list(list_name=&#39;nea_list&#39;)</span>

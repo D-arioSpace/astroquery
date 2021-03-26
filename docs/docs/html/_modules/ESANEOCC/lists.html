@@ -161,18 +161,18 @@
 <span class="sd">* Property: European Space Agency (ESA)</span>
 <span class="sd">* Developed by: Elecnor Deimos</span>
 <span class="sd">* Author: C. Álvaro Arroyo Parejo</span>
-<span class="sd">* Issue: 1.1</span>
-<span class="sd">* Date: 24-03-2021</span>
+<span class="sd">* Issue: 1.2</span>
+<span class="sd">* Date: 26-03-2021</span>
 <span class="sd">* Purpose: Module which request and parse list data from ESA NEOCC</span>
 <span class="sd">* Module: lists.py</span>
 <span class="sd">* History:</span>
 
-<span class="sd">========   ===========   ================</span>
+<span class="sd">========   ===========   =========================</span>
 <span class="sd">Version    Date          Change History</span>
-<span class="sd">========   ===========   ================</span>
+<span class="sd">========   ===========   =========================</span>
 <span class="sd">1.0        26-02-2021    Initial version</span>
-<span class="sd">1.1        24-03-2021    New docstrings</span>
-<span class="sd">========   ===========   ================</span>
+<span class="sd">1.1        26-03-2021    New docstrings and lists</span>
+<span class="sd">========   ===========   =========================</span>
 
 <span class="sd">© Copyright [European Space Agency][2021]</span>
 <span class="sd">All rights reserved</span>
@@ -211,19 +211,23 @@
     <span class="c1"># Define the parameters of each list</span>
     <span class="n">lists_dict</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;nea_list&quot;</span><span class="p">:</span> <span class="s1">&#39;allneo.lst&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;updated_nea&quot;</span><span class="p">:</span> <span class="s1">&#39;updated_nea.lst&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;monthly_update&quot;</span><span class="p">:</span> <span class="s1">&#39;monthly_update.done&#39;</span><span class="p">,</span>
         <span class="s2">&quot;risk_list&quot;</span><span class="p">:</span> <span class="s1">&#39;esa_risk_list&#39;</span><span class="p">,</span>
         <span class="s2">&quot;risk_list_special&quot;</span><span class="p">:</span> <span class="s1">&#39;esa_special_risk_list&#39;</span><span class="p">,</span>
         <span class="s2">&quot;close_appr_upcoming&quot;</span><span class="p">:</span> <span class="s1">&#39;esa_upcoming_close_app&#39;</span><span class="p">,</span>
         <span class="s2">&quot;close_appr_recent&quot;</span><span class="p">:</span> <span class="s1">&#39;esa_recent_close_app&#39;</span><span class="p">,</span>
         <span class="s2">&quot;priority_list&quot;</span><span class="p">:</span> <span class="s1">&#39;esa_priority_neo_list&#39;</span><span class="p">,</span>
         <span class="s2">&quot;priority_list_faint&quot;</span><span class="p">:</span> <span class="s1">&#39;esa_faint_neo_list&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;close_encounter&quot;</span> <span class="p">:</span> <span class="s1">&#39;close_encounter2.txt&#39;</span>
         <span class="p">}</span>
     <span class="c1"># Raise error is input is not in dictionary</span>
     <span class="k">if</span> <span class="n">list_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lists_dict</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;Valid list names are nea_list, risk_list, &#39;</span>
-                       <span class="s1">&#39;risk_list_special, close_appr_upcoming, &#39;</span>
-                       <span class="s1">&#39;close_appr_recent, priority_list, &#39;</span>
-                       <span class="s1">&#39;priority_list_faint&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;Valid list names are nea_list, updated_nea, &#39;</span>
+                       <span class="s1">&#39;monthly_update, risk_list, risk_list_special, &#39;</span>
+                       <span class="s1">&#39;close_appr_upcoming, close_appr_recent, &#39;</span>
+                       <span class="s1">&#39;priority_list, priority_list_faint and &#39;</span>
+                       <span class="s1">&#39;close_encounter&#39;</span><span class="p">)</span>
     <span class="c1"># Get url</span>
     <span class="n">url</span> <span class="o">=</span> <span class="n">lists_dict</span><span class="p">[</span><span class="n">list_name</span><span class="p">]</span>
 
@@ -319,7 +323,7 @@
 <span class="sd">        Data frame with data from the list parsed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Parse data for each type of list</span>
-    <span class="k">if</span> <span class="n">list_name</span> <span class="o">==</span> <span class="s2">&quot;nea_list&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">list_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;nea_list&quot;</span><span class="p">,</span> <span class="s2">&quot;updated_nea&quot;</span><span class="p">,</span> <span class="s2">&quot;monthly_update&quot;</span><span class="p">):</span>
         <span class="n">neocc_lst</span> <span class="o">=</span> <span class="n">parse_nea</span><span class="p">(</span><span class="n">data_byte_d</span><span class="p">)</span>
 
     <span class="k">elif</span> <span class="n">list_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;risk_list&quot;</span><span class="p">,</span> <span class="s2">&quot;risk_list_special&quot;</span><span class="p">):</span>
@@ -330,12 +334,14 @@
 
     <span class="k">elif</span> <span class="n">list_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;priority_list&quot;</span><span class="p">,</span> <span class="s2">&quot;priority_list_faint&quot;</span><span class="p">):</span>
         <span class="n">neocc_lst</span> <span class="o">=</span> <span class="n">parse_pri</span><span class="p">(</span><span class="n">data_byte_d</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">list_name</span> <span class="o">==</span> <span class="s2">&quot;close_encounter&quot;</span><span class="p">:</span>
+        <span class="n">neocc_lst</span> <span class="o">=</span> <span class="n">parse_encounter</span><span class="p">(</span><span class="n">data_byte_d</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">neocc_lst</span></div>
 
 
 <div class="viewcode-block" id="parse_nea"><a class="viewcode-back" href="../../index.html#ESANEOCC.lists.parse_nea">[docs]</a><span class="k">def</span> <span class="nf">parse_nea</span><span class="p">(</span><span class="n">data_byte_d</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Parse and arrange all NEA list.</span>
+    <span class="sd">&quot;&quot;&quot;Parse and arrange NEA lists.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -351,7 +357,8 @@
 
     <span class="c1"># Remove redundant white spaces</span>
     <span class="n">neocc_lst</span> <span class="o">=</span> <span class="n">neocc_lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\s+&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">,</span>
-                                                 <span class="n">regex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                                                 <span class="n">regex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>\
+                                        <span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;# &#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">neocc_lst</span></div>
 
@@ -393,6 +400,22 @@
     <span class="n">neocc_lst</span><span class="p">[</span><span class="s1">&#39;Date/Time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">neocc_lst</span><span class="p">[</span><span class="s1">&#39;Date/Time&#39;</span><span class="p">])</span>
     <span class="c1"># Convert from datetime to YYYY.yyyyyy</span>
     <span class="n">neocc_lst</span><span class="p">[</span><span class="s1">&#39;Date/Time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">neocc_lst</span><span class="p">[</span><span class="s1">&#39;Date/Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">get_dec_year</span><span class="p">)</span>
+    <span class="c1"># Adding metadata</span>
+    <span class="n">neocc_lst</span><span class="o">.</span><span class="n">help</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Risk lists contain a data frame with the &#39;</span>
+                      <span class="s1">&#39;following information:</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Object Name: name of the NEA</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Diamater in m: approximate diameter in meters</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-*=Y: recording an asterisk if the value has &#39;</span>
+                      <span class="s1">&#39;been estimated from the absolute magnitude</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Date/Time: predicted impact date in YYYY.yyyyyy &#39;</span>
+                      <span class="s1">&#39;format</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-IP max: Maximum Impact Probability</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-PS max: Palermo scale rating</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Vel in km/s: Impact velocity at atmospheric entry&#39;</span>
+                      <span class="s1">&#39; in km/s</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Years: Time span of detected impacts</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-IP cum: Cumulative Impact Probability</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-PS cum: Cumulative Palermo Scale&#39;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">neocc_lst</span></div>
 
@@ -437,6 +460,24 @@
     <span class="n">neocc_lst</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">neocc_lst</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">])</span>
     <span class="c1"># Convert from datetime to YYYY.yyyyyy</span>
     <span class="n">neocc_lst</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">neocc_lst</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">get_dec_year</span><span class="p">)</span>
+    <span class="c1"># Adding metadata</span>
+    <span class="n">neocc_lst</span><span class="o">.</span><span class="n">help</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Close approches lists contain a data frame with&#39;</span>
+                      <span class="s1">&#39; the following information:</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Object Name: name of the NEA</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Date: close approach date in YYYY.yyyyyy &#39;</span>
+                      <span class="s1">&#39;format</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Miss distance in km: miss distance in kilometers&#39;</span>
+                      <span class="s1">&#39; with precision of 1 km</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Miss distance in au: miss distance in astronomical&#39;</span>
+                      <span class="s1">&#39; units (1 au  = 149597870.7 km)</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Miss distance in LD: miss distance in Lunar &#39;</span>
+                      <span class="s1">&#39;Distance (1 LD = 384399 km)</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Diamater in m: approximate diameter in meters</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-*=Yes: recording an asterisk if the value has &#39;</span>
+                      <span class="s1">&#39;been estimated from the absolute magnitude</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-H: Absolute Magnitude</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Max Bright: Maximum brightness at close approach</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Rel. vel in km/s: relative velocity in km/s&#39;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">neocc_lst</span></div>
 
@@ -475,7 +516,6 @@
     <span class="n">neocc_lst</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">neocc_lst</span><span class="p">[</span><span class="mi">7</span><span class="p">])</span>
 
     <span class="c1"># Convert from datetime to YYYY.yyyyyy</span>
-    <span class="c1"># False positive. pylint: disable=E1101</span>
     <span class="n">neocc_lst</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="n">neocc_lst</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">get_dec_year</span><span class="p">)</span>
 
     <span class="c1"># Rename columns</span>
@@ -483,6 +523,79 @@
                          <span class="s1">&#39;R.A. in arcsec&#39;</span><span class="p">,</span> <span class="s1">&#39;Decl. in deg&#39;</span><span class="p">,</span>
                          <span class="s1">&#39;Elong. in deg&#39;</span><span class="p">,</span> <span class="s1">&#39;V in mag&#39;</span><span class="p">,</span> <span class="s1">&#39;Sky uncert.&#39;</span><span class="p">,</span>
                          <span class="s1">&#39;End of Visibility&#39;</span><span class="p">]</span>
+    <span class="c1"># Adding metadata</span>
+    <span class="n">neocc_lst</span><span class="o">.</span><span class="n">help</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Priority lists contain a data frame with&#39;</span>
+                      <span class="s1">&#39; the following information:</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Priority: 0=UR: Urgent, 1=NE: Necessary, &#39;</span>
+                      <span class="s1">&#39;2=US: Useful, 3=LP: Low Priority</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Object: designator of the object</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-R.A. in arcsec: current right ascension on &#39;</span>
+                      <span class="s1">&#39;the sky, Geocentric equatorial, in arcseconds</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Decl. in deg: current declination on the sky&#39;</span>
+                      <span class="s1">&#39;, in sexagesimal degrees</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Elong. in deg: current Solar elongation, in &#39;</span>
+                      <span class="s1">&#39;sexagesimal degrees</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-V in mag: current observable brightness, V &#39;</span>
+                      <span class="s1">&#39;band, in magnitudes</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Sky uncert.: uncertainty in the plane of the &#39;</span>
+                      <span class="s1">&#39;sky, in arcseconds</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-End of Visibility: expected date of end of &#39;</span>
+                      <span class="s1">&#39;visibility as YYYY.yyyyyy format&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">neocc_lst</span></div>
+
+
+<div class="viewcode-block" id="parse_encounter"><a class="viewcode-back" href="../../index.html#ESANEOCC.lists.parse_encounter">[docs]</a><span class="k">def</span> <span class="nf">parse_encounter</span><span class="p">(</span><span class="n">data_byte_d</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Parse and arrange close encounter lists.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data_byte_d : object</span>
+<span class="sd">        Decoded StringIO object.</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    neocc_lst : *pandas.Series* or *pandas.DataFrame*</span>
+<span class="sd">        Data frame with close approaches list data parsed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Read data as csv</span>
+    <span class="n">neocc_lst</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">data_byte_d</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;|&#39;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
+    <span class="c1"># Check if there is server internal error</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">neocc_lst</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="s1">&#39;Internal Server Error. Please try &#39;</span>
+                              <span class="s1">&#39;again.&#39;</span><span class="p">)</span>
+    <span class="c1"># Remove redundant white spaces</span>
+    <span class="n">neocc_lst</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">neocc_lst</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">neocc_lst</span> <span class="o">=</span> <span class="n">neocc_lst</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\s+&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">df_obj</span> <span class="o">=</span> <span class="n">neocc_lst</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">([</span><span class="s1">&#39;object&#39;</span><span class="p">])</span>
+    <span class="n">neocc_lst</span><span class="p">[</span><span class="n">df_obj</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_obj</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span>
+                                             <span class="n">x</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+    <span class="n">neocc_lst</span><span class="o">.</span><span class="n">help</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Close encounter list contains a data frame with&#39;</span>
+                      <span class="s1">&#39; the following information:</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Name/design: designator of the NEA</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Planet:  planet or massive asteroid is &#39;</span>
+                      <span class="s1">&#39;involved in the close approach</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Date: close encounter date in YYYY.yyyyyy &#39;</span>
+                      <span class="s1">&#39;format</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Time approach: close encounter date in &#39;</span>
+                      <span class="s1">&#39;MJD2000</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Time uncert: time uncertainty in MJD2000</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Distance: Nominal distance at the close &#39;</span>
+                      <span class="s1">&#39;approach in au</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Minimum distance: minimum possible distance at&#39;</span>
+                      <span class="s1">&#39; the close approach in au</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Distance uncertainty: distance uncertainty in &#39;</span>
+                      <span class="s1">&#39;in au</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Width: width of the strechin in au</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Stretch: stretching. It indicates how much the &#39;</span>
+                      <span class="s1">&#39;confidence region at the epoch has been &#39;</span>
+                      <span class="s1">&#39;stretched by the time of the approach. This is &#39;</span>
+                      <span class="s1">&#39;a close cousin of the Lyapounov exponent</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Probability: close approach probability. A &#39;</span>
+                      <span class="s1">&#39;value of 1 indicates a certain close approach</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Velocity: velocity in km/s</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Max Mag: maximum brightness magnitude at close&#39;</span>
+                      <span class="s1">&#39;approach&#39;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">neocc_lst</span></div>
 </pre></div>
