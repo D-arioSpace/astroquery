@@ -15,12 +15,13 @@ portal: https://neo.ssa.esa.int/.
 * Module: neocc.py
 * History:
 
-========   ===========   ================================
+========   ===========   ============================================
 Version    Date          Change History
-========   ===========   ================================
+========   ===========   ============================================
 1.0        26-02-2021    Initial version
 1.1        26-03-2021    Adding new docstrings
-========   ===========   ================================
+1.2        XX-05-2021    orbit_elements changes to orbital_elements
+========   ===========   ============================================
 
 © Copyright [European Space Agency][2021]
 All rights reserved
