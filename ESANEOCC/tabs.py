@@ -1794,8 +1794,9 @@ class Ephemerides:
                             engine='python', colspecs=col_space,
                             skipfooter=2)
         # Rename columns
-        ephem.columns = ['Date', 'Hour', 'MJD', 'H', 'M', 'S', 'D',
-                         '\'','"','Mag','Alt', 'Airmass', 'Sun elev.',
+        ephem.columns = ['Date', 'Hour', 'MJD', 'RA H', 'RA M', 'RA S',
+                         'DEC D', 'DEC \'','DEC "',
+                         'Mag','Alt', 'Airmass', 'Sun elev.',
                          'SolEl (deg)', 'LunEl (deg)', 'Phase (deg)',
                          'Glat (deg)', 'Glon (deg)', 'R (au)',
                          'Delta (au)', 'Ra*cosDE ("/min)',
@@ -1807,7 +1808,40 @@ class Ephemerides:
         # format
         if ephem['D'].dtype == str:
             ephem['D'] = ephem['D'].str.replace(' ','').astype(int)
-
+        #Adding help to ephemerides data frame
+        ephem.help = ('Ephemerides data frame shows:\n'
+                      '-The Date and the Hour considered\n'
+                      '-The Right Ascension (RA) and Declination (DEC) '
+                      'coordinates\n'
+                      '-The estimated V magnitude (Mag) of the object\n'
+                      '-The Altitude (Alt) over the horizon of the '
+                      'target at the specific time for the specific '
+                      'location. For negative values the object is '
+                      'unobservable. For geocentric position and for '
+                      'space telescopes the value is meaningless\n'
+                      '-The Airmass for the specific time. The Airmass'
+                      ' is INF when the object is under the horizon. '
+                      'For geocentric position and space telescope the' 
+                      ' value is meaningless\n'
+                      '-The Sun elevation (Sun elev.) of the target, '
+                      'that means the angle of the Sun above or under '
+                      'the Horizon\n'
+                      '-The Solar elongation (SolEl) of the target, '
+                      'that means the angle Sun-observer-target\n'
+                      '-The Lunar elongation (LunEl) of the target, '
+                      'that means the angle Moon-observer-target\n'
+                      '-The Phase angle, that is the angle '
+                      'Sun-target-observer\n'
+                      '-The Galactic Latitude (Glat)\n'
+                      '-The Galactic Longitude (Glon)\n'
+                      '-The distance Sun-object (R)\n'
+                      '-The distance Earth-object (Delta)\n'
+                      '-The Apparent motion in RA (corrected by '
+                      'cos(DEC), which means the real motion on sky), '
+                      'and in DEC, in arcsec/min of the object\n'
+                      '-The Sky plane error with the long axis (Err1),'
+                      ' short axis (Err2) and Position Angle (PA) '
+                      'values')
         # Assign attributes
         self.ephemerides = ephem
         self.observatory = self._get_head_ephem(data_obj)[0]
