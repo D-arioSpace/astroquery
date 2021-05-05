@@ -189,7 +189,7 @@ def query_object(name, tab, **kwargs):
 
         * *orbit_properties*: the required additional arguments are:
 
-            * *orbit_elements* : str (keplerian or equinoctial)
+            * *orbital_elements* : str (keplerian or equinoctial)
             * *orbit_epoch* : str (present or middle)
 
         * *ephemerides*: the required additional arguments are:
@@ -343,13 +343,13 @@ def query_object(name, tab, **kwargs):
 
     **Orbit Properties:** In order to access the orbit properties
     information, it is necessary to provide two additional inputs to
-    *query_object* method: **orbit_elements** and **orbit_epoch**.
+    *query_object* method: **orbital_elements** and **orbit_epoch**.
 
     It is mandatory to write these two paramters as: *orbit_epoch=' '*
     to make the library works.
 
     >>> ast_orbit_prop = neocc.query_object(name='99942',
-    tab='orbit_properties',orbit_elements='keplerian', orbit_epoch='present')
+    tab='orbit_properties',orbital_elements='keplerian', orbit_epoch='present')
     >>> ast_orbit_prop.
     ast_orbit_prop.anode       ast_orbit_prop.moid
     ast_orbit_prop.aphelion    ast_orbit_prop.ngr
@@ -431,16 +431,18 @@ def query_object(name, tab, **kwargs):
     # Orbit properties
     elif tab == 'orbit_properties':
         # Raise error if no elements are provided
-        if 'orbit_elements' not in kwargs:
-            raise KeyError('Please specify type of elements: '
-                           'keplerian or equinoctial')
+        if 'orbital_elements' not in kwargs:
+            raise KeyError('Please specify type of orbital_elements: '
+                           'keplerian or equinoctial.'
+                           'E.g., orbital_elements="keplerian"')
         # Raise error if no epoch is provided
         if 'orbit_epoch' not in kwargs:
-            raise KeyError('Please specify type of epoch: '
-                           'present or middle')
+            raise KeyError('Please specify type of orbit_epoch: '
+                           'present or middle.'
+                           'E.g., orbit_epoch="middle"')
         # Get URL to obtain the data from NEOCC
         url = tabs.get_object_url(name, tab,
-                                  orbit_elements=kwargs['orbit_elements'],
+                                  orbital_elements=kwargs['orbital_elements'],
                                   orbit_epoch=kwargs['orbit_epoch'])
 
         # Request data two times if the first attempt fails
@@ -456,12 +458,12 @@ def query_object(name, tab, **kwargs):
             data_obj = tabs.get_object_data(url)
 
         # Assign orbit properties depending on the elements requested
-        if kwargs['orbit_elements'] == "keplerian":
+        if kwargs['orbital_elements'] == "keplerian":
             # Create empty object with class Orbit properties
             neocc_obj = tabs.KeplerianOrbitProperties()
             # Parse the requested data using Orbit properties parser
             neocc_obj._orb_kep_prop_parser(data_obj)
-        elif kwargs['orbit_elements'] == "equinoctial":
+        elif kwargs['orbital_elements'] == "equinoctial":
             # Create empty object with class Orbit properties
             neocc_obj = tabs.EquinoctialOrbitProperties()
             # Parse the requested data using Orbit properties parser

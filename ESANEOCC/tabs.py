@@ -61,7 +61,7 @@ def get_object_url(name, tab, **kwargs):
 
         * *orbit_properties*: the required additional arguments are:
 
-            * *orbit_element* : str (keplerian or equinoctial)
+            * *orbital_elements* : str (keplerian or equinoctial)
             * *orbit_epoch* : str (present or middle)
 
         * *ephemerides*: the required additional arguments are:
@@ -95,16 +95,16 @@ def get_object_url(name, tab, **kwargs):
         raise KeyError('Valid list names are impacts, close_approaches'
                        ' observations and orbit_properties')
 
-    # Check if orbit_elements is an input
-    if 'orbit_elements' in kwargs:
+    # Check if orbital_elements is an input
+    if 'orbital_elements' in kwargs:
         # Check if the elements are Keplerian or Equinoctial
-        if kwargs['orbit_elements'] == "keplerian":
+        if kwargs['orbital_elements'] == "keplerian":
             #Check if the epoch is present day or middle obs. arch
             if kwargs['orbit_epoch'] == "present":
                 url = str(name).replace(' ', '%20') + tab_dict[tab][1]
             elif kwargs['orbit_epoch'] == "middle":
                 url = str(name).replace(' ', '%20') + tab_dict[tab][0]
-        elif kwargs['orbit_elements'] == "equinoctial":
+        elif kwargs['orbital_elements'] == "equinoctial":
             if kwargs['orbit_epoch'] == "present":
                 url = str(name).replace(' ', '%20') + tab_dict[tab][3]
             elif kwargs['orbit_epoch'] == "middle":
