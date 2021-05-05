@@ -1821,7 +1821,7 @@ class Ephemerides:
                       'space telescopes the value is meaningless\n'
                       '-The Airmass for the specific time. The Airmass'
                       ' is INF when the object is under the horizon. '
-                      'For geocentric position and space telescope the' 
+                      'For geocentric position and space telescope the'
                       ' value is meaningless\n'
                       '-The Sun elevation (Sun elev.) of the target, '
                       'that means the angle of the Sun above or under '
