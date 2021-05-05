@@ -189,7 +189,7 @@ def query_object(name, tab, **kwargs):
 
         * *orbit_properties*: the required additional arguments are:
 
-            * *orbit_element* : str (keplerian or equinoctial)
+            * *orbit_elements* : str (keplerian or equinoctial)
             * *orbit_epoch* : str (present or middle)
 
         * *ephemerides*: the required additional arguments are:
