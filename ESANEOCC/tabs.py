@@ -433,6 +433,30 @@ class CloseApproaches:
         # Read data as csv
         df_close_appr = pd.read_csv(df_impacts_d,
                                     delim_whitespace=True)
+        df_close_appr.help = ('Close approaches data frame contains:\n'
+                              '-BODY:  planet or massive asteroid is '
+                              'involved in the close approach\n'
+                              '-CALENDAR-TIME: date of the close '
+                              'approach in YYYY/MM/DD.ddddd format\n'
+                              '-MJD-TIME: Modified Julian Date of the'
+                              'approach\n'
+                              '-TIME-UNCERT.: time uncertainty in '
+                              'MJD2000\n'
+                              '-NOM.-DISTANCE: Nominal distance at '
+                              'the close approach in au\n'
+                              '-MIN.-POSS.-DIST.: Minimum possible '
+                              'distance at the close approach in au\n'
+                              '-DIST.-UNCERT.: distance uncertainty in '
+                              'au\n'
+                              '-STRETCH: It indicates how much the '
+                              'confidence region at the epoch has '
+                              'been stretched by the time of the '
+                              'approach. This is a close cousin of '
+                              'the Lyapounov exponent. Units in au\n'
+                              '-WIDTH: width of the stretching\n'
+                              '-PROBABITLIY: Close approach '
+                              'probability. A value of 1 indicates a '
+                              'certain close approach')
 
         return df_close_appr
 
