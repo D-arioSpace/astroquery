@@ -463,6 +463,37 @@ class PhysicalProperties:
         return sources
 
     @staticmethod
+    def _get_property_names(url):
+        """
+            Check and obtain dataframe names
+
+            Parameters
+            ----------
+            url : str
+                Complete url for physical properties
+
+            Returns
+            -------
+            df_names : Data structure
+                Data structure containing all property names
+            parsed_html : object
+                BeautifulSoup object with the requested information
+        """
+        # Get contents from url
+        contents = requests.get(url, timeout=90).content
+        # Parse html using BS
+        parsed_html = BeautifulSoup(contents, 'lxml')
+        # Search for property names using div and class
+        props_names = parsed_html.find_all("div",
+                                        {"class":
+                                         "col-lg-3 font-weight-bold"
+                                         " d-none d-lg-block"})
+        # Create DataFrame with the obtained properties
+        df_names = pd.DataFrame(props_names)
+
+        return parsed_html, df_names
+
+    @staticmethod
     def _get_physical_props(url):
         """
             Obtain the physical properties from the portal
@@ -477,35 +508,20 @@ class PhysicalProperties:
             physical_properties : Data structure
                 Data structure containing the physical properties
         """
-        # Get contents from url
-        contents = requests.get(url, timeout=90).content
-        # Parse html using BS
-        parsed_html = BeautifulSoup(contents, 'lxml')
-        # Search for property names using div and class
-        props_names = parsed_html.find_all("div",
-                                        {"class": "col-lg-3 font-weight-bold"
-                                            " d-none d-lg-block"})
-        # Create DataFrame with the obtained properties
-        df_names = pd.DataFrame(props_names)
+        # Obtain DataFrame with the obtained properties and html parsed
+        parsed_html = PhysicalProperties._get_property_names(url)[0]
+        df_names = PhysicalProperties._get_property_names(url)[1]
         # Since the parsing gets properties from other tabs it is
         # necessary to select the properties associated to Physical
         # Properties tab
         if df_names.empty:
             print('Required properties file is not available for this '
                   'object. Re-attempting...')
+            # Wait and re-try
             time.sleep(5)
-            # WARNING THIS PART OF CODE 494-504 MUST BE WRITTEN AS A METHOD
-            # Get contents from url
-            contents = requests.get(url, timeout=90).content
-            # Parse html using BS
-            parsed_html = BeautifulSoup(contents, 'lxml')
-            # Search for property names using div and class
-            props_names = parsed_html.find_all("div",
-                                            {"class":
-                                             "col-lg-3 font-weight-bold"
-                                             " d-none d-lg-block"})
-            # Create DataFrame with the obtained properties
-            df_names = pd.DataFrame(props_names)
+            # Obtain DataFrame with the obtained properties and html parsed
+            parsed_html = PhysicalProperties._get_property_names(url)[0]
+            df_names = PhysicalProperties._get_property_names(url)[1]
             if df_names.empty:
                 logging.warning('Required properties file is not '
                                 'found for this object. Check object name.')
