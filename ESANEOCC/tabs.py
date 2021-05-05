@@ -134,7 +134,7 @@ def get_object_data(url):
         Object in byte format.
     """
     # Get data from URL
-    data_obj = requests.get(BASE_URL + url).content
+    data_obj = requests.get(BASE_URL + url, timeout=90).content
     # Parse data and assign attributes to object
 
     return data_obj
@@ -477,7 +477,7 @@ class PhysicalProperties:
                 Data structure containing the physical properties
         """
         # Get contents from url
-        contents = requests.get(url).content
+        contents = requests.get(url, timeout=90).content
         # Parse html using BS
         parsed_html = BeautifulSoup(contents, 'lxml')
         # Search for property names using div and class
@@ -489,6 +489,28 @@ class PhysicalProperties:
         # Since the parsing gets properties from other tabs it is
         # necessary to select the properties associated to Physical
         # Properties tab
+        if df_names.empty:
+            print('Required properties file is not available for this '
+                  'object. Re-attempting...')
+            time.sleep(5)
+            # WARNING THIS PART OF CODE 494-504 MUST BE WRITTEN AS A METHOD
+            # Get contents from url
+            contents = requests.get(url, timeout=90).content
+            # Parse html using BS
+            parsed_html = BeautifulSoup(contents, 'lxml')
+            # Search for property names using div and class
+            props_names = parsed_html.find_all("div",
+                                            {"class":
+                                             "col-lg-3 font-weight-bold"
+                                             " d-none d-lg-block"})
+            # Create DataFrame with the obtained properties
+            df_names = pd.DataFrame(props_names)
+            if df_names.empty:
+                logging.warning('Required properties file is not '
+                                'found for this object. Check object name.')
+                raise ValueError('Required properties file is not '
+                                'found for this object. '
+                                'Check object name.')
         df_names = df_names[0][13:27]
         # Reindex and drop old indexes
         df_names = df_names.reset_index(drop=True)
@@ -1665,7 +1687,7 @@ class Ephemerides:
         # Request data two times if the first attempt fails
         try:
             # Get object data
-            data_obj = requests.get(url_ephe).content
+            data_obj = requests.get(url_ephe, timeout=90).content
 
         except ConnectionError:
             print('Initial attempt to obtain object data failed. '
@@ -1675,7 +1697,7 @@ class Ephemerides:
             # Wait 5 seconds
             time.sleep(5)
             # Get object data
-            data_obj = requests.get(url_ephe).content
+            data_obj = requests.get(url_ephe, timeout=90).content
 
         # Check if file contains errors due to bad URL keys
         check = io.StringIO(data_obj.decode('utf-8'))
@@ -1757,7 +1779,7 @@ class Summary:
 
         # Read the url as html
         try:
-            contents = requests.get(url).content
+            contents = requests.get(url, timeout=90).content
         except contents.DoesNotExist as contents_not_exist:
             logging.warning('Object not found: the name of the '
                             'object is wrong or misspelt')
@@ -1807,7 +1829,11 @@ class Summary:
         physical_properties_df = pd.DataFrame(physical_properties)
         self.physical_properties = physical_properties_df
         # Assign attributes for discovery date and observatory
-        discovery_date = props_df[0][red_index+4]
-        self.discovery_date = discovery_date
-        observatory = props_df[0][red_index+6]
-        self.observatory = observatory
+        if not get_indexes(props_df, 'Observatory'):
+            self.discovery_date = 'Discovery date is not available'
+            self.observatory = 'Observatory is not available'
+        else:
+            discovery_date = props_df[0][red_index+4]
+            self.discovery_date = discovery_date
+            observatory = props_df[0][red_index+6]
+            self.observatory = observatory
