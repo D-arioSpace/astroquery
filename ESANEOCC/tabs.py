@@ -350,6 +350,38 @@ class Impacts:
         df_impacts = df_impacts.drop(columns=['+/-',
                                      'TS']).rename(
                                      columns=col_dict)
+        # Adding help to impacts Dataframe
+        df_impacts.help = ('Data frame with possible impacts '
+                           'information:\n'
+                           '-Date: date for the potential impact in '
+                           'YYYY-MM-DD.ddd format\n'
+                           '-MJD: Modified Julian Day for the '
+                           'potential impact\n'
+                           '-sigma: approximate location along the '
+                           'Line Of Variation (LOV) in sigma space\n'
+                           '-sigimp: The lateral distance in '
+                           'sigma-space from the LOV to the Earth '
+                           'surface. A zero implies that the LOV '
+                           'passes through the Earth'
+                           '-dist: Minimum Distance in Earth radii. '
+                           'The lateral distance from the LOV to the '
+                           'center of the Earth\n'
+                           '-width: one-sigma semi-width of the '
+                           'Target Plane confidence region in Earth '
+                           'radii\n'
+                           '-stretch: Stretching factor. '
+                           'It indicates how much the '
+                           'confidence region at the epoch has been '
+                           'stretched by the time of the approach. This is '
+                           'a close cousin of the Lyapounov exponent. '
+                           'Units are in Earth radii divided by sigma '
+                           '(RE/sig)\n'
+                           '-p_RE: probability of Earth Impact (IP)\n'
+                           '-Exp. Energy in MT: Expected energy. It is '
+                           'the product of the impact energy and the '
+                           'impact probability\n'
+                           '-PS: Palermo Scale\n'
+                           '-TS: Torino Scale')
         # Assign Data structure to attribute
         self.impacts = df_impacts
 
