@@ -31,11 +31,11 @@ All rights reserved
 import io
 import logging
 import time
+import re
 import pandas as pd
 from parse import parse
 import requests
 from bs4 import BeautifulSoup
-
 
 # Define the base URL for NEOCC
 BASE_URL = 'https://neo.ssa.esa.int/PSDB-portlet/download?file='
@@ -539,6 +539,11 @@ class PhysicalProperties:
         contents = requests.get(url, timeout=90).content
         # Parse html using BS
         parsed_html = BeautifulSoup(contents, 'lxml')
+        # Check if there is a tag sub for term A2 if so, decompose html
+        # i.e., remove that properties from parsing
+        subtag = parsed_html.find('sub')
+        if subtag:
+            parsed_html.sub.decompose()
         # Search for property names using div and class
         props_names = parsed_html.find_all("div",
                                         {"class":
@@ -546,6 +551,29 @@ class PhysicalProperties:
                                          " d-none d-lg-block"})
         # Create DataFrame with the obtained properties
         df_names = pd.DataFrame(props_names)
+        # Since the parsing gets properties from other tabs it is
+        # necessary to select the properties associated to Physical
+        # Properties tab
+        if df_names.empty:
+            print('Required properties file is not available for this '
+                  'object. Re-attempting...')
+            # Wait and re-try
+            time.sleep(5)
+            # Obtain DataFrame with the obtained properties and html parsed
+            parsed_html = PhysicalProperties._get_property_names(url)[0]
+            df_names = PhysicalProperties._get_property_names(url)[1]
+            if df_names.empty:
+                logging.warning('Required properties file is not '
+                                'found for this object. Check object name.')
+                raise ValueError('Required properties file is not '
+                                'found for this object. '
+                                'Check object name.')
+        # Search for Rotation Period property to define the dataframe
+        property_index = get_indexes(df_names, 'Rotation Period')
+        df_names = df_names[0][property_index[0][0]:
+                               property_index[0][0]+14]
+        # Reindex and drop old indexes
+        df_names = df_names.reset_index(drop=True)
 
         return parsed_html, df_names
 
@@ -567,26 +595,6 @@ class PhysicalProperties:
         # Obtain DataFrame with the obtained properties and html parsed
         parsed_html = PhysicalProperties._get_property_names(url)[0]
         df_names = PhysicalProperties._get_property_names(url)[1]
-        # Since the parsing gets properties from other tabs it is
-        # necessary to select the properties associated to Physical
-        # Properties tab
-        if df_names.empty:
-            print('Required properties file is not available for this '
-                  'object. Re-attempting...')
-            # Wait and re-try
-            time.sleep(5)
-            # Obtain DataFrame with the obtained properties and html parsed
-            parsed_html = PhysicalProperties._get_property_names(url)[0]
-            df_names = PhysicalProperties._get_property_names(url)[1]
-            if df_names.empty:
-                logging.warning('Required properties file is not '
-                                'found for this object. Check object name.')
-                raise ValueError('Required properties file is not '
-                                'found for this object. '
-                                'Check object name.')
-        df_names = df_names[0][13:27]
-        # Reindex and drop old indexes
-        df_names = df_names.reset_index(drop=True)
         # Search for property values, units and sources
         props_value = parsed_html.find_all("div",
                                         {"class": "col-12"})
@@ -607,8 +615,10 @@ class PhysicalProperties:
         # introduce an additional parsing step searching for the
         # specific property
         diameter = parsed_html.find_all("span",
-                                        {"id": "_NEOSearch_WAR_PSDBportlet_:"
-                                        "j_idt10:j_idt639:diameter-value"})
+                                        {"id": re.compile("_NEOSearch_WAR_"\
+                                                          "PSDBportlet_"\
+                                                          ".*diameter-value.*"
+                                                          )})
         # Get the value from BS attribute
         diameter_parsed = BeautifulSoup(str(diameter), 'html.parser').\
                           span.text
@@ -1905,10 +1915,13 @@ class Summary:
         # Convert into bytes to allow pandas read
         props_byte = io.StringIO(props_str)
         props_df = pd.read_fwf(props_byte, engine='python', header=None)
-        # Diameter property is an exception. Use BS to find and parse it
+        # Diameter property is an exception. Use BS and REGEX
+        # to find and parse it
         diameter = parsed_html.find_all("span",
-                                        {"id": "_NEOSearch_WAR_PSDBportlet_:"\
-                                         "j_idt10:j_idt639:diameter-value"})
+                                        {"id": re.compile("_NEOSearch_WAR_"\
+                                                          "PSDBportlet_"\
+                                                          ".*diameter-value.*"
+                                                          )})
         # Obtain the text in the span location. Note that the diameter type
         # will be str since * can be given in the value
         diam_p = BeautifulSoup(str(diameter), 'html.parser').span.text
