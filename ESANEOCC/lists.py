@@ -67,15 +67,16 @@ def get_list_url(list_name):
         "close_appr_recent": 'esa_recent_close_app',
         "priority_list": 'esa_priority_neo_list',
         "priority_list_faint": 'esa_faint_neo_list',
-        "close_encounter" : 'close_encounter2.txt'
+        "close_encounter" : 'close_encounter2.txt',
+        "impacted_objects" : 'impactedObjectsList.txt'
         }
     # Raise error is input is not in dictionary
     if list_name not in lists_dict:
         raise KeyError('Valid list names are nea_list, updated_nea, '
                        'monthly_update, risk_list, risk_list_special, '
                        'close_appr_upcoming, close_appr_recent, '
-                       'priority_list, priority_list_faint and '
-                       'close_encounter')
+                       'priority_list, priority_list_faint, '
+                       'close_encounter and impacted_objects')
     # Get url
     url = lists_dict[list_name]
 
@@ -184,6 +185,8 @@ def parse_list(list_name, data_byte_d):
         neocc_lst = parse_pri(data_byte_d)
     elif list_name == "close_encounter":
         neocc_lst = parse_encounter(data_byte_d)
+    elif list_name == "impacted_objects":
+        neocc_lst = parse_impacted(data_byte_d)
 
     return neocc_lst
 
@@ -444,5 +447,23 @@ def parse_encounter(data_byte_d):
                       '-Velocity: velocity in km/s\n'
                       '-Max Mag: maximum brightness magnitude at close'
                       'approach')
+
+    return neocc_lst
+
+def parse_impacted(data_byte_d):
+    """Parse impacted objects list.
+
+    Parameters
+    ----------
+    data_byte_d : object
+        Decoded StringIO object.
+    Returns
+    -------
+    neocc_lst : *pandas.DataFrame*
+        Data frame with impacted objects list data parsed.
+    """
+    # Read data as csv
+    neocc_lst = pd.read_csv(data_byte_d, header=None,
+                            delim_whitespace=True)
 
     return neocc_lst
