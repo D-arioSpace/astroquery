@@ -8,18 +8,19 @@ obtain it from the ESA NEOCC portal and parse it to show it properly.
 * Developed by: Elecnor Deimos
 * Author: C. Álvaro Arroyo Parejo
 * Issue: 1.2
-* Date: 26-03-2021
+* Date: 17-05-2021
 * Purpose: Module which request and parse list data from ESA NEOCC
 * Module: lists.py
 * History:
 
-========   ===========   =====================================
+========   ===========   ==========================================
 Version    Date          Change History
-========   ===========   =====================================
+========   ===========   ==========================================
 1.0        26-02-2021    Initial version
 1.1        26-03-2021    New docstrings and lists
-1.2        17-05-2021    Adding *help* property for dataframes
-========   ===========   =====================================
+1.2        17-05-2021    Adding *help* property for dataframes.\n
+                         Adding timeout of 90 seconds.
+========   ===========   ==========================================
 
 © Copyright [European Space Agency][2021]
 All rights reserved
