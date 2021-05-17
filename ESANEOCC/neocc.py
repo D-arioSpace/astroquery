@@ -257,6 +257,34 @@ def query_object(name, tab, **kwargs):
     7  2103-04-14.311  89267.311  2.706     ...           0.000041 -5.38   0
     [8 rows x 11 columns]
 
+
+    Note
+    ----
+        Most of the dataframes of the object tabs contain the
+        'help' property which contains information about the fields
+        of the dataframe.
+        >>> print(ast_impacts.impacts.help)
+        Data frame with possible impacts information:
+        -Date: date for the potential impact in YYYY-MM-DD.ddd format
+        -MJD: Modified Julian Day for the potential impact
+        -sigma: approximate location along the Line Of Variation (LOV)
+         in sigma space
+        -sigimp: The lateral distance in sigma-space from the LOV to
+         the Earth surface. A zero implies that the LOV passes through
+         the Earth-dist: Minimum Distance in Earth radii. The lateral
+         distance from the LOV to the center of the Earth
+        -width: one-sigma semi-width of the Target Plane confidence
+         region in Earth radii
+        -stretch: Stretching factor. It indicates how much the
+         confidence region at the epoch has been stretched by the time
+         of the approach. This is a close cousin of the Lyapounov
+         exponent. Units are in Earth radii divided by sigma (RE/sig)
+        -p_RE: probability of Earth Impact (IP)
+        -Exp. Energy in MT: Expected energy. It is the product of the
+         impact energy and the impact probability
+        -PS: Palermo Scale
+        -TS: Torino Scale
+
     Another example is shown to obtain the physical properties:
 
     >>> from ESANEOCC import neocc
