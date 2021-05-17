@@ -875,6 +875,36 @@ class AsteroidObservations:
                                   'DEC Resid', 'MAG Val', 'MAG B',
                                   'MAG RMS', 'MAG Resid', 'Ast Cat',
                                   'Obs Code', 'Chi', 'A', 'M']
+        df_optical_obs.help = ('This dataframe shows the information of '
+                               'optical observations. The fields are:\n'
+                               '-Designation: number or the provisional '
+                               'designation of the asteroid.\n'
+                               '-K, Type: observation type and technology'
+                               ' provided by the MPC. Note that for '
+                               'satellite (s) and roving (v) observations'
+                               'there are 2 additional dataframes which '
+                               'contain the information given by the MPC.\n'
+                               '-Date: date in UTC format.\n'
+                               '-Right Ascension: The data provided include'
+                               ' the observation, the a priori accuracy (as'
+                               ' supplied by the MPC), the a priori RMS '
+                               'used for weighing, a flag indicating a '
+                               'forced weight, the bias, and the residuals '
+                               'in arcsec.\n'
+                               '-Declination: same format as Right '
+                               'Ascension.\n'
+                               '-Apparent magnitude: The columns contain '
+                               'the apparent magnitude as reported, the a '
+                               'priori RMS used for weighing, and the '
+                               'residual, all in magnitudes.\n'
+                               '-Quality: observatory code is extracted from'
+                               ' the MPC published observation, the value of'
+                               ' chi from the chi**2 test (characterization '
+                               'of the relative quality of the observation).'
+                               ' The "Used A" column is "Yes" if the '
+                               'observation is used in our orbit, and "No" '
+                               'if it has been discarded. The same for the '
+                               'photometry in the "Used M" column.')
 
         return df_optical_obs, df_roving_obs, df_sat_obs
 
@@ -942,6 +972,29 @@ class AsteroidObservations:
         df_rad = df_rad[['Design', 'K', 'T', 'Datetime', 'Measure',
                          'Accuracy', 'rms', 'F', 'Bias', 'Resid',
                          'TRX', 'RCX', 'Chi', 'S']]
+        df_rad.help = ('This dataframe contains the information for '
+                       'radar observations:\n'
+                       '-Designation: number or the provisional '
+                       'designation of the asteroid.\n'
+                       '-K, Type: observation type and technology'
+                       'provided by the MPC. A "c" indicates the '
+                       'radar observation is referenced to the '
+                       'asteroid center of mass, and an "s" indicates '
+                       'the measurement is referenced to the radar '
+                       'bounce point.\n'
+                       '-Datetime: date in UTC format.\n'
+                       '-Radar range or range rate: refers to columns '
+                       'measure (km or km/day), accuracy (precision of'
+                       'the measurement), rms, F, bias and Resid.\n'
+                       '-Quality: transmit (TRX) and receive (RCX) '
+                       'station are given. When these differ, an '
+                       'observation is considered as belonging to '
+                       'the receiver station. the value of'
+                       ' chi from the chi**2 test (characterization '
+                       'of the relative quality of the observation).'
+                       'The "S" column is "Yes" if the '
+                       'observation is used in our orbit, and "No" '
+                       'if it has been discarded.')
 
         return df_rad
 
