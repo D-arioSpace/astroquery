@@ -263,6 +263,7 @@ def query_object(name, tab, **kwargs):
         Most of the dataframes of the object tabs contain the
         'help' property which contains information about the fields
         of the dataframe.
+        
         >>> print(ast_impacts.impacts.help)
         Data frame with possible impacts information:
         -Date: date for the potential impact in YYYY-MM-DD.ddd format
