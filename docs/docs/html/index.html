@@ -1,0 +1,1758 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>ESA NEOCC Portal Python Interface Library &mdash; ESA NEOCC Python Interface 1.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="#" class="icon icon-home"> ESA NEOCC Python Interface
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">ESA NEOCC Portal Python Interface Library</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#requirements">Requirements</a></li>
+<li><a class="reference internal" href="#modules">Modules</a><ul>
+<li><a class="reference internal" href="#module-ESANEOCC.neocc">ESANEOCC.neocc</a></li>
+<li><a class="reference internal" href="#module-ESANEOCC.lists">ESANEOCC.lists</a></li>
+<li><a class="reference internal" href="#module-ESANEOCC.tabs">ESANEOCC.tabs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">ESA NEOCC Python Interface</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>ESA NEOCC Portal Python Interface Library</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="esa-neocc-portal-python-interface-library">
+<h1>ESA NEOCC Portal Python Interface Library<a class="headerlink" href="#esa-neocc-portal-python-interface-library" title="Permalink to this headline">¶</a></h1>
+<p>This is the documentation for the ESA NEOCC Portal Python interface library.</p>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>ESA NEOCC Portal Python interface library makes the data that <a class="reference external" href="http://neo.ssa.esa.int/">ESA NEOCC</a>
+provides easily accessible through a Python program.</p>
+<p>The main functionality of this library is to allow a programmer to easily retrieve:</p>
+<ul class="simple">
+<li><p>All the NEAs</p></li>
+<li><p>Other data that the NEOCC provides (risk list, close approach list, etc.)</p></li>
+<li><p>All basic and advanced information regarding a NEA</p></li>
+<li><p>An ephemeris service for NEAs</p></li>
+</ul>
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>The library is contained in ESANEOCC folder. In order to install the library:</p>
+<ol class="arabic simple">
+<li><p>Navigate to the proper directory where the <em>setup.py</em> is located.</p></li>
+<li><p>The installation is doable through <em>pip install</em> command:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install .
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Consider installing <code class="docutils literal notranslate"><span class="pre">ESANEOCC</span></code> library into a <a class="reference external" href="https://docs.python.org/3/tutorial/venv.html">virtualenv</a>. This will avoid problems
+with previous installed dependencies.</p>
+</div>
+<p>The previous installation will install the library and its dependencies, but
+the dependencies will not be updated in case they are previously installed.
+In order to asssure that the packages version is the one determined in the
+Requirements the following command must be written:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install -r requirements.txt
+</pre></div>
+</div>
+<p>This can be done in one command line:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install . <span class="o">&amp;&amp;</span> pip install -r requirements.txt
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The previous command will force to install the package version of the
+requirements. This will upgrade/downgrade the version of any previous
+installed package that <code class="docutils literal notranslate"><span class="pre">ESANEOCC</span></code> library depends on.</p>
+</div>
+<p>Another installation method that will install the library and will update
+the dependencies is the follwing:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install . --upgrade-strategy eager
+</pre></div>
+</div>
+<p>In this case, dependencies are upgraded regardless of whether the currently
+installed version satisfies the requirements of the upgraded package(s).</p>
+<p>If you want to make sure none of your existing dependencies get upgraded, you
+can also do:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install . --no-deps
+</pre></div>
+</div>
+<p>Note that, in the latter case, it is possible that some library functionalities
+will not work if the dependencies do not satisfy the Requirements.</p>
+</div>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<p>ESA NEOCC Portal Python Interface Library works with Python 3.</p>
+<p>The following packages are required for the library installation &amp; use:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://pypi.org/project/beautifulsoup4/">beautifulsoup4</a> = 4.9.3</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/lxml/">lxml</a> = 4.6.3</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/pandas/">pandas</a> = 1.2.4</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/parse/">parse</a> = 1.19.0</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/requests/">requests</a> = 2.25.1</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/scipy/">scipy</a> = 1.6.3</p></li>
+</ul>
+<p>For tests the following packages are required:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://pypi.org/project/pytest/">pytest</a></p></li>
+</ul>
+</div>
+<div class="section" id="modules">
+<h2>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-ESANEOCC.neocc">
+<span id="esaneocc-neocc"></span><h3>ESANEOCC.neocc<a class="headerlink" href="#module-ESANEOCC.neocc" title="Permalink to this headline">¶</a></h3>
+<p>Main module from ESA NEOCCS library. This module contains the two main
+methods of the library: <em>query_list</em> and <em>query_object</em>. The information
+is obtained from ESA Near-Earth Object Coordination Centre’s (NEOCC) web
+portal: <a class="reference external" href="https://neo.ssa.esa.int/">https://neo.ssa.esa.int/</a>.</p>
+<ul class="simple">
+<li><p>Project: NEOCC portal Python interface</p></li>
+<li><p>Property: European Space Agency (ESA)</p></li>
+<li><p>Developed by: Elecnor Deimos</p></li>
+<li><p>Author: C. Álvaro Arroyo Parejo</p></li>
+<li><p>Issue: 1.2</p></li>
+<li><p>Date: 17-05-2021</p></li>
+<li><p>Purpose: Main module which gets NEAs data from <a class="reference external" href="https://neo.ssa.esa.int/">https://neo.ssa.esa.int/</a></p></li>
+<li><p>Module: neocc.py</p></li>
+<li><p>History:</p></li>
+</ul>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 17%" />
+<col style="width: 70%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Version</p></th>
+<th class="head"><p>Date</p></th>
+<th class="head"><p>Change History</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1.0</p></td>
+<td><p>26-02-2021</p></td>
+<td><p>Initial version</p></td>
+</tr>
+<tr class="row-odd"><td><p>1.1</p></td>
+<td><p>26-03-2021</p></td>
+<td><p>Adding new docstrings</p></td>
+</tr>
+<tr class="row-even"><td><p>1.2</p></td>
+<td><p>17-05-2021</p></td>
+<td><p>Adding new docstrings for <em>help</em>
+property in dataframes and <em>&lt;tab&gt;</em>
+specification for obtaining attributes.</p>
+<p>For orbit properties <em>orbit_elements</em>
+changes to <em>orbital_elements</em>.</p>
+<p>Adding impacted objects lists.</p>
+<p>Minor typos changes.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>© Copyright [European Space Agency][2021]
+All rights reserved</p>
+<dl class="py function">
+<dt id="ESANEOCC.neocc.query_list">
+<code class="sig-prename descclassname">ESANEOCC.neocc.</code><code class="sig-name descname">query_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">list_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ESANEOCC/neocc.html#query_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.neocc.query_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get requested list data from ESA NEOCC.</p>
+<p>Different lists that can be requested are:</p>
+<ul class="simple">
+<li><p>All NEA list: <em>nea_list</em></p></li>
+<li><p>Updated NEA list: <em>updated_nea</em></p></li>
+<li><p>Monthly computation date: <em>monthly_update</em></p></li>
+<li><p>Risk list (normal): <em>risk_list</em></p></li>
+<li><p>Risk list (special): <em>risk_list_special</em></p></li>
+<li><p>Close approaches (upcoming): <em>close_appr_upcoming</em></p></li>
+<li><p>Close approaches (recent): <em>close_appr_recent</em></p></li>
+<li><p>Priotiry list (normal): <em>priority_list</em></p></li>
+<li><p>Priority list (faint): <em>priority_list_faint</em></p></li>
+<li><p>Close encounter list: <em>close_encounter</em></p></li>
+<li><p>Impacted objects: <em>impacted_objects</em></p></li>
+</ul>
+<p>These lists are referenced in <a class="reference external" href="https://neo.ssa.esa.int/computer-access">https://neo.ssa.esa.int/computer-access</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>list_name</strong> (<em>str</em>) – Name of the requested list. Valid names are: <em>nea_list,
+updated_nea, monthly_update, risk_list, risk_list_special,
+close_appr_upcoming, close_appr_recent, priority_list,
+priority_list_faint, close_encounter and impacted_objects</em>.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>neocc_lst</strong> – Data Frame which contains the information of the requested list</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><em>pandas.Series</em> or <em>pandas.DataFrame</em></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p><strong>NEA list, Updated NEA list, Monthly computation date:</strong> The output
+of this list is a <em>pandas.Series</em> which contains the list of all NEAs
+currently considered in the NEOCC system.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ESANEOCC</span> <span class="kn">import</span> <span class="n">neocc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_data</span> <span class="o">=</span> <span class="n">neocc</span><span class="o">.</span><span class="n">query_list</span><span class="p">(</span><span class="n">list_name</span><span class="o">=</span><span class="s1">&#39;nea_list&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_data</span>
+<span class="go">0            433 Eros</span>
+<span class="go">1          719 Albert</span>
+<span class="go">2          887 Alinda</span>
+<span class="go">3        1036 Ganymed</span>
+<span class="go">4           1221 Amor</span>
+<span class="go">            ...</span>
+<span class="go">25191          2021DY</span>
+<span class="go">25192         2021DY1</span>
+<span class="go">25193          2021DZ</span>
+<span class="go">25194         2021DZ1</span>
+<span class="go">25195         6344P-L</span>
+<span class="go">Name: 0, Length: 25196, dtype: object</span>
+</pre></div>
+</div>
+<p>Each asteroid can be accessed using its index. This information can
+be used as input for <em>query_object</em> method.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">list_data</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+<span class="go">&#39;1221 Amor&#39;</span>
+</pre></div>
+</div>
+<p><strong>Other lists:</strong>  The output of this list is a <em>pandas.DataFrame</em> which
+contains the information of the requested list.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ESANEOCC</span> <span class="kn">import</span> <span class="n">neocc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_data</span> <span class="o">=</span> <span class="n">neocc</span><span class="o">.</span><span class="n">query_list</span><span class="p">(</span><span class="n">list_name</span><span class="o">=</span><span class="s1">&#39;close_appr_upcoming&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_data</span>
+<span class="go">         Object Name         Date   ...   Rel. vel in km/s</span>
+<span class="go">0             2021DE  2021.156164  ...                26.0</span>
+<span class="go">1             2021DM  2021.158904  ...                10.2</span>
+<span class="go">2             2011DW  2021.161644  ...                13.6</span>
+<span class="go">3           2011EH17  2021.161644  ...                16.8</span>
+<span class="go">4            2016DV1  2021.164384  ...                18.6</span>
+<span class="go">..               ...          ...  ...                 ...</span>
+<span class="go">141           2020DF  2022.120548  ...                 8.6</span>
+<span class="go">142          2018CW2  2022.131507  ...                10.8</span>
+<span class="go">143          2020CX1  2022.131507  ...                 8.2</span>
+<span class="go">144  455176 1999VF22  2022.142466  ...                25.1</span>
+<span class="go">145          2017CX1  2022.145205  ...                 5.0</span>
+<span class="go">[146 rows x 10 columns]</span>
+</pre></div>
+</div>
+<p>The information of the columns can be accessed through (see
+<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/index.html">pandas</a>
+for further information about data access):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">list_data</span><span class="p">[</span><span class="s1">&#39;Object Name&#39;</span><span class="p">]</span>
+<span class="go">0               2021DE</span>
+<span class="go">1               2021DM</span>
+<span class="go">2               2011DW</span>
+<span class="go">3             2011EH17</span>
+<span class="go">4              2016DV1</span>
+<span class="go">            ...</span>
+<span class="go">141             2020DF</span>
+<span class="go">142            2018CW2</span>
+<span class="go">143            2020CX1</span>
+<span class="go">144    455176 1999VF22</span>
+<span class="go">145            2017CX1</span>
+<span class="go">Name: Object Name, Length: 146, dtype: object</span>
+</pre></div>
+</div>
+<p>And the information of the rows can be accessed using:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">list_data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="go">Object Name              2011DW</span>
+<span class="go">Date                    2021.16</span>
+<span class="go">Miss Distance in km     5333057</span>
+<span class="go">Miss Distance in au    0.035649</span>
+<span class="go">Miss Distance in LD      13.874</span>
+<span class="go">Diameter in m                90</span>
+<span class="go">*=Yes                         *</span>
+<span class="go">H                          22.9</span>
+<span class="go">Max Bright                 16.4</span>
+<span class="go">Rel. vel in km/s           13.6</span>
+<span class="go">Name: 2, dtype: object</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the contents request fails the following message will be printed:</p>
+<p><em>Initial attempt to obtain list failed. Reattempting…</em></p>
+<p>Then a second request will be automatically sent to the NEOCC portal.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ESANEOCC.neocc.query_object">
+<code class="sig-prename descclassname">ESANEOCC.neocc.</code><code class="sig-name descname">query_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">tab</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ESANEOCC/neocc.html#query_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.neocc.query_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get requested object data from ESA NEOCC.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the requested object</p></li>
+<li><p><strong>tab</strong> (<em>str</em>) – Name of the request tab. Valid names are:summary,
+orbit_properties, physical_properties, observations,
+ephemerides, close_approaches and impacts.</p></li>
+<li><p><strong>**kwargs</strong> (<em>str</em>) – <p>Tabs orbit_properties and ephemerides tabs required additional
+arguments to work:</p>
+<ul>
+<li><p><em>orbit_properties</em>: the required additional arguments are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>orbital_elements</em> : str (keplerian or equinoctial)</p></li>
+<li><p><em>orbit_epoch</em> : str (present or middle)</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><em>ephemerides</em>: the required additional arguments are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>observatory</em> : str (observatory code, e.g. ‘500’, ‘J04’, etc.)</p></li>
+<li><p><em>start</em> : str (start date in YYYY-MM-DD HH:MM)</p></li>
+<li><p><em>stop</em> : str (end date in YYYY-MM-DD HH:MM)</p></li>
+<li><p><em>step</em> : str (time step, e.g. ‘2’, ‘15’, etc.)</p></li>
+<li><p><em>step_unit</em> : str (e.g. ‘days’, ‘minutes’, etc.)</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>neocc_obj</strong> – Object data which contains different attributes depending on
+the tab selected.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p><strong>Impacts, Physical Properties and Observations</strong>: This example
+tries to summarize how to access the data of this tabs and how to
+use it. Note that this classes only require as inputs the name of
+the object and the requested tab.</p>
+<p>The information can be obtained introducing directly the name of
+the object, but it can be also added from the output of a
+<em>query_list</em> search:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ESANEOCC</span> <span class="kn">import</span> <span class="n">neocc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ast_impacts</span> <span class="o">=</span> <span class="n">neocc</span><span class="o">.</span><span class="n">query_object</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;1979XB&#39;</span><span class="p">,</span> <span class="n">tab</span><span class="o">=</span><span class="s1">&#39;impacts&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nea_list</span> <span class="o">=</span> <span class="n">neocc</span><span class="o">.</span><span class="n">query_list</span><span class="p">(</span><span class="n">list_name</span><span class="o">=</span><span class="s1">&#39;nea_list&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nea_list</span><span class="p">[</span><span class="mi">2921</span><span class="p">]</span>
+<span class="go">&#39;1979XB&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ast_impacts</span> <span class="o">=</span> <span class="n">neocc</span><span class="o">.</span><span class="n">query_object</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">nea_list</span><span class="p">[</span><span class="mi">2921</span><span class="p">],</span> <span class="n">tab</span><span class="o">=</span><span class="s1">&#39;impacts&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">risk_list</span> <span class="o">=</span> <span class="n">neocc</span><span class="o">.</span><span class="n">query_list</span><span class="p">(</span><span class="n">list_name</span><span class="o">=</span><span class="s1">&#39;risk_list&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">risk_list</span><span class="p">[</span><span class="s1">&#39;Object Name&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+<span class="go">&#39;1979XB&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ast_impacts</span> <span class="o">=</span> <span class="n">neocc</span><span class="o">.</span><span class="n">query_object</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">risk_list</span><span class="p">[</span><span class="s1">&#39;Object Name&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+<span class="go">                                     tab=&#39;impacts&#39;)</span>
+</pre></div>
+</div>
+<p>The output provides an object with the different attributes:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ast_impacts</span><span class="o">.&lt;</span><span class="n">tab</span><span class="o">&gt;</span>
+<span class="go">ast.additional_note       ast.impacts</span>
+<span class="go">ast.arc_end               ast.info</span>
+<span class="go">ast.arc_start             ast.observation_accepted</span>
+<span class="go">ast.computation           ast.observation_rejected</span>
+</pre></div>
+</div>
+<p>By adding the attribute its information can be accessed:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ast_impacts</span><span class="o">.</span><span class="n">impacts</span>
+<span class="go">             date        MJD  sigma  ...  Exp. Energy in MT    PS  TS</span>
+<span class="go">0  2056-12-12.902  72344.902  0.255  ...           0.011500 -3.22   0</span>
+<span class="go">1  2065-12-16.462  75635.463 -1.110  ...           0.000090 -5.36   0</span>
+<span class="go">2  2086-12-16.663  83305.664 -1.101  ...           0.002390 -4.03   0</span>
+<span class="go">3  2101-12-14.203  88781.204 -0.384  ...           0.000131 -5.36   0</span>
+<span class="go">4  2105-12-12.764  90240.765  1.003  ...           0.000574 -4.75   0</span>
+<span class="go">5  2113-12-14.753  93164.753 -0.706  ...           0.018500 -3.25   0</span>
+<span class="go">6  2113-12-14.756  93164.756 -0.708  ...           0.000163 -5.30   0</span>
+<span class="go">7  2117-12-15.496  94626.496 -1.316  ...           0.000069 -5.68   0</span>
+<span class="go">[8 rows x 11 columns]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Most of the dataframes of the object tabs contain the
+‘help’ property which contains information about the fields
+of the dataframe.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ast_impacts</span><span class="o">.</span><span class="n">impacts</span><span class="o">.</span><span class="n">help</span><span class="p">)</span>
+<span class="go">Data frame with possible impacts information:</span>
+<span class="go">-Date: date for the potential impact in YYYY-MM-DD.ddd format</span>
+<span class="go">-MJD: Modified Julian Day for the potential impact</span>
+<span class="go">-sigma: approximate location along the Line Of Variation (LOV)</span>
+<span class="go"> in sigma space</span>
+<span class="go">-sigimp: The lateral distance in sigma-space from the LOV to</span>
+<span class="go"> the Earth surface. A zero implies that the LOV passes through</span>
+<span class="go"> the Earth-dist: Minimum Distance in Earth radii. The lateral</span>
+<span class="go"> distance from the LOV to the center of the Earth</span>
+<span class="go">-width: one-sigma semi-width of the Target Plane confidence</span>
+<span class="go"> region in Earth radii</span>
+<span class="go">-stretch: Stretching factor. It indicates how much the</span>
+<span class="go"> confidence region at the epoch has been stretched by the time</span>
+<span class="go"> of the approach. This is a close cousin of the Lyapounov</span>
+<span class="go"> exponent. Units are in Earth radii divided by sigma (RE/sig)</span>
+<span class="go">-p_RE: probability of Earth Impact (IP)</span>
+<span class="go">-Exp. Energy in MT: Expected energy. It is the product of the</span>
+<span class="go"> impact energy and the impact probability</span>
+<span class="go">-PS: Palermo Scale</span>
+<span class="go">-TS: Torino Scale</span>
+</pre></div>
+</div>
+</div>
+<p>Another example is shown to obtain the physical properties:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ESANEOCC</span> <span class="kn">import</span> <span class="n">neocc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">properties</span> <span class="o">=</span> <span class="n">neocc</span><span class="o">.</span><span class="n">query_object</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;433&#39;</span><span class="p">,</span> <span class="n">tab</span><span class="o">=</span><span class="s1">&#39;physical_properties&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Again, the output provides an object with different attributes:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">properties</span><span class="o">.&lt;</span><span class="n">tab</span><span class="o">&gt;</span>
+<span class="go">properties.physical_properties  properties.sources</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">properties</span><span class="o">.</span><span class="n">physical_properties</span>
+<span class="go">                   Property     Values Unit Source</span>
+<span class="go">0           Rotation Period       5.27    h    [4]</span>
+<span class="go">1                   Quality          4    -    [4]</span>
+<span class="go">2                 Amplitude  0.04-1.49  mag    [4]</span>
+<span class="go">3        Rotation Direction        PRO    -    [1]</span>
+<span class="go">4              Spinvector L         16  deg    [1]</span>
+<span class="go">5              Spinvector B          9  deg    [1]</span>
+<span class="go">6                  Taxonomy         Sq    -    [2]</span>
+<span class="go">7            Taxonomy (all)          S    -    [3]</span>
+<span class="go">8    Absolute Magnitude (H)      10.31  mag    [5]</span>
+<span class="go">9       Slope Parameter (G)     0.46**  mag    [6]</span>
+<span class="go">10                   Albedo       0.24    -    [9]</span>
+<span class="go">11                 Diameter      23300    m   [10]</span>
+<span class="go">12  Color Index Information       0.39  R-I   [11]</span>
+<span class="go">13                Sightings   Visual S    -   [13]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Some physical properties (e.g. <em>Absolute Mangnitude (H)</em>, <em>Slope
+Parameter (G)</em>, etc) may have several values which come from different
+sources. Currently, the library will only show one value as it is done
+in the NEOCC portal.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For the case of tab Observations there are objects which contain
+“Roving observer” and satellite observations. In the original
+requested data the information of these observations produces two
+lines of data, where the second line does not fit the structure of
+the data frame
+(<a class="reference external" href="https://www.minorplanetcenter.org/iau/info/OpticalObs.html">https://www.minorplanetcenter.org/iau/info/OpticalObs.html</a>).
+In order to solve this problem those second lines
+have been extracted in another attribute (e.g. sat_observations or
+roving_observations) to make the data more readable.</p>
+<p>Since this information can be requested in pairs, i.e. it is needed
+to access both lines of data, this can be made using the date of the
+observations which will be the same for both attributes:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ast_observations</span> <span class="o">=</span> <span class="n">neocc</span><span class="o">.</span><span class="n">query_object</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;99942&#39;</span><span class="p">,</span>
+<span class="go">tab=&#39;observations&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sat_obs</span> <span class="o">=</span> <span class="n">ast_observations</span><span class="o">.</span><span class="n">sat_observations</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sat_obs</span>
+<span class="go">    Design.  K  T  N  YYYY  MM  DD.dddddd  ... Obs Code</span>
+<span class="go">0     99942  S  s     2020  12   18.97667  ...      C51</span>
+<span class="go">1     99942  S  s     2020  12   19.10732  ...      C51</span>
+<span class="gp">... </span>    <span class="o">...</span>            <span class="o">...</span>            <span class="o">...</span>  <span class="o">...</span>      <span class="o">...</span>
+<span class="go">10    99942  S  s     2021   1   16.92315  ...      C53</span>
+<span class="go">11    99942  S  s     2021   1   19.36233  ...      C53</span>
+<span class="go">12    99942  S  s     2021   1   19.36927  ...      C53</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">opt_obs</span> <span class="o">=</span> <span class="n">ast_ast_observations</span><span class="o">.</span><span class="n">optical_observations</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">opt_obs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">opt_obs</span><span class="p">[</span><span class="s1">&#39;DD.dddddd&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">sat_obs</span><span class="p">[</span><span class="s1">&#39;DD.dddddd&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span>
+<span class="go">        Design.  K  T N  YYYY  MM  ...  Obs Code   Chi  A  M</span>
+<span class="go">4582    99942    S  S    2020  12  ...       C51  1.13  1  1</span>
+<span class="go">[1 rows x 33 columns]</span>
+</pre></div>
+</div>
+</div>
+<p><strong>Close Approaches</strong>: This example corresponds to the class close
+approaches. As for the previous example, the information can be
+obtained by directly introducing the name of the object or from a
+previous <em>query_list</em> search.</p>
+<p>In this particular case, there are no attributes and the data obtained is
+a DataFrame which contains the information for close approaches:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">close_appr</span> <span class="o">=</span> <span class="n">neocc</span><span class="o">.</span><span class="n">query_object</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;99942&#39;</span><span class="p">,</span> <span class="n">tab</span><span class="o">=</span><span class="s1">&#39;close_approaches&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">close_appr</span>
+<span class="go">    BODY     CALENDAR-TIME  ...         WIDTH  PROBABILITY</span>
+<span class="go">0   EARTH  1957/04/01.13908  ...  1.318000e-08        1.000</span>
+<span class="go">1   EARTH  1964/10/24.90646  ...  1.119000e-08        1.000</span>
+<span class="go">2   EARTH  1965/02/11.51118  ...  4.004000e-09        1.000</span>
+<span class="gp">... </span>  <span class="o">...</span>               <span class="o">...</span>  <span class="o">...</span>           <span class="o">...</span>          <span class="o">...</span>
+<span class="go">16  EARTH  2080/05/09.23878  ...  1.206000e-06        0.821</span>
+<span class="go">17  EARTH  2087/04/07.54747  ...  1.254000e-08        0.327</span>
+<span class="go">[18 rows x 10 columns]</span>
+</pre></div>
+</div>
+<p><strong>Orbit Properties:</strong> In order to access the orbit properties
+information, it is necessary to provide two additional inputs to
+<em>query_object</em> method: <strong>orbital_elements</strong> and <strong>orbit_epoch</strong>.</p>
+<p>It is mandatory to write these two paramters as: <em>orbit_epoch=’ ‘</em>
+to make the library works.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ast_orbit_prop</span> <span class="o">=</span> <span class="n">neocc</span><span class="o">.</span><span class="n">query_object</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;99942&#39;</span><span class="p">,</span>
+<span class="go">tab=&#39;orbit_properties&#39;,orbital_elements=&#39;keplerian&#39;, orbit_epoch=&#39;present&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ast_orbit_prop</span><span class="o">.&lt;</span><span class="n">tab</span><span class="o">&gt;</span>
+<span class="go">ast_orbit_prop.anode       ast_orbit_prop.moid</span>
+<span class="go">ast_orbit_prop.aphelion    ast_orbit_prop.ngr</span>
+<span class="go">ast_orbit_prop.cor         ast_orbit_prop.perihelion</span>
+<span class="go">ast_orbit_prop.cov         ast_orbit_prop.period</span>
+<span class="go">ast_orbit_prop.dnode       ast_orbit_prop.pha</span>
+<span class="go">ast_orbit_prop.epoch       ast_orbit_prop.rectype</span>
+<span class="go">ast_orbit_prop.form        ast_orbit_prop.refsys</span>
+<span class="go">ast_orbit_prop.kep         ast_orbit_prop.rms</span>
+<span class="go">ast_orbit_prop.lsp         ast_orbit_prop.u_par</span>
+<span class="go">ast_orbit_prop.mag         ast_orbit_prop.vinfty</span>
+</pre></div>
+</div>
+<p><strong>Ephemerides:</strong> In order to access ephemerides information, it
+is necessary to provide five additional inputs to <em>query_object</em>
+method: <strong>observatory</strong>, <strong>start</strong>, <strong>stop</strong>, <strong>step</strong> and
+<strong>step_unit*</strong>.</p>
+<p>It is mandatory to write these five paramters as: <em>observatory=’ ‘</em>
+to make the library works.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ast_ephemerides</span> <span class="o">=</span> <span class="n">neocc</span><span class="o">.</span><span class="n">query_object</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;99942&#39;</span><span class="p">,</span>
+<span class="go">tab=&#39;ephemerides&#39;, observatory=&#39;500&#39;, start=&#39;2019-05-08 01:30&#39;,</span>
+<span class="go">stop=&#39;2019-05-23 01:30&#39;, step=&#39;1&#39;, step_unit=&#39;days&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ast_ephemerides</span><span class="o">.&lt;</span><span class="n">tab</span><span class="o">&gt;</span>
+<span class="go">ast_ephemerides.ephemerides  ast_ephemerides.tinit</span>
+<span class="go">ast_ephemerides.observatory  ast_ephemerides.tstep</span>
+<span class="go">ast_ephemerides.tfinal</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ESANEOCC.lists">
+<span id="esaneocc-lists"></span><h3>ESANEOCC.lists<a class="headerlink" href="#module-ESANEOCC.lists" title="Permalink to this headline">¶</a></h3>
+<p>This module contains all the methods required to request the list data,
+obtain it from the ESA NEOCC portal and parse it to show it properly.</p>
+<ul class="simple">
+<li><p>Project: NEOCC portal Python interface</p></li>
+<li><p>Property: European Space Agency (ESA)</p></li>
+<li><p>Developed by: Elecnor Deimos</p></li>
+<li><p>Author: C. Álvaro Arroyo Parejo</p></li>
+<li><p>Issue: 1.2</p></li>
+<li><p>Date: 17-05-2021</p></li>
+<li><p>Purpose: Module which request and parse list data from ESA NEOCC</p></li>
+<li><p>Module: lists.py</p></li>
+<li><p>History:</p></li>
+</ul>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 18%" />
+<col style="width: 69%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Version</p></th>
+<th class="head"><p>Date</p></th>
+<th class="head"><p>Change History</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1.0</p></td>
+<td><p>26-02-2021</p></td>
+<td><p>Initial version</p></td>
+</tr>
+<tr class="row-odd"><td><p>1.1</p></td>
+<td><p>26-03-2021</p></td>
+<td><p>New docstrings and lists</p></td>
+</tr>
+<tr class="row-even"><td><p>1.2</p></td>
+<td><p>17-05-2021</p></td>
+<td><p>Adding <em>help</em> property for dataframes.</p>
+<p>Adding timeout of 90 seconds.</p>
+<p>Adding <em>parse_impacted</em> function for new
+list</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>© Copyright [European Space Agency][2021]
+All rights reserved</p>
+<dl class="py function">
+<dt id="ESANEOCC.lists.get_dec_year">
+<code class="sig-prename descclassname">ESANEOCC.lists.</code><code class="sig-name descname">get_dec_year</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">date</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ESANEOCC/lists.html#get_dec_year"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.lists.get_dec_year" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get decimal year from a date.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>date</strong> (<em>datetime</em>) – Date in YYYY/MM/DD.dddd format.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>decimal_year</strong> – Date in decimal year format YYYY.yyyyyy.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float64</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ESANEOCC.lists.get_list_data">
+<code class="sig-prename descclassname">ESANEOCC.lists.</code><code class="sig-name descname">get_list_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">url</span></em>, <em class="sig-param"><span class="n">list_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ESANEOCC/lists.html#get_list_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.lists.get_list_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get requested parsed list from url.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>list_name</strong> (<em>str</em>) – Name of the requested list.</p></li>
+<li><p><strong>url</strong> (<em>str</em>) – URL of the requested list.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>neocc_lst</strong> – Data frame which contains the data of the requested list.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><em>pandas.Series</em> or <em>pandas.DataDrame</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ESANEOCC.lists.get_list_url">
+<code class="sig-prename descclassname">ESANEOCC.lists.</code><code class="sig-name descname">get_list_url</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">list_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ESANEOCC/lists.html#get_list_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.lists.get_list_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get url from requested list name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>list_name</strong> (<em>str</em>) – Name of the requested list. Valid names are: <em>nea_list,
+risk_list, risk_list_special, close_appr_upcoming,
+close_appr_recent, priority_list, priority_list_faint</em>.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>url</strong> – Final URL string.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>KeyError</strong> – If the requested list_name is not in the dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ESANEOCC.lists.parse_clo">
+<code class="sig-prename descclassname">ESANEOCC.lists.</code><code class="sig-name descname">parse_clo</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_byte_d</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ESANEOCC/lists.html#parse_clo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.lists.parse_clo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse and arrange close approaches lists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data_byte_d</strong> (<em>object</em>) – Decoded StringIO object.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>neocc_lst</strong> – Data frame with close approaches list data parsed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><em>pandas.Series</em> or <em>pandas.DataFrame</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ESANEOCC.lists.parse_encounter">
+<code class="sig-prename descclassname">ESANEOCC.lists.</code><code class="sig-name descname">parse_encounter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_byte_d</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ESANEOCC/lists.html#parse_encounter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.lists.parse_encounter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse and arrange close encounter lists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data_byte_d</strong> (<em>object</em>) – Decoded StringIO object.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>neocc_lst</strong> – Data frame with close encounter list data parsed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><em>pandas.Series</em> or <em>pandas.DataFrame</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ESANEOCC.lists.parse_impacted">
+<code class="sig-prename descclassname">ESANEOCC.lists.</code><code class="sig-name descname">parse_impacted</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_byte_d</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ESANEOCC/lists.html#parse_impacted"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.lists.parse_impacted" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse impacted objects list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data_byte_d</strong> (<em>object</em>) – Decoded StringIO object.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>neocc_lst</strong> – Data frame with impacted objects list data parsed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><em>pandas.DataFrame</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ESANEOCC.lists.parse_list">
+<code class="sig-prename descclassname">ESANEOCC.lists.</code><code class="sig-name descname">parse_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">list_name</span></em>, <em class="sig-param"><span class="n">data_byte_d</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ESANEOCC/lists.html#parse_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.lists.parse_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Switch function to select parse method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>list_name</strong> (<em>str</em>) – Name of the requested list.</p></li>
+<li><p><strong>data_byte_d</strong> (<em>object</em>) – Decoded StringIO object.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>neocc_lst</strong> – Data frame with data from the list parsed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><em>pandas.Series</em> or <em>pandas.DataFrame</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ESANEOCC.lists.parse_nea">
+<code class="sig-prename descclassname">ESANEOCC.lists.</code><code class="sig-name descname">parse_nea</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_byte_d</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ESANEOCC/lists.html#parse_nea"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.lists.parse_nea" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse and arrange NEA lists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data_byte_d</strong> (<em>object</em>) – Decoded StringIO object.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>neocc_lst</strong> – Data frame with NEA list data parsed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><em>pandas.Series</em> or <em>pandas.DataFrame</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ESANEOCC.lists.parse_pri">
+<code class="sig-prename descclassname">ESANEOCC.lists.</code><code class="sig-name descname">parse_pri</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_byte_d</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ESANEOCC/lists.html#parse_pri"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.lists.parse_pri" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse and arrange priority lists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data_byte_d</strong> (<em>object</em>) – Decoded StringIO object.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>neocc_lst</strong> – Data frame with priority list data parsed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><em>pandas.Series</em> or <em>pandas.DataFrame</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ESANEOCC.lists.parse_risk">
+<code class="sig-prename descclassname">ESANEOCC.lists.</code><code class="sig-name descname">parse_risk</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_byte_d</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ESANEOCC/lists.html#parse_risk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.lists.parse_risk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse and arrange risk lists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data_byte_d</strong> (<em>object</em>) – Decoded StringIO object.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>neocc_lst</strong> – Data frame with risk list data parsed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><em>pandas.Series</em> or <em>pandas.DataFrame</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ESANEOCC.tabs">
+<span id="esaneocc-tabs"></span><h3>ESANEOCC.tabs<a class="headerlink" href="#module-ESANEOCC.tabs" title="Permalink to this headline">¶</a></h3>
+<p>This module contains all the methods required to request the data from
+a particular object, obtain it from the ESA NEOCC portal and parse it
+to show it properly. The information of the object is shows in the
+ESA NEOCC in different tabs that correspond to the different classes
+within this module.</p>
+<ul class="simple">
+<li><p>Project: NEOCC portal Python interface</p></li>
+<li><p>Property: European Space Agency (ESA)</p></li>
+<li><p>Developed by: Elecnor Deimos</p></li>
+<li><p>Author: C. Álvaro Arroyo Parejo</p></li>
+<li><p>Issue: 1.2</p></li>
+<li><p>Date: 17-05-2021</p></li>
+<li><p>Purpose: Module which request and parse list data from ESA NEOCC</p></li>
+<li><p>Module: tabs.py</p></li>
+<li><p>History:</p></li>
+</ul>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 11%" />
+<col style="width: 15%" />
+<col style="width: 74%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Version</p></th>
+<th class="head"><p>Date</p></th>
+<th class="head"><p>Change History</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1.0</p></td>
+<td><p>26-02-2021</p></td>
+<td><p>Initial version</p></td>
+</tr>
+<tr class="row-odd"><td><p>1.1</p></td>
+<td><p>26-03-2021</p></td>
+<td><p>Physical properties and summary funcionalities added</p></td>
+</tr>
+<tr class="row-even"><td><p>1.2</p></td>
+<td><p>17-05-2021</p></td>
+<td><p>Adding <em>help</em> property for dataframes.</p>
+<p>Parsing of diameter property in <em>summary</em> and
+<em>physical_properties</em> has been modified to add
+robustness.</p>
+<p>In <em>physical_properties</em> the parsing of properties
+has been modified to include cases with more
+information.</p>
+<p>Adding timeout of 90 seconds.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>© Copyright [European Space Agency][2021]
+All rights reserved</p>
+<dl class="py class">
+<dt id="ESANEOCC.tabs.AsteroidObservations">
+<em class="property">class </em><code class="sig-prename descclassname">ESANEOCC.tabs.</code><code class="sig-name descname">AsteroidObservations</code><a class="reference internal" href="_modules/ESANEOCC/tabs.html#AsteroidObservations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.tabs.AsteroidObservations" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class contains information of asteroid observations.</p>
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.AsteroidObservations.version">
+<code class="sig-name descname">version</code><a class="headerlink" href="#ESANEOCC.tabs.AsteroidObservations.version" title="Permalink to this definition">¶</a></dt>
+<dd><p>File version.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.AsteroidObservations.errmod">
+<code class="sig-name descname">errmod</code><a class="headerlink" href="#ESANEOCC.tabs.AsteroidObservations.errmod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Error model for the data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.AsteroidObservations.rmsast">
+<code class="sig-name descname">rmsast</code><a class="headerlink" href="#ESANEOCC.tabs.AsteroidObservations.rmsast" title="Permalink to this definition">¶</a></dt>
+<dd><p>Root Mean Square for asteroid observations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.AsteroidObservations.rmsmag">
+<code class="sig-name descname">rmsmag</code><a class="headerlink" href="#ESANEOCC.tabs.AsteroidObservations.rmsmag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Root Mean Square for magnitude.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.AsteroidObservations.optical_observations">
+<code class="sig-name descname">optical_observations</code><a class="headerlink" href="#ESANEOCC.tabs.AsteroidObservations.optical_observations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data frame which contains optical observations (without roving
+observer and satellite observation).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.AsteroidObservations.radar_observations">
+<code class="sig-name descname">radar_observations</code><a class="headerlink" href="#ESANEOCC.tabs.AsteroidObservations.radar_observations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data structure which contains radar observations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.AsteroidObservations.roving_observations">
+<code class="sig-name descname">roving_observations</code><a class="headerlink" href="#ESANEOCC.tabs.AsteroidObservations.roving_observations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data structure which contains “roving observer” observations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.AsteroidObservations.sat_observations">
+<code class="sig-name descname">sat_observations</code><a class="headerlink" href="#ESANEOCC.tabs.AsteroidObservations.sat_observations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data structure which contains satellite observations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="ESANEOCC.tabs.CloseApproaches">
+<em class="property">class </em><code class="sig-prename descclassname">ESANEOCC.tabs.</code><code class="sig-name descname">CloseApproaches</code><a class="reference internal" href="_modules/ESANEOCC/tabs.html#CloseApproaches"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.tabs.CloseApproaches" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class contains information of object close approaches.</p>
+<dl class="py method">
+<dt id="ESANEOCC.tabs.CloseApproaches.clo_appr_parser">
+<em class="property">static </em><code class="sig-name descname">clo_appr_parser</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_obj</span></em>, <em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ESANEOCC/tabs.html#CloseApproaches.clo_appr_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.tabs.CloseApproaches.clo_appr_parser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse and arrange the close approaches data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data_obj</strong> (<em>object</em>) – Object in byte format.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>df_close_appr</strong> – Data frame with the close approaches information.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If file is empty.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="ESANEOCC.tabs.Ephemerides">
+<em class="property">class </em><code class="sig-prename descclassname">ESANEOCC.tabs.</code><code class="sig-name descname">Ephemerides</code><a class="reference internal" href="_modules/ESANEOCC/tabs.html#Ephemerides"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.tabs.Ephemerides" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class contains information of object ephemerides.</p>
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.Ephemerides.observatory">
+<code class="sig-name descname">observatory</code><a class="headerlink" href="#ESANEOCC.tabs.Ephemerides.observatory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the observatory from which ephemerides are obtained.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.Ephemerides.tinit">
+<code class="sig-name descname">tinit</code><a class="headerlink" href="#ESANEOCC.tabs.Ephemerides.tinit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start date from which ephemerides are obtained.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.Ephemerides.tfinal">
+<code class="sig-name descname">tfinal</code><a class="headerlink" href="#ESANEOCC.tabs.Ephemerides.tfinal" title="Permalink to this definition">¶</a></dt>
+<dd><p>End date from which ephemerides are obtained.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.Ephemerides.tstep">
+<code class="sig-name descname">tstep</code><a class="headerlink" href="#ESANEOCC.tabs.Ephemerides.tstep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Time step and time unit used during ephemerides calculation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.Ephemerides.ephemerides">
+<code class="sig-name descname">ephemerides</code><a class="headerlink" href="#ESANEOCC.tabs.Ephemerides.ephemerides" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data frame which contains the information of the object
+ephemerides</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="ESANEOCC.tabs.EquinoctialOrbitProperties">
+<em class="property">class </em><code class="sig-prename descclassname">ESANEOCC.tabs.</code><code class="sig-name descname">EquinoctialOrbitProperties</code><a class="reference internal" href="_modules/ESANEOCC/tabs.html#EquinoctialOrbitProperties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.tabs.EquinoctialOrbitProperties" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class contains information of equinoctial asteroid orbit
+properties. This class inherits the attributes from OrbitProperties.</p>
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.EquinoctialOrbitProperties.equinoctial">
+<code class="sig-name descname">equinoctial</code><a class="headerlink" href="#ESANEOCC.tabs.EquinoctialOrbitProperties.equinoctial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data frame which contains the equinoctial elements information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.EquinoctialOrbitProperties.rms">
+<code class="sig-name descname">rms</code><a class="headerlink" href="#ESANEOCC.tabs.EquinoctialOrbitProperties.rms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Root Mean Square for equinoctial elements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.EquinoctialOrbitProperties.eig">
+<code class="sig-name descname">eig</code><a class="headerlink" href="#ESANEOCC.tabs.EquinoctialOrbitProperties.eig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Eigenvalues for the covariance matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.EquinoctialOrbitProperties.wea">
+<code class="sig-name descname">wea</code><a class="headerlink" href="#ESANEOCC.tabs.EquinoctialOrbitProperties.wea" title="Permalink to this definition">¶</a></dt>
+<dd><p>Eigenvector corresponding to the largest eigenvalue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.EquinoctialOrbitProperties.cov">
+<code class="sig-name descname">cov</code><a class="headerlink" href="#ESANEOCC.tabs.EquinoctialOrbitProperties.cov" title="Permalink to this definition">¶</a></dt>
+<dd><p>Covariance matrix for equinoctial elements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.EquinoctialOrbitProperties.nor">
+<code class="sig-name descname">nor</code><a class="headerlink" href="#ESANEOCC.tabs.EquinoctialOrbitProperties.nor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalization matrix for equinoctial elements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="ESANEOCC.tabs.Impacts">
+<em class="property">class </em><code class="sig-prename descclassname">ESANEOCC.tabs.</code><code class="sig-name descname">Impacts</code><a class="reference internal" href="_modules/ESANEOCC/tabs.html#Impacts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.tabs.Impacts" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class contains information of object possible impacts.</p>
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.Impacts.impacts">
+<code class="sig-name descname">impacts</code><a class="headerlink" href="#ESANEOCC.tabs.Impacts.impacts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data frame where are listed all the possible impactors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.Impacts.arc_start">
+<code class="sig-name descname">arc_start</code><a class="headerlink" href="#ESANEOCC.tabs.Impacts.arc_start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starting date for optical observations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.Impacts.arc_end">
+<code class="sig-name descname">arc_end</code><a class="headerlink" href="#ESANEOCC.tabs.Impacts.arc_end" title="Permalink to this definition">¶</a></dt>
+<dd><p>End date for optical observations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.Impacts.observations_accepted">
+<code class="sig-name descname">observations_accepted</code><a class="headerlink" href="#ESANEOCC.tabs.Impacts.observations_accepted" title="Permalink to this definition">¶</a></dt>
+<dd><p>Total number of observations subtracting rejected
+observations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.Impacts.observations_rejected">
+<code class="sig-name descname">observations_rejected</code><a class="headerlink" href="#ESANEOCC.tabs.Impacts.observations_rejected" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of observations rejected.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.Impacts.computation">
+<code class="sig-name descname">computation</code><a class="headerlink" href="#ESANEOCC.tabs.Impacts.computation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Date of computation (in format YYYYMMDD MJD TimeSys)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.Impacts.info">
+<code class="sig-name descname">info</code><a class="headerlink" href="#ESANEOCC.tabs.Impacts.info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Information from the footer of the requested file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.Impacts.additional_note">
+<code class="sig-name descname">additional_note</code><a class="headerlink" href="#ESANEOCC.tabs.Impacts.additional_note" title="Permalink to this definition">¶</a></dt>
+<dd><p>Additional information. Some objects (e.g. 99942 Apophis)
+have an additional note after the main footer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="ESANEOCC.tabs.KeplerianOrbitProperties">
+<em class="property">class </em><code class="sig-prename descclassname">ESANEOCC.tabs.</code><code class="sig-name descname">KeplerianOrbitProperties</code><a class="reference internal" href="_modules/ESANEOCC/tabs.html#KeplerianOrbitProperties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.tabs.KeplerianOrbitProperties" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class contains information of keplerian asteroid orbit
+properties. This class inherits the attributes from OrbitProperties.</p>
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.KeplerianOrbitProperties.kep">
+<code class="sig-name descname">kep</code><a class="headerlink" href="#ESANEOCC.tabs.KeplerianOrbitProperties.kep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data frame which contains the keplerian elements information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.KeplerianOrbitProperties.perihelion">
+<code class="sig-name descname">perihelion</code><a class="headerlink" href="#ESANEOCC.tabs.KeplerianOrbitProperties.perihelion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Orbit perihelion in au.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.KeplerianOrbitProperties.aphelion">
+<code class="sig-name descname">aphelion</code><a class="headerlink" href="#ESANEOCC.tabs.KeplerianOrbitProperties.aphelion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Orbit aphelion in au.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.KeplerianOrbitProperties.anode">
+<code class="sig-name descname">anode</code><a class="headerlink" href="#ESANEOCC.tabs.KeplerianOrbitProperties.anode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ascending node-Earth separation in au.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.KeplerianOrbitProperties.dnode">
+<code class="sig-name descname">dnode</code><a class="headerlink" href="#ESANEOCC.tabs.KeplerianOrbitProperties.dnode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Descending node-Earth separation in au.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.KeplerianOrbitProperties.moid">
+<code class="sig-name descname">moid</code><a class="headerlink" href="#ESANEOCC.tabs.KeplerianOrbitProperties.moid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Minimum Orbit Intersection distance in au.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.KeplerianOrbitProperties.period">
+<code class="sig-name descname">period</code><a class="headerlink" href="#ESANEOCC.tabs.KeplerianOrbitProperties.period" title="Permalink to this definition">¶</a></dt>
+<dd><p>Orbit period in days.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.KeplerianOrbitProperties.pha">
+<code class="sig-name descname">pha</code><a class="headerlink" href="#ESANEOCC.tabs.KeplerianOrbitProperties.pha" title="Permalink to this definition">¶</a></dt>
+<dd><p>Potential hazardous asteroid classification.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.KeplerianOrbitProperties.vinfty">
+<code class="sig-name descname">vinfty</code><a class="headerlink" href="#ESANEOCC.tabs.KeplerianOrbitProperties.vinfty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Infinite velocity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.KeplerianOrbitProperties.u_par">
+<code class="sig-name descname">u_par</code><a class="headerlink" href="#ESANEOCC.tabs.KeplerianOrbitProperties.u_par" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uncertainty parameter as defined by MPC.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.KeplerianOrbitProperties.rms">
+<code class="sig-name descname">rms</code><a class="headerlink" href="#ESANEOCC.tabs.KeplerianOrbitProperties.rms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Root mean square for keplerian elements</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.KeplerianOrbitProperties.cov">
+<code class="sig-name descname">cov</code><a class="headerlink" href="#ESANEOCC.tabs.KeplerianOrbitProperties.cov" title="Permalink to this definition">¶</a></dt>
+<dd><p>Covariance matrix for keplerian elements</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.KeplerianOrbitProperties.cor">
+<code class="sig-name descname">cor</code><a class="headerlink" href="#ESANEOCC.tabs.KeplerianOrbitProperties.cor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Correlation matrix for keplerian elements</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="ESANEOCC.tabs.OrbitProperties">
+<em class="property">class </em><code class="sig-prename descclassname">ESANEOCC.tabs.</code><code class="sig-name descname">OrbitProperties</code><a class="reference internal" href="_modules/ESANEOCC/tabs.html#OrbitProperties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.tabs.OrbitProperties" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class contains information of asteroid orbit properties.</p>
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.OrbitProperties.form">
+<code class="sig-name descname">form</code><a class="headerlink" href="#ESANEOCC.tabs.OrbitProperties.form" title="Permalink to this definition">¶</a></dt>
+<dd><p>File format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.OrbitProperties.rectype">
+<code class="sig-name descname">rectype</code><a class="headerlink" href="#ESANEOCC.tabs.OrbitProperties.rectype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Record type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.OrbitProperties.refsys">
+<code class="sig-name descname">refsys</code><a class="headerlink" href="#ESANEOCC.tabs.OrbitProperties.refsys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default reference system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.OrbitProperties.epoch">
+<code class="sig-name descname">epoch</code><a class="headerlink" href="#ESANEOCC.tabs.OrbitProperties.epoch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Epoch in MJD format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.OrbitProperties.mag">
+<code class="sig-name descname">mag</code><a class="headerlink" href="#ESANEOCC.tabs.OrbitProperties.mag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data frame which contains magnitude values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.OrbitProperties.lsp">
+<code class="sig-name descname">lsp</code><a class="headerlink" href="#ESANEOCC.tabs.OrbitProperties.lsp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data structure with information about non-gravitational
+parameters (model, numer of parameters, dimension, etc.).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.OrbitProperties.ngr">
+<code class="sig-name descname">ngr</code><a class="headerlink" href="#ESANEOCC.tabs.OrbitProperties.ngr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data frame which contains non-gravitational parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="ESANEOCC.tabs.PhysicalProperties">
+<em class="property">class </em><code class="sig-prename descclassname">ESANEOCC.tabs.</code><code class="sig-name descname">PhysicalProperties</code><a class="reference internal" href="_modules/ESANEOCC/tabs.html#PhysicalProperties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.tabs.PhysicalProperties" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class contains information of asteroid physical properties</p>
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.PhysicalProperties.physical_properties">
+<code class="sig-name descname">physical_properties</code><a class="headerlink" href="#ESANEOCC.tabs.PhysicalProperties.physical_properties" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data structure containing property, value, units and source
+from the complete set of physical properties</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.PhysicalProperties.sources">
+<code class="sig-name descname">sources</code><a class="headerlink" href="#ESANEOCC.tabs.PhysicalProperties.sources" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data structure containing source number, name and
+additional information</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the name of the object is not found</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="ESANEOCC.tabs.Summary">
+<em class="property">class </em><code class="sig-prename descclassname">ESANEOCC.tabs.</code><code class="sig-name descname">Summary</code><a class="reference internal" href="_modules/ESANEOCC/tabs.html#Summary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.tabs.Summary" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class contains the information from the Summary tab.</p>
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.Summary.physical_properties">
+<code class="sig-name descname">physical_properties</code><a class="headerlink" href="#ESANEOCC.tabs.Summary.physical_properties" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data frame which contains the information of the object
+physical properties, their value and their units.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.Summary.discovery_date">
+<code class="sig-name descname">discovery_date</code><a class="headerlink" href="#ESANEOCC.tabs.Summary.discovery_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provides the object discovery date</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.Summary.observatory">
+<code class="sig-name descname">observatory</code><a class="headerlink" href="#ESANEOCC.tabs.Summary.observatory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provides the name of the observatory where object was discovered</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="ESANEOCC.tabs.get_indexes">
+<code class="sig-prename descclassname">ESANEOCC.tabs.</code><code class="sig-name descname">get_indexes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dfobj</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ESANEOCC/tabs.html#get_indexes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.tabs.get_indexes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list with location index of a value or string in the
+DataFrame requested.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dfobj</strong> (<em>pandas.DataFrame</em>) – Data frame where the value will be searched.</p></li>
+<li><p><strong>value</strong> (<em>str</em><em>, </em><em>int</em><em>, </em><em>float</em>) – String, integer or float to be searched.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>listofpos</strong> – List which contains the location of the value in the Data
+frame. The first elements will correspond to the index and
+the second element to the columns</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ESANEOCC.tabs.get_object_data">
+<code class="sig-prename descclassname">ESANEOCC.tabs.</code><code class="sig-name descname">get_object_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">url</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ESANEOCC/tabs.html#get_object_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.tabs.get_object_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get object in byte format from requested url.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>url</strong> (<em>str</em>) – URL of the requested data.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>data_obj</strong> – Object in byte format.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ESANEOCC.tabs.get_object_url">
+<code class="sig-prename descclassname">ESANEOCC.tabs.</code><code class="sig-name descname">get_object_url</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">tab</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ESANEOCC/tabs.html#get_object_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.tabs.get_object_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get url from requested object and tab name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the requested object.</p></li>
+<li><p><strong>tab</strong> (<em>str</em>) – Name of the request tab. Valid names are: <em>summary,
+orbit_properties, physical_properties, observations,
+ephemerides, close_approaches and impacts</em>.</p></li>
+<li><p><strong>**kwargs</strong> (<em>str</em>) – <p>orbit_properties and ephemerides tabs required additional
+arguments to work:</p>
+<ul>
+<li><p><em>orbit_properties</em>: the required additional arguments are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>orbital_elements</em> : str (keplerian or equinoctial)</p></li>
+<li><p><em>orbit_epoch</em> : str (present or middle)</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><em>ephemerides</em>: the required additional arguments are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><em>observatory</em> : str (observatory code, e.g. ‘500’, ‘J04’, etc.)</p></li>
+<li><p><em>start</em> : str (start date in YYYY-MM-DD HH:MM)</p></li>
+<li><p><em>stop</em> : str (end date in YYYY-MM-DD HH:MM)</p></li>
+<li><p><em>step</em> : str (time step, e.g. ‘2’, ‘15’, etc.)</p></li>
+<li><p><em>step_unit</em> : str (e.g. ‘days’, ‘minutes’, etc.)</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>url</strong> – Final url from which data is requested.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>KeyError</strong> – If the requested tab is not in the dictionary.</p></li>
+<li><p><strong>ValueError</strong> – If the elements requested are not valid.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright European Space Agency ESA.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
