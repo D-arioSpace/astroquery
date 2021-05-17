@@ -266,7 +266,6 @@ def query_object(name, tab, **kwargs):
     7  2117-12-15.496  94626.496 -1.316  ...           0.000069 -5.68   0
     [8 rows x 11 columns]
 
-
     Note
     ----
         Most of the dataframes of the object tabs contain the
