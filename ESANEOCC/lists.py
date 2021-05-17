@@ -408,7 +408,7 @@ def parse_encounter(data_byte_d):
     Returns
     -------
     neocc_lst : *pandas.Series* or *pandas.DataFrame*
-        Data frame with close approaches list data parsed.
+        Data frame with close encounter list data parsed.
     """
     # Read data as csv
     neocc_lst = pd.read_csv(data_byte_d, sep='|', skiprows=[0,2])
