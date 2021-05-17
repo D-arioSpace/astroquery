@@ -20,7 +20,7 @@ Version    Date          Change History
 1.1        26-03-2021    New docstrings and lists
 1.2        17-05-2021    Adding *help* property for dataframes.\n
                          Adding timeout of 90 seconds.\n
-                         Adding *parse_impacted* function for new 
+                         Adding *parse_impacted* function for new
                          list
 ========   ===========   ==========================================
 
