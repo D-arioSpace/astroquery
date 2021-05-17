@@ -237,7 +237,7 @@ def query_object(name, tab, **kwargs):
 
     The output provides an object with the different attributes:
 
-    >>> ast_impacts.
+    >>> ast_impacts.<tab>
     ast.additional_note       ast.impacts
     ast.arc_end               ast.info
     ast.arc_start             ast.observation_accepted
@@ -264,7 +264,7 @@ def query_object(name, tab, **kwargs):
 
     Again, the output provides an object with different attributes:
 
-    >>> properties.
+    >>> properties.<tab>
     properties.physical_properties  properties.sources
     >>> properties.physical_properties
                        Property     Values Unit Source
@@ -351,7 +351,7 @@ def query_object(name, tab, **kwargs):
 
     >>> ast_orbit_prop = neocc.query_object(name='99942',
     tab='orbit_properties',orbital_elements='keplerian', orbit_epoch='present')
-    >>> ast_orbit_prop.
+    >>> ast_orbit_prop.<tab>
     ast_orbit_prop.anode       ast_orbit_prop.moid
     ast_orbit_prop.aphelion    ast_orbit_prop.ngr
     ast_orbit_prop.cor         ast_orbit_prop.perihelion
@@ -374,7 +374,7 @@ def query_object(name, tab, **kwargs):
     >>> ast_ephemerides = neocc.query_object(name='99942',
     tab='ephemerides', observatory='500', start='2019-05-08 01:30',
     stop='2019-05-23 01:30', step='1', step_unit='days')
-    >>> ast_ephemerides.
+    >>> ast_ephemerides.<tab>
     ast_ephemerides.ephemerides  ast_ephemerides.tinit
     ast_ephemerides.observatory  ast_ephemerides.tstep
     ast_ephemerides.tfinal
