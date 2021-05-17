@@ -15,13 +15,21 @@ portal: https://neo.ssa.esa.int/.
 * Module: neocc.py
 * History:
 
+Here's a grid table followed by a simple table:
+
 ========   ===========   ============================================
 Version    Date          Change History
 ========   ===========   ============================================
 1.0        26-02-2021    Initial version
 1.1        26-03-2021    Adding new docstrings
-1.2        XX-05-2021    orbit_elements changes to orbital_elements
+1.2        17-05-2021    Adding new docstrings for *help*
+                         property in dataframes and *<tab>*
+                         specification for obtaining attributes.\n
+                         For orbit properties *orbit_elements*
+                         changes to *orbital_elements*.\n
+                         Minor typos changes.
 ========   ===========   ============================================
+
 
 © Copyright [European Space Agency][2021]
 All rights reserved
@@ -263,7 +271,7 @@ def query_object(name, tab, **kwargs):
         Most of the dataframes of the object tabs contain the
         'help' property which contains information about the fields
         of the dataframe.
-        
+
         >>> print(ast_impacts.impacts.help)
         Data frame with possible impacts information:
         -Date: date for the potential impact in YYYY-MM-DD.ddd format
