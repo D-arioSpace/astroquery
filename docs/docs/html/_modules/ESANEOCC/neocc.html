@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>ESANEOCC.neocc &mdash; ESA NEOCC Python Interface 1.1.0 documentation</title>
+  <title>ESANEOCC.neocc &mdash; ESA NEOCC Python Interface 1.2.0 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1
+                1.2
               </div>
             
           
@@ -164,17 +164,24 @@
 <span class="sd">* Developed by: Elecnor Deimos</span>
 <span class="sd">* Author: C. Álvaro Arroyo Parejo</span>
 <span class="sd">* Issue: 1.2</span>
-<span class="sd">* Date: 26-03-2021</span>
+<span class="sd">* Date: 17-05-2021</span>
 <span class="sd">* Purpose: Main module which gets NEAs data from https://neo.ssa.esa.int/</span>
 <span class="sd">* Module: neocc.py</span>
 <span class="sd">* History:</span>
 
-<span class="sd">========   ===========   ================================</span>
+<span class="sd">========   ===========   ============================================</span>
 <span class="sd">Version    Date          Change History</span>
-<span class="sd">========   ===========   ================================</span>
+<span class="sd">========   ===========   ============================================</span>
 <span class="sd">1.0        26-02-2021    Initial version</span>
 <span class="sd">1.1        26-03-2021    Adding new docstrings</span>
-<span class="sd">========   ===========   ================================</span>
+<span class="sd">1.2        17-05-2021    Adding new docstrings for *help*</span>
+<span class="sd">                         property in dataframes and *&lt;tab&gt;*</span>
+<span class="sd">                         specification for obtaining attributes.\n</span>
+<span class="sd">                         For orbit properties *orbit_elements*</span>
+<span class="sd">                         changes to *orbital_elements*.\n</span>
+<span class="sd">                         Minor typos changes.</span>
+<span class="sd">========   ===========   ============================================</span>
+
 
 <span class="sd">© Copyright [European Space Agency][2021]</span>
 <span class="sd">All rights reserved</span>
@@ -343,7 +350,7 @@
 
 <span class="sd">        * *orbit_properties*: the required additional arguments are:</span>
 
-<span class="sd">            * *orbit_element* : str (keplerian or equinoctial)</span>
+<span class="sd">            * *orbital_elements* : str (keplerian or equinoctial)</span>
 <span class="sd">            * *orbit_epoch* : str (present or middle)</span>
 
 <span class="sd">        * *ephemerides*: the required additional arguments are:</span>
@@ -390,7 +397,7 @@
 
 <span class="sd">    The output provides an object with the different attributes:</span>
 
-<span class="sd">    &gt;&gt;&gt; ast_impacts.</span>
+<span class="sd">    &gt;&gt;&gt; ast_impacts.&lt;tab&gt;</span>
 <span class="sd">    ast.additional_note       ast.impacts</span>
 <span class="sd">    ast.arc_end               ast.info</span>
 <span class="sd">    ast.arc_start             ast.observation_accepted</span>
@@ -410,6 +417,35 @@
 <span class="sd">    7  2103-04-14.311  89267.311  2.706     ...           0.000041 -5.38   0</span>
 <span class="sd">    [8 rows x 11 columns]</span>
 
+
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+<span class="sd">        Most of the dataframes of the object tabs contain the</span>
+<span class="sd">        &#39;help&#39; property which contains information about the fields</span>
+<span class="sd">        of the dataframe.</span>
+
+<span class="sd">        &gt;&gt;&gt; print(ast_impacts.impacts.help)</span>
+<span class="sd">        Data frame with possible impacts information:</span>
+<span class="sd">        -Date: date for the potential impact in YYYY-MM-DD.ddd format</span>
+<span class="sd">        -MJD: Modified Julian Day for the potential impact</span>
+<span class="sd">        -sigma: approximate location along the Line Of Variation (LOV)</span>
+<span class="sd">         in sigma space</span>
+<span class="sd">        -sigimp: The lateral distance in sigma-space from the LOV to</span>
+<span class="sd">         the Earth surface. A zero implies that the LOV passes through</span>
+<span class="sd">         the Earth-dist: Minimum Distance in Earth radii. The lateral</span>
+<span class="sd">         distance from the LOV to the center of the Earth</span>
+<span class="sd">        -width: one-sigma semi-width of the Target Plane confidence</span>
+<span class="sd">         region in Earth radii</span>
+<span class="sd">        -stretch: Stretching factor. It indicates how much the</span>
+<span class="sd">         confidence region at the epoch has been stretched by the time</span>
+<span class="sd">         of the approach. This is a close cousin of the Lyapounov</span>
+<span class="sd">         exponent. Units are in Earth radii divided by sigma (RE/sig)</span>
+<span class="sd">        -p_RE: probability of Earth Impact (IP)</span>
+<span class="sd">        -Exp. Energy in MT: Expected energy. It is the product of the</span>
+<span class="sd">         impact energy and the impact probability</span>
+<span class="sd">        -PS: Palermo Scale</span>
+<span class="sd">        -TS: Torino Scale</span>
+
 <span class="sd">    Another example is shown to obtain the physical properties:</span>
 
 <span class="sd">    &gt;&gt;&gt; from ESANEOCC import neocc</span>
@@ -417,7 +453,7 @@
 
 <span class="sd">    Again, the output provides an object with different attributes:</span>
 
-<span class="sd">    &gt;&gt;&gt; properties.</span>
+<span class="sd">    &gt;&gt;&gt; properties.&lt;tab&gt;</span>
 <span class="sd">    properties.physical_properties  properties.sources</span>
 <span class="sd">    &gt;&gt;&gt; properties.physical_properties</span>
 <span class="sd">                       Property     Values Unit Source</span>
@@ -497,14 +533,14 @@
 
 <span class="sd">    **Orbit Properties:** In order to access the orbit properties</span>
 <span class="sd">    information, it is necessary to provide two additional inputs to</span>
-<span class="sd">    *query_object* method: **orbit_elements** and **orbit_epoch**.</span>
+<span class="sd">    *query_object* method: **orbital_elements** and **orbit_epoch**.</span>
 
 <span class="sd">    It is mandatory to write these two paramters as: *orbit_epoch=&#39; &#39;*</span>
 <span class="sd">    to make the library works.</span>
 
 <span class="sd">    &gt;&gt;&gt; ast_orbit_prop = neocc.query_object(name=&#39;99942&#39;,</span>
-<span class="sd">    tab=&#39;orbit_properties&#39;,orbit_elements=&#39;keplerian&#39;, orbit_epoch=&#39;present&#39;)</span>
-<span class="sd">    &gt;&gt;&gt; ast_orbit_prop.</span>
+<span class="sd">    tab=&#39;orbit_properties&#39;,orbital_elements=&#39;keplerian&#39;, orbit_epoch=&#39;present&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; ast_orbit_prop.&lt;tab&gt;</span>
 <span class="sd">    ast_orbit_prop.anode       ast_orbit_prop.moid</span>
 <span class="sd">    ast_orbit_prop.aphelion    ast_orbit_prop.ngr</span>
 <span class="sd">    ast_orbit_prop.cor         ast_orbit_prop.perihelion</span>
@@ -527,11 +563,12 @@
 <span class="sd">    &gt;&gt;&gt; ast_ephemerides = neocc.query_object(name=&#39;99942&#39;,</span>
 <span class="sd">    tab=&#39;ephemerides&#39;, observatory=&#39;500&#39;, start=&#39;2019-05-08 01:30&#39;,</span>
 <span class="sd">    stop=&#39;2019-05-23 01:30&#39;, step=&#39;1&#39;, step_unit=&#39;days&#39;)</span>
-<span class="sd">    &gt;&gt;&gt; ast_ephemerides.</span>
+<span class="sd">    &gt;&gt;&gt; ast_ephemerides.&lt;tab&gt;</span>
 <span class="sd">    ast_ephemerides.ephemerides  ast_ephemerides.tinit</span>
 <span class="sd">    ast_ephemerides.observatory  ast_ephemerides.tstep</span>
 <span class="sd">    ast_ephemerides.tfinal</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1"># Define a list with all possible tabs to be requested</span>
     <span class="n">tab_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;impacts&#39;</span><span class="p">,</span> <span class="s1">&#39;close_approaches&#39;</span><span class="p">,</span> <span class="s1">&#39;observations&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;physical_properties&#39;</span><span class="p">,</span> <span class="s1">&#39;orbit_properties&#39;</span><span class="p">,</span>
@@ -585,16 +622,18 @@
     <span class="c1"># Orbit properties</span>
     <span class="k">elif</span> <span class="n">tab</span> <span class="o">==</span> <span class="s1">&#39;orbit_properties&#39;</span><span class="p">:</span>
         <span class="c1"># Raise error if no elements are provided</span>
-        <span class="k">if</span> <span class="s1">&#39;orbit_elements&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;Please specify type of elements: &#39;</span>
-                           <span class="s1">&#39;keplerian or equinoctial&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;orbital_elements&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;Please specify type of orbital_elements: &#39;</span>
+                           <span class="s1">&#39;keplerian or equinoctial.&#39;</span>
+                           <span class="s1">&#39;E.g., orbital_elements=&quot;keplerian&quot;&#39;</span><span class="p">)</span>
         <span class="c1"># Raise error if no epoch is provided</span>
         <span class="k">if</span> <span class="s1">&#39;orbit_epoch&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;Please specify type of epoch: &#39;</span>
-                           <span class="s1">&#39;present or middle&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;Please specify type of orbit_epoch: &#39;</span>
+                           <span class="s1">&#39;present or middle.&#39;</span>
+                           <span class="s1">&#39;E.g., orbit_epoch=&quot;middle&quot;&#39;</span><span class="p">)</span>
         <span class="c1"># Get URL to obtain the data from NEOCC</span>
         <span class="n">url</span> <span class="o">=</span> <span class="n">tabs</span><span class="o">.</span><span class="n">get_object_url</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tab</span><span class="p">,</span>
-                                  <span class="n">orbit_elements</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;orbit_elements&#39;</span><span class="p">],</span>
+                                  <span class="n">orbital_elements</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;orbital_elements&#39;</span><span class="p">],</span>
                                   <span class="n">orbit_epoch</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;orbit_epoch&#39;</span><span class="p">])</span>
 
         <span class="c1"># Request data two times if the first attempt fails</span>
@@ -610,12 +649,12 @@
             <span class="n">data_obj</span> <span class="o">=</span> <span class="n">tabs</span><span class="o">.</span><span class="n">get_object_data</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
 
         <span class="c1"># Assign orbit properties depending on the elements requested</span>
-        <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;orbit_elements&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;keplerian&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;orbital_elements&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;keplerian&quot;</span><span class="p">:</span>
             <span class="c1"># Create empty object with class Orbit properties</span>
             <span class="n">neocc_obj</span> <span class="o">=</span> <span class="n">tabs</span><span class="o">.</span><span class="n">KeplerianOrbitProperties</span><span class="p">()</span>
             <span class="c1"># Parse the requested data using Orbit properties parser</span>
             <span class="n">neocc_obj</span><span class="o">.</span><span class="n">_orb_kep_prop_parser</span><span class="p">(</span><span class="n">data_obj</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;orbit_elements&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;equinoctial&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;orbital_elements&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;equinoctial&quot;</span><span class="p">:</span>
             <span class="c1"># Create empty object with class Orbit properties</span>
             <span class="n">neocc_obj</span> <span class="o">=</span> <span class="n">tabs</span><span class="o">.</span><span class="n">EquinoctialOrbitProperties</span><span class="p">()</span>
             <span class="c1"># Parse the requested data using Orbit properties parser</span>

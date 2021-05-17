@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>ESANEOCC.lists &mdash; ESA NEOCC Python Interface 1.1.0 documentation</title>
+  <title>ESANEOCC.lists &mdash; ESA NEOCC Python Interface 1.2.0 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1
+                1.2
               </div>
             
           
@@ -162,17 +162,19 @@
 <span class="sd">* Developed by: Elecnor Deimos</span>
 <span class="sd">* Author: C. Álvaro Arroyo Parejo</span>
 <span class="sd">* Issue: 1.2</span>
-<span class="sd">* Date: 26-03-2021</span>
+<span class="sd">* Date: 17-05-2021</span>
 <span class="sd">* Purpose: Module which request and parse list data from ESA NEOCC</span>
 <span class="sd">* Module: lists.py</span>
 <span class="sd">* History:</span>
 
-<span class="sd">========   ===========   =========================</span>
+<span class="sd">========   ===========   ==========================================</span>
 <span class="sd">Version    Date          Change History</span>
-<span class="sd">========   ===========   =========================</span>
+<span class="sd">========   ===========   ==========================================</span>
 <span class="sd">1.0        26-02-2021    Initial version</span>
 <span class="sd">1.1        26-03-2021    New docstrings and lists</span>
-<span class="sd">========   ===========   =========================</span>
+<span class="sd">1.2        17-05-2021    Adding *help* property for dataframes.\n</span>
+<span class="sd">                         Adding timeout of 90 seconds.</span>
+<span class="sd">========   ===========   ==========================================</span>
 
 <span class="sd">© Copyright [European Space Agency][2021]</span>
 <span class="sd">All rights reserved</span>
@@ -250,7 +252,7 @@
 <span class="sd">        Data frame which contains the data of the requested list.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Get data from URL</span>
-    <span class="n">data_list</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">BASE_URL</span> <span class="o">+</span> <span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
+    <span class="n">data_list</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">BASE_URL</span> <span class="o">+</span> <span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
 
     <span class="c1"># Decode the data using UTF-8</span>
     <span class="n">data_list_d</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">data_list</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>

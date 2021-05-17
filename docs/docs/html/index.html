@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>ESA NEOCC Portal Python Interface Library &mdash; ESA NEOCC Python Interface 1.1.0 documentation</title>
+  <title>ESA NEOCC Portal Python Interface Library &mdash; ESA NEOCC Python Interface 1.2.0 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1
+                1.2
               </div>
             
           
@@ -92,9 +92,12 @@
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
 <li><a class="reference internal" href="#installation">Installation</a></li>
 <li><a class="reference internal" href="#requirements">Requirements</a></li>
+<li><a class="reference internal" href="#modules">Modules</a><ul>
 <li><a class="reference internal" href="#module-ESANEOCC.neocc">ESANEOCC.neocc</a></li>
 <li><a class="reference internal" href="#module-ESANEOCC.lists">ESANEOCC.lists</a></li>
 <li><a class="reference internal" href="#module-ESANEOCC.tabs">ESANEOCC.tabs</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -235,18 +238,20 @@ will not work if the dependencies do not satisfy the Requirements.</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://pypi.org/project/beautifulsoup4/">beautifulsoup4</a> = 4.9.3</p></li>
 <li><p><a class="reference external" href="https://pypi.org/project/lxml/">lxml</a> = 4.6.3</p></li>
-<li><p><a class="reference external" href="https://pypi.org/project/pandas/">pandas</a> = 1.2.3</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/pandas/">pandas</a> = 1.2.4</p></li>
 <li><p><a class="reference external" href="https://pypi.org/project/parse/">parse</a> = 1.19.0</p></li>
 <li><p><a class="reference external" href="https://pypi.org/project/requests/">requests</a> = 2.25.1</p></li>
-<li><p><a class="reference external" href="https://pypi.org/project/scipy/">scipy</a> = 1.6.2</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/scipy/">scipy</a> = 1.6.3</p></li>
 </ul>
 <p>For tests the following packages are required:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://pypi.org/project/pytest/">pytest</a></p></li>
 </ul>
 </div>
+<div class="section" id="modules">
+<h2>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="module-ESANEOCC.neocc">
-<span id="esaneocc-neocc"></span><h2>ESANEOCC.neocc<a class="headerlink" href="#module-ESANEOCC.neocc" title="Permalink to this headline">¶</a></h2>
+<span id="esaneocc-neocc"></span><h3>ESANEOCC.neocc<a class="headerlink" href="#module-ESANEOCC.neocc" title="Permalink to this headline">¶</a></h3>
 <p>Main module from ESA NEOCCS library. This module contains the two main
 methods of the library: <em>query_list</em> and <em>query_object</em>. The information
 is obtained from ESA Near-Earth Object Coordination Centre’s (NEOCC) web
@@ -257,16 +262,16 @@ portal: <a class="reference external" href="https://neo.ssa.esa.int/">https://ne
 <li><p>Developed by: Elecnor Deimos</p></li>
 <li><p>Author: C. Álvaro Arroyo Parejo</p></li>
 <li><p>Issue: 1.2</p></li>
-<li><p>Date: 26-03-2021</p></li>
+<li><p>Date: 17-05-2021</p></li>
 <li><p>Purpose: Main module which gets NEAs data from <a class="reference external" href="https://neo.ssa.esa.int/">https://neo.ssa.esa.int/</a></p></li>
 <li><p>Module: neocc.py</p></li>
 <li><p>History:</p></li>
 </ul>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 16%" />
-<col style="width: 22%" />
-<col style="width: 63%" />
+<col style="width: 13%" />
+<col style="width: 17%" />
+<col style="width: 70%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Version</p></th>
@@ -282,6 +287,16 @@ portal: <a class="reference external" href="https://neo.ssa.esa.int/">https://ne
 <tr class="row-odd"><td><p>1.1</p></td>
 <td><p>26-03-2021</p></td>
 <td><p>Adding new docstrings</p></td>
+</tr>
+<tr class="row-even"><td><p>1.2</p></td>
+<td><p>17-05-2021</p></td>
+<td><p>Adding new docstrings for <em>help</em>
+property in dataframes and <em>&lt;tab&gt;</em>
+specification for obtaining attributes.</p>
+<p>For orbit properties <em>orbit_elements</em>
+changes to <em>orbital_elements</em>.</p>
+<p>Minor typos changes.</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -424,7 +439,7 @@ arguments to work:</p>
 <li><p><em>orbit_properties</em>: the required additional arguments are:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p><em>orbit_element</em> : str (keplerian or equinoctial)</p></li>
+<li><p><em>orbital_elements</em> : str (keplerian or equinoctial)</p></li>
 <li><p><em>orbit_epoch</em> : str (present or middle)</p></li>
 </ul>
 </div></blockquote>
@@ -479,7 +494,7 @@ the object, but it can be also added from the output of a
 </pre></div>
 </div>
 <p>The output provides an object with the different attributes:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ast_impacts</span><span class="o">.</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ast_impacts</span><span class="o">.&lt;</span><span class="n">tab</span><span class="o">&gt;</span>
 <span class="go">ast.additional_note       ast.impacts</span>
 <span class="go">ast.arc_end               ast.info</span>
 <span class="go">ast.arc_start             ast.observation_accepted</span>
@@ -500,13 +515,42 @@ the object, but it can be also added from the output of a
 <span class="go">[8 rows x 11 columns]</span>
 </pre></div>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Most of the dataframes of the object tabs contain the
+‘help’ property which contains information about the fields
+of the dataframe.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ast_impacts</span><span class="o">.</span><span class="n">impacts</span><span class="o">.</span><span class="n">help</span><span class="p">)</span>
+<span class="go">Data frame with possible impacts information:</span>
+<span class="go">-Date: date for the potential impact in YYYY-MM-DD.ddd format</span>
+<span class="go">-MJD: Modified Julian Day for the potential impact</span>
+<span class="go">-sigma: approximate location along the Line Of Variation (LOV)</span>
+<span class="go"> in sigma space</span>
+<span class="go">-sigimp: The lateral distance in sigma-space from the LOV to</span>
+<span class="go"> the Earth surface. A zero implies that the LOV passes through</span>
+<span class="go"> the Earth-dist: Minimum Distance in Earth radii. The lateral</span>
+<span class="go"> distance from the LOV to the center of the Earth</span>
+<span class="go">-width: one-sigma semi-width of the Target Plane confidence</span>
+<span class="go"> region in Earth radii</span>
+<span class="go">-stretch: Stretching factor. It indicates how much the</span>
+<span class="go"> confidence region at the epoch has been stretched by the time</span>
+<span class="go"> of the approach. This is a close cousin of the Lyapounov</span>
+<span class="go"> exponent. Units are in Earth radii divided by sigma (RE/sig)</span>
+<span class="go">-p_RE: probability of Earth Impact (IP)</span>
+<span class="go">-Exp. Energy in MT: Expected energy. It is the product of the</span>
+<span class="go"> impact energy and the impact probability</span>
+<span class="go">-PS: Palermo Scale</span>
+<span class="go">-TS: Torino Scale</span>
+</pre></div>
+</div>
+</div>
 <p>Another example is shown to obtain the physical properties:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ESANEOCC</span> <span class="kn">import</span> <span class="n">neocc</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">properties</span> <span class="o">=</span> <span class="n">neocc</span><span class="o">.</span><span class="n">query_object</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;433&#39;</span><span class="p">,</span> <span class="n">tab</span><span class="o">=</span><span class="s1">&#39;physical_properties&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Again, the output provides an object with different attributes:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">properties</span><span class="o">.</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">properties</span><span class="o">.&lt;</span><span class="n">tab</span><span class="o">&gt;</span>
 <span class="go">properties.physical_properties  properties.sources</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">properties</span><span class="o">.</span><span class="n">physical_properties</span>
 <span class="go">                   Property     Values Unit Source</span>
@@ -586,12 +630,12 @@ a DataFrame which contains the information for close approaches:</p>
 </div>
 <p><strong>Orbit Properties:</strong> In order to access the orbit properties
 information, it is necessary to provide two additional inputs to
-<em>query_object</em> method: <strong>orbit_elements</strong> and <strong>orbit_epoch</strong>.</p>
+<em>query_object</em> method: <strong>orbital_elements</strong> and <strong>orbit_epoch</strong>.</p>
 <p>It is mandatory to write these two paramters as: <em>orbit_epoch=’ ‘</em>
 to make the library works.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ast_orbit_prop</span> <span class="o">=</span> <span class="n">neocc</span><span class="o">.</span><span class="n">query_object</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;99942&#39;</span><span class="p">,</span>
-<span class="go">tab=&#39;orbit_properties&#39;,orbit_elements=&#39;keplerian&#39;, orbit_epoch=&#39;present&#39;)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ast_orbit_prop</span><span class="o">.</span>
+<span class="go">tab=&#39;orbit_properties&#39;,orbital_elements=&#39;keplerian&#39;, orbit_epoch=&#39;present&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ast_orbit_prop</span><span class="o">.&lt;</span><span class="n">tab</span><span class="o">&gt;</span>
 <span class="go">ast_orbit_prop.anode       ast_orbit_prop.moid</span>
 <span class="go">ast_orbit_prop.aphelion    ast_orbit_prop.ngr</span>
 <span class="go">ast_orbit_prop.cor         ast_orbit_prop.perihelion</span>
@@ -613,7 +657,7 @@ to make the library works.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ast_ephemerides</span> <span class="o">=</span> <span class="n">neocc</span><span class="o">.</span><span class="n">query_object</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;99942&#39;</span><span class="p">,</span>
 <span class="go">tab=&#39;ephemerides&#39;, observatory=&#39;500&#39;, start=&#39;2019-05-08 01:30&#39;,</span>
 <span class="go">stop=&#39;2019-05-23 01:30&#39;, step=&#39;1&#39;, step_unit=&#39;days&#39;)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ast_ephemerides</span><span class="o">.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ast_ephemerides</span><span class="o">.&lt;</span><span class="n">tab</span><span class="o">&gt;</span>
 <span class="go">ast_ephemerides.ephemerides  ast_ephemerides.tinit</span>
 <span class="go">ast_ephemerides.observatory  ast_ephemerides.tstep</span>
 <span class="go">ast_ephemerides.tfinal</span>
@@ -623,7 +667,7 @@ to make the library works.</p>
 
 </div>
 <div class="section" id="module-ESANEOCC.lists">
-<span id="esaneocc-lists"></span><h2>ESANEOCC.lists<a class="headerlink" href="#module-ESANEOCC.lists" title="Permalink to this headline">¶</a></h2>
+<span id="esaneocc-lists"></span><h3>ESANEOCC.lists<a class="headerlink" href="#module-ESANEOCC.lists" title="Permalink to this headline">¶</a></h3>
 <p>This module contains all the methods required to request the list data,
 obtain it from the ESA NEOCC portal and parse it to show it properly.</p>
 <ul class="simple">
@@ -632,16 +676,16 @@ obtain it from the ESA NEOCC portal and parse it to show it properly.</p>
 <li><p>Developed by: Elecnor Deimos</p></li>
 <li><p>Author: C. Álvaro Arroyo Parejo</p></li>
 <li><p>Issue: 1.2</p></li>
-<li><p>Date: 26-03-2021</p></li>
+<li><p>Date: 17-05-2021</p></li>
 <li><p>Purpose: Module which request and parse list data from ESA NEOCC</p></li>
 <li><p>Module: lists.py</p></li>
 <li><p>History:</p></li>
 </ul>
 <table class="docutils align-default">
 <colgroup>
+<col style="width: 13%" />
 <col style="width: 18%" />
-<col style="width: 25%" />
-<col style="width: 57%" />
+<col style="width: 69%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Version</p></th>
@@ -657,6 +701,12 @@ obtain it from the ESA NEOCC portal and parse it to show it properly.</p>
 <tr class="row-odd"><td><p>1.1</p></td>
 <td><p>26-03-2021</p></td>
 <td><p>New docstrings and lists</p></td>
+</tr>
+<tr class="row-even"><td><p>1.2</p></td>
+<td><p>17-05-2021</p></td>
+<td><p>Adding <em>help</em> property for dataframes.</p>
+<p>Adding timeout of 90 seconds.</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -828,7 +878,7 @@ close_appr_recent, priority_list, priority_list_faint</em>.</p>
 
 </div>
 <div class="section" id="module-ESANEOCC.tabs">
-<span id="esaneocc-tabs"></span><h2>ESANEOCC.tabs<a class="headerlink" href="#module-ESANEOCC.tabs" title="Permalink to this headline">¶</a></h2>
+<span id="esaneocc-tabs"></span><h3>ESANEOCC.tabs<a class="headerlink" href="#module-ESANEOCC.tabs" title="Permalink to this headline">¶</a></h3>
 <p>This module contains all the methods required to request the data from
 a particular object, obtain it from the ESA NEOCC portal and parse it
 to show it properly. The information of the object is shows in the
@@ -839,8 +889,8 @@ within this module.</p>
 <li><p>Property: European Space Agency (ESA)</p></li>
 <li><p>Developed by: Elecnor Deimos</p></li>
 <li><p>Author: C. Álvaro Arroyo Parejo</p></li>
-<li><p>Issue: 1.1</p></li>
-<li><p>Date: 24-03-2021</p></li>
+<li><p>Issue: 1.2</p></li>
+<li><p>Date: 17-05-2021</p></li>
 <li><p>Purpose: Module which request and parse list data from ESA NEOCC</p></li>
 <li><p>Module: tabs.py</p></li>
 <li><p>History:</p></li>
@@ -865,6 +915,18 @@ within this module.</p>
 <tr class="row-odd"><td><p>1.1</p></td>
 <td><p>26-03-2021</p></td>
 <td><p>Physical properties and summary funcionalities added</p></td>
+</tr>
+<tr class="row-even"><td><p>1.2</p></td>
+<td><p>17-05-2021</p></td>
+<td><p>Adding <em>help</em> property for dataframes.</p>
+<p>Parsing of diameter property in <em>summary</em> and
+<em>physical_properties</em> has been modified to add
+robustness.</p>
+<p>In <em>physical_properties</em> the parsing of properties
+has been modified to include cases with more
+information.</p>
+<p>Adding timeout of 90 seconds.</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -1588,7 +1650,7 @@ arguments to work:</p>
 <li><p><em>orbit_properties</em>: the required additional arguments are:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p><em>orbit_element</em> : str (keplerian or equinoctial)</p></li>
+<li><p><em>orbital_elements</em> : str (keplerian or equinoctial)</p></li>
 <li><p><em>orbit_epoch</em> : str (present or middle)</p></li>
 </ul>
 </div></blockquote>
@@ -1623,6 +1685,7 @@ arguments to work:</p>
 </dl>
 </dd></dl>
 
+</div>
 </div>
 </div>
 

@@ -2,13 +2,16 @@
    sphinx-quickstart on Fri Feb  5 08:37:43 2021.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
-
+##########################################
 ESA NEOCC Portal Python Interface Library
-=========================================
+##########################################
+
 This is the documentation for the ESA NEOCC Portal Python interface library.
 
+***************
 Introduction
--------------------
+***************
+
 ESA NEOCC Portal Python interface library makes the data that `ESA NEOCC <http://neo.ssa.esa.int/>`_
 provides easily accessible through a Python program.
 
@@ -21,11 +24,13 @@ The main functionality of this library is to allow a programmer to easily retrie
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
+***************
 Installation
--------------------
+***************
+
 The library is contained in ESANEOCC folder. In order to install the library:
 
 #. Navigate to the proper directory where the *setup.py* is located.
@@ -80,8 +85,10 @@ can also do::
 Note that, in the latter case, it is possible that some library functionalities
 will not work if the dependencies do not satisfy the Requirements.
 
+***************
 Requirements
--------------------
+***************
+
 ESA NEOCC Portal Python Interface Library works with Python 3.
 
 The following packages are required for the library installation & use:
@@ -97,6 +104,9 @@ For tests the following packages are required:
 
 * `pytest <https://pypi.org/project/pytest/>`_
 
+***************
+Modules
+***************
 
 ESANEOCC.neocc
 -------------------
