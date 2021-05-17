@@ -18,7 +18,7 @@ Version    Date          Change History
 ========   ===========   =====================================
 1.0        26-02-2021    Initial version
 1.1        26-03-2021    New docstrings and lists
-1.2        XX-05-2021    Adding help for dataframes
+1.2        17-05-2021    Adding *help* property for dataframes
 ========   ===========   =====================================
 
 © Copyright [European Space Agency][2021]
