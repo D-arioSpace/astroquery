@@ -227,21 +227,22 @@ def query_object(name, tab, **kwargs):
     *query_list* search:
 
     >>> from ESANEOCC import neocc
-    >>> ast_impacts = neocc.query_object(name='99942 Apophis', tab='impacts')
+    >>> ast_impacts = neocc.query_object(name='1979XB', tab='impacts')
 
     or
 
     >>> nea_list = neocc.query_list(list_name='nea_list')
-    >>> nea_list[403]
-    '99942 Apophis'
-    >>> ast_impacts = neocc.query_object(name=nea_list[403], tab='impacts')
+    >>> nea_list[2921]
+    '1979XB'
+    >>> ast_impacts = neocc.query_object(name=nea_list[2921], tab='impacts')
 
     or
 
-    >>> risk_list = neocc.query_liss(list_name='risk_list')
-    >>> risk_list[8]
-    '99942 Apophis'
-    >>> ast_impacts = neocc.query_object(name=risk_list[8], tab='impacts')
+    >>> risk_list = neocc.query_list(list_name='risk_list')
+    >>> risk_list['Object Name'][1]
+    '1979XB'
+    >>> ast_impacts = neocc.query_object(name=risk_list['Object Name'][1],
+                                         tab='impacts')
 
     The output provides an object with the different attributes:
 
@@ -254,15 +255,15 @@ def query_object(name, tab, **kwargs):
     By adding the attribute its information can be accessed:
 
     >>> ast_impacts.impacts
-                 date        MJD  sigma     ...  Exp. Energy in MT    PS  TS
-    0  2056-04-13.094  72101.094  2.221     ...           0.000129 -4.55   0
-    1  2065-04-13.131  75388.131  2.430     ...           0.000044 -5.10   0
-    2  2068-04-12.634  76483.634  2.723     ...           0.000830 -3.86   0
-    3  2074-04-13.359  78675.359  2.396     ...           0.000022 -5.48   0
-    4  2075-04-13.212  79040.212  1.356     ...           0.000244 -4.44   0
-    5  2077-04-13.112  79771.112  2.714     ...           0.000020 -5.54   0
-    6  2098-10-16.481  87627.481  2.398     ...           0.000058 -5.21   0
-    7  2103-04-14.311  89267.311  2.706     ...           0.000041 -5.38   0
+                 date        MJD  sigma  ...  Exp. Energy in MT    PS  TS
+    0  2056-12-12.902  72344.902  0.255  ...           0.011500 -3.22   0
+    1  2065-12-16.462  75635.463 -1.110  ...           0.000090 -5.36   0
+    2  2086-12-16.663  83305.664 -1.101  ...           0.002390 -4.03   0
+    3  2101-12-14.203  88781.204 -0.384  ...           0.000131 -5.36   0
+    4  2105-12-12.764  90240.765  1.003  ...           0.000574 -4.75   0
+    5  2113-12-14.753  93164.753 -0.706  ...           0.018500 -3.25   0
+    6  2113-12-14.756  93164.756 -0.708  ...           0.000163 -5.30   0
+    7  2117-12-15.496  94626.496 -1.316  ...           0.000069 -5.68   0
     [8 rows x 11 columns]
 
 
