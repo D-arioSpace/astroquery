@@ -25,6 +25,7 @@ Version    Date          Change History
                          specification for obtaining attributes.\n
                          For orbit properties *orbit_elements*
                          changes to *orbital_elements*.\n
+                         Adding impacted objects lists.\n
                          Minor typos changes.
 ========   ===========   ============================================
 
