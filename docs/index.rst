@@ -88,10 +88,10 @@ The following packages are required for the library installation & use:
 
 * `beautifulsoup4 <https://pypi.org/project/beautifulsoup4/>`_ = 4.9.3
 * `lxml <https://pypi.org/project/lxml/>`_ = 4.6.3
-* `pandas <https://pypi.org/project/pandas/>`_ = 1.2.3
+* `pandas <https://pypi.org/project/pandas/>`_ = 1.2.4
 * `parse <https://pypi.org/project/parse/>`_ = 1.19.0
 * `requests <https://pypi.org/project/requests/>`_ = 2.25.1
-* `scipy <https://pypi.org/project/scipy/>`_ = 1.6.2
+* `scipy <https://pypi.org/project/scipy/>`_ = 1.6.3
 
 For tests the following packages are required:
 
