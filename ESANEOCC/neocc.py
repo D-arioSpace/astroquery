@@ -54,6 +54,7 @@ def query_list(list_name):
     * Priotiry list (normal): *priority_list*
     * Priority list (faint): *priority_list_faint*
     * Close encounter list: *close_encounter*
+    * Impacted objects: *impacted_objects*
 
     These lists are referenced in https://neo.ssa.esa.int/computer-access
 
@@ -63,7 +64,7 @@ def query_list(list_name):
         Name of the requested list. Valid names are: *nea_list,
         updated_nea, monthly_update, risk_list, risk_list_special,
         close_appr_upcoming, close_appr_recent, priority_list,
-        priority_list_faint and close_encounter*.
+        priority_list_faint, close_encounter and impacted_objects*.
 
     Returns
     -------
