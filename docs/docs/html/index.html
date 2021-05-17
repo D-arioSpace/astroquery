@@ -319,6 +319,7 @@ All rights reserved</p>
 <li><p>Priotiry list (normal): <em>priority_list</em></p></li>
 <li><p>Priority list (faint): <em>priority_list_faint</em></p></li>
 <li><p>Close encounter list: <em>close_encounter</em></p></li>
+<li><p>Impacted objects: <em>impacted_objects</em></p></li>
 </ul>
 <p>These lists are referenced in <a class="reference external" href="https://neo.ssa.esa.int/computer-access">https://neo.ssa.esa.int/computer-access</a></p>
 <dl class="field-list simple">
@@ -326,7 +327,7 @@ All rights reserved</p>
 <dd class="field-odd"><p><strong>list_name</strong> (<em>str</em>) – Name of the requested list. Valid names are: <em>nea_list,
 updated_nea, monthly_update, risk_list, risk_list_special,
 close_appr_upcoming, close_appr_recent, priority_list,
-priority_list_faint and close_encounter</em>.</p>
+priority_list_faint, close_encounter and impacted_objects</em>.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>neocc_lst</strong> – Data Frame which contains the information of the requested list</p>
@@ -800,7 +801,7 @@ close_appr_recent, priority_list, priority_list_faint</em>.</p>
 <dd class="field-odd"><p><strong>data_byte_d</strong> (<em>object</em>) – Decoded StringIO object.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>neocc_lst</strong> – Data frame with close approaches list data parsed.</p>
+<dd class="field-even"><p><strong>neocc_lst</strong> – Data frame with close encounter list data parsed.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><em>pandas.Series</em> or <em>pandas.DataFrame</em></p>
