@@ -10,7 +10,7 @@ portal: https://neo.ssa.esa.int/.
 * Developed by: Elecnor Deimos
 * Author: C. Álvaro Arroyo Parejo
 * Issue: 1.2
-* Date: 26-03-2021
+* Date: 17-05-2021
 * Purpose: Main module which gets NEAs data from https://neo.ssa.esa.int/
 * Module: neocc.py
 * History:
