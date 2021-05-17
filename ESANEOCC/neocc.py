@@ -15,8 +15,6 @@ portal: https://neo.ssa.esa.int/.
 * Module: neocc.py
 * History:
 
-Here's a grid table followed by a simple table:
-
 ========   ===========   ============================================
 Version    Date          Change History
 ========   ===========   ============================================
