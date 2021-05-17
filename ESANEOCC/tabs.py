@@ -1876,8 +1876,8 @@ class Ephemerides:
         ephem['Date'] = ephem['Date'].dt.strftime("%d %b %Y")
         # Remove mid whitespaces from declination, if any, and apply int
         # format
-        if ephem['D'].dtype == str:
-            ephem['D'] = ephem['D'].str.replace(' ','').astype(int)
+        if ephem['DEC D'].dtype == str:
+            ephem['DEC D'] = ephem['DEC D'].str.replace(' ','').astype(int)
         #Adding help to ephemerides data frame
         ephem.help = ('Ephemerides data frame shows:\n'
                       '-The Date and the Hour considered\n'
