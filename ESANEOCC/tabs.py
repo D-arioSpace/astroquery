@@ -1859,8 +1859,7 @@ class Ephemerides:
                      (170,178), (178,184)]
         # Read pandas as txt
         ephem = pd.read_fwf(ephems_d, header=None, skiprows=9,
-                            engine='python', colspecs=col_space,
-                            skipfooter=2)
+                            engine='python', colspecs=col_space)
         # Rename columns
         ephem.columns = ['Date', 'Hour', 'MJD', 'RA H', 'RA M', 'RA S',
                          'DEC D', 'DEC \'','DEC "',
