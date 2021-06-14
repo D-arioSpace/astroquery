@@ -356,7 +356,9 @@ class Impacts:
         df_impacts['date'] = pd.to_datetime(df_impacts['date1'],
                                        format='%Y/%m/%d') +\
                         (df_impacts['date2'].astype(float)/1e3)\
-                                           .map(timedelta)    
+                                           .map(timedelta)
+        # Remove auxiliary columns
+        df_impacts = df_impacts.drop(['date1','date2'], axis=1)
         # Add number of decimals
         df_impacts['dist'].map(lambda x: f"{x:.2f}")
         df_impacts['width'].map(lambda x: f"{x:.3f}")
