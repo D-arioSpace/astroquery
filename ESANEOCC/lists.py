@@ -253,17 +253,19 @@ def parse_risk(data_byte_d):
     # Convert column with date to datetime variable
     neocc_lst['Date/Time'] = pd.to_datetime(neocc_lst['Date/Time'])
     # Split Years into 2 columns to avoid dashed between integers
-    neocc_lst[['First year', 'Last year']] = neocc_lst['Years']\
-                                                .str.split("-",
-                                                expand=True)\
-                                                .astype(int)
-    # Drop split column
-    neocc_lst = neocc_lst.drop(['Years'], axis=1)
-    # Reorder columns
-    neocc_lst = neocc_lst[['Object Name', 'Diameter in m', '*=Y',
-                           'Date/Time', 'IP max', 'PS max', 
-                           'First year', 'Last year', 'IP cum',
-                           'PS cum']]
+    # Check dataframe is not empty (for special list)
+    if len(neocc_lst.index.values) != 0:
+        neocc_lst[['First year', 'Last year']] = neocc_lst['Years']\
+                                                    .str.split("-",
+                                                    expand=True)\
+                                                    .astype(int)
+        # Drop split column
+        neocc_lst = neocc_lst.drop(['Years'], axis=1)
+        # Reorder columns
+        neocc_lst = neocc_lst[['Object Name', 'Diameter in m', '*=Y',
+                            'Date/Time', 'IP max', 'PS max', 
+                            'First year', 'Last year', 'IP cum',
+                            'PS cum']]
 
     # Adding metadata
     neocc_lst.help = ('Risk lists contain a data frame with the '
