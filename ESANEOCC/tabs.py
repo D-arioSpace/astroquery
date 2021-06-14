@@ -432,42 +432,39 @@ class CloseApproaches:
         df_impacts_d = io.StringIO(data_obj.decode('utf-8'))
         # Check if the decoded data is empty before reading
         if not df_impacts_d.getvalue():
-            logging.warning('Required close approach file is '
-                            'empty for %s', name)
-            raise ValueError('Required close approach file is '
-                             'empty for ' + name)
-
-        # Read data as csv
-        df_close_appr = pd.read_csv(df_impacts_d,
-                                    delim_whitespace=True)
-        df_close_appr.help = ('Close approaches data frame contains:\n'
-                              '-BODY:  planet or massive asteroid is '
-                              'involved in the close approach\n'
-                              '-CALENDAR-TIME: date of the close '
-                              'approach in YYYY/MM/DD.ddddd format\n'
-                              '-MJD-TIME: Modified Julian Date of the'
-                              'approach\n'
-                              '-TIME-UNCERT.: time uncertainty in '
-                              'MJD2000\n'
-                              '-NOM.-DISTANCE: Nominal distance at '
-                              'the close approach in au\n'
-                              '-MIN.-POSS.-DIST.: Minimum possible '
-                              'distance at the close approach in au\n'
-                              '-DIST.-UNCERT.: distance uncertainty in '
-                              'au\n'
-                              '-STRETCH: It indicates how much the '
-                              'confidence region at the epoch has '
-                              'been stretched by the time of the '
-                              'approach. This is a close cousin of '
-                              'the Lyapounov exponent. Units in au\n'
-                              '-WIDTH: width of the stretching\n'
-                              '-PROBABITLIY: Close approach '
-                              'probability. A value of 1 indicates a '
-                              'certain close approach')
+            df_close_appr = pd.DataFrame()
+        else:
+            # Read data as csv
+            df_close_appr = pd.read_csv(df_impacts_d,
+                                        delim_whitespace=True)
+            df_close_appr.help = ('Close approaches data frame contains:\n'
+                                '-BODY:  planet or massive asteroid is '
+                                'involved in the close approach\n'
+                                '-CALENDAR-TIME: date of the close '
+                                'approach in YYYY/MM/DD.ddddd format\n'
+                                '-MJD-TIME: Modified Julian Date of the'
+                                'approach\n'
+                                '-TIME-UNCERT.: time uncertainty in '
+                                'MJD2000\n'
+                                '-NOM.-DISTANCE: Nominal distance at '
+                                'the close approach in au\n'
+                                '-MIN.-POSS.-DIST.: Minimum possible '
+                                'distance at the close approach in au\n'
+                                '-DIST.-UNCERT.: distance uncertainty in '
+                                'au\n'
+                                '-STRETCH: It indicates how much the '
+                                'confidence region at the epoch has '
+                                'been stretched by the time of the '
+                                'approach. This is a close cousin of '
+                                'the Lyapounov exponent. Units in au\n'
+                                '-WIDTH: width of the stretching\n'
+                                '-PROBABITLIY: Close approach '
+                                'probability. A value of 1 indicates a '
+                                'certain close approach')
 
         return df_close_appr
 
-
+# TODO fix physical properties for objects like 2009BD with 2 yarkovsky parameters
 class PhysicalProperties:
     """
         This class contains information of asteroid physical properties
@@ -1246,22 +1243,22 @@ class OrbitProperties:
                                     dfd.iloc[i, 3], dfd.iloc[i+1, 1],
                                     dfd.iloc[i+1, 2], dfd.iloc[i+1, 3],
                                     dfd.iloc[i+2, 1], dfd.iloc[i+2, 2]],
-                                mat_var[orbit_element][5]:
+                                mat_var[orbit_element][1]:
                                     [dfd.iloc[i, 2], dfd.iloc[i+2, 3],
                                     dfd.iloc[i+3, 1], dfd.iloc[i+3, 2],
                                     dfd.iloc[i+3, 3], dfd.iloc[i+4, 1],
                                     dfd.iloc[i+4, 2], dfd.iloc[i+4, 3]],
-                                mat_var[orbit_element][5]:
+                                mat_var[orbit_element][2]:
                                     [dfd.iloc[i, 3], dfd.iloc[i+3, 1],
                                     dfd.iloc[i+5, 1], dfd.iloc[i+5, 2],
                                     dfd.iloc[i+5, 3], dfd.iloc[i+6, 1],
                                     dfd.iloc[i+6, 2], dfd.iloc[i+6, 3]],
-                                mat_var[orbit_element][5]:
+                                mat_var[orbit_element][3]:
                                     [dfd.iloc[i+1, 1], dfd.iloc[i+3, 2],
                                     dfd.iloc[i+5, 2], dfd.iloc[i+7, 1],
                                     dfd.iloc[i+7, 2], dfd.iloc[i+7, 3],
                                     dfd.iloc[i+8, 1], dfd.iloc[i+8, 2]],
-                                mat_var[orbit_element][5]:
+                                mat_var[orbit_element][4]:
                                     [dfd.iloc[i+1, 2], dfd.iloc[i+3, 3],
                                     dfd.iloc[i+5, 3], dfd.iloc[i+7, 2],
                                     dfd.iloc[i+8, 3], dfd.iloc[i+9, 1],
@@ -1398,7 +1395,7 @@ class OrbitProperties:
             lsp = df_orb.iloc[lsp_index:lsp_index+1, 1:6]
             lsp.columns = ['model used', 'number of model parameters',
                         'dimension', '', '']
-            ngr = df_orb.iloc[lsp_index+3:lsp_index+4, 1:2]
+            ngr = df_orb.iloc[lsp_index+3:lsp_index+4, 1:3]
             ngr.index = ['NGR']
             ngr.columns = ['Area-to-mass ratio in m^2/ton',
                            'Yarkov sky parameter in 1E-10au/day^2']
