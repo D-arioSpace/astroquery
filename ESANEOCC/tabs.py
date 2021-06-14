@@ -39,11 +39,11 @@ import io
 import logging
 import time
 import re
+from datetime import datetime, timedelta
 import pandas as pd
 from parse import parse
 import requests
 from bs4 import BeautifulSoup
-from datetime import datetime, timedelta
 
 # Define the base URL for NEOCC
 BASE_URL = 'https://neo.ssa.esa.int/PSDB-portlet/download?file='
@@ -457,11 +457,25 @@ class CloseApproaches:
             # Read data as csv
             df_close_appr = pd.read_csv(df_impacts_d,
                                         delim_whitespace=True)
+            # Convert Date column to datetime format
+            # Create auxilary columns
+            df_close_appr[['date1','date2']] =\
+                df_close_appr['CALENDAR-TIME'].str.split(".",
+                                                         expand=True)
+            # Convert each auxiliary column to datetime format and add
+            df_close_appr['CALENDAR-TIME'] =\
+                pd.to_datetime(df_close_appr['date1'],
+                               format='%Y/%m/%d') +\
+                              (df_close_appr['date2'].\
+                               astype(float)/1e5).map(timedelta)
+            # Remove auxiliary columns
+            df_close_appr = df_close_appr.drop(['date1','date2'], axis=1)
+            # Create help attribute
             df_close_appr.help = ('Close approaches data frame contains:\n'
                                 '-BODY:  planet or massive asteroid is '
                                 'involved in the close approach\n'
                                 '-CALENDAR-TIME: date of the close '
-                                'approach in YYYY/MM/DD.ddddd format\n'
+                                'approach in datetime format\n'
                                 '-MJD-TIME: Modified Julian Date of the'
                                 'approach\n'
                                 '-TIME-UNCERT.: time uncertainty in '
