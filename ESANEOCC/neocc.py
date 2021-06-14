@@ -454,7 +454,7 @@ def query_object(name, tab, **kwargs):
             neocc_obj._impacts_parser(data_obj)
         elif tab == 'close_approaches':
             # Parse the requested data using Close Approaches parser
-            neocc_obj = tabs.CloseApproaches.clo_appr_parser(data_obj, name)
+            neocc_obj = tabs.CloseApproaches.clo_appr_parser(data_obj)
         elif tab == 'observations':
             # Create empty object
             neocc_obj = tabs.AsteroidObservations()
