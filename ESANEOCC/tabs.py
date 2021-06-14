@@ -464,7 +464,7 @@ class CloseApproaches:
 
         return df_close_appr
 
-# TODO fix physical properties for objects like 2009BD with 2 yarkovsky parameters
+
 class PhysicalProperties:
     """
         This class contains information of asteroid physical properties
@@ -543,11 +543,12 @@ class PhysicalProperties:
         contents = requests.get(url, timeout=90).content
         # Parse html using BS
         parsed_html = BeautifulSoup(contents, 'lxml')
-        # Check if there is a tag sub for term A2 if so, decompose html
-        # i.e., remove that properties from parsing
-        subtag = parsed_html.find('sub')
-        if subtag:
-            parsed_html.sub.decompose()
+        # Check if there is a tag sub for term A1 and A2 if so, 
+        # decompose html i.e., remove that properties from parsing
+        for i in range (2):
+            subtag = parsed_html.find('sub')
+            if subtag:
+                parsed_html.sub.decompose()
         # Search for property names using div and class
         props_names = parsed_html.find_all("div",
                                         {"class":
