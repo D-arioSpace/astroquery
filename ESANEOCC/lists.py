@@ -252,8 +252,19 @@ def parse_risk(data_byte_d):
 
     # Convert column with date to datetime variable
     neocc_lst['Date/Time'] = pd.to_datetime(neocc_lst['Date/Time'])
-    # Convert from datetime to YYYY.yyyyyy
-    neocc_lst['Date/Time'] = neocc_lst['Date/Time'].map(get_dec_year)
+    # Split Years into 2 columns to avoid dashed between integers
+    neocc_lst[['First year', 'Last year']] = neocc_lst['Years']\
+                                                .str.split("-",
+                                                expand=True)\
+                                                .astype(int)
+    # Drop split column
+    neocc_lst = neocc_lst.drop(['Years'], axis=1)
+    # Reorder columns
+    neocc_lst = neocc_lst[['Object Name', 'Diameter in m', '*=Y',
+                           'Date/Time', 'IP max', 'PS max', 
+                           'First year', 'Last year', 'IP cum',
+                           'PS cum']]
+
     # Adding metadata
     neocc_lst.help = ('Risk lists contain a data frame with the '
                       'following information:\n'
@@ -261,13 +272,14 @@ def parse_risk(data_byte_d):
                       '-Diamater in m: approximate diameter in meters\n'
                       '-*=Y: recording an asterisk if the value has '
                       'been estimated from the absolute magnitude\n'
-                      '-Date/Time: predicted impact date in YYYY.yyyyyy '
+                      '-Date/Time: predicted impact date in datetime '
                       'format\n'
                       '-IP max: Maximum Impact Probability\n'
                       '-PS max: Palermo scale rating\n'
                       '-Vel in km/s: Impact velocity at atmospheric entry'
                       ' in km/s\n'
-                      '-Years: Time span of detected impacts\n'
+                      '-First year: first year of possible impacts\n'
+                      '-Last year: last year of possible impacts\n'
                       '-IP cum: Cumulative Impact Probability\n'
                       '-PS cum: Cumulative Palermo Scale')
 
