@@ -326,13 +326,11 @@ def parse_clo(data_byte_d):
 
     # Convert column with date to datetime variable
     neocc_lst['Date'] = pd.to_datetime(neocc_lst['Date'])
-    # Convert from datetime to YYYY.yyyyyy
-    neocc_lst['Date'] = neocc_lst['Date'].map(get_dec_year)
     # Adding metadata
     neocc_lst.help = ('Close approches lists contain a data frame with'
                       ' the following information:\n'
                       '-Object Name: name of the NEA\n'
-                      '-Date: close approach date in YYYY.yyyyyy '
+                      '-Date: close approach date in datetime '
                       'format\n'
                       '-Miss distance in km: miss distance in kilometers'
                       ' with precision of 1 km\n'
