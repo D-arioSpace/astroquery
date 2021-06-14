@@ -29,6 +29,7 @@ All rights reserved
 """
 
 import io
+from datetime import timedelta
 from datetime import datetime as dt
 import time
 import pandas as pd
@@ -195,7 +196,7 @@ def parse_list(list_name, data_byte_d):
 
 
 def parse_nea(data_byte_d):
-    """Parse and arrange NEA lists.
+    """Parse and arrange NEA list, updated NEA and monthly update.
 
     Parameters
     ----------
@@ -263,7 +264,7 @@ def parse_risk(data_byte_d):
         neocc_lst = neocc_lst.drop(['Years'], axis=1)
         # Reorder columns
         neocc_lst = neocc_lst[['Object Name', 'Diameter in m', '*=Y',
-                            'Date/Time', 'IP max', 'PS max', 
+                            'Date/Time', 'IP max', 'PS max',
                             'First year', 'Last year', 'IP cum',
                             'PS cum']]
 
@@ -433,12 +434,24 @@ def parse_encounter(data_byte_d):
     neocc_lst[df_obj.columns] = df_obj.apply(lambda x:
                                              x.str.strip())
 
+    # Convert Date column to datetime format
+    # Create auxilary columns
+    neocc_lst[['Date1','Date2']] = neocc_lst['Date']\
+                                   .str.split(".",expand=True)
+    # Convert each auxiliary column to datetime format and add
+    neocc_lst['Date'] = pd.to_datetime(neocc_lst['Date1'],
+                                       format='%Y/%m/%d') +\
+                        (neocc_lst['Date2'].astype(float)/1e5)\
+                                           .map(timedelta)
+    # Remove auxiliary columns
+    neocc_lst = neocc_lst.drop(['Date1','Date2'], axis=1)
+
     neocc_lst.help = ('Close encounter list contains a data frame with'
                       ' the following information:\n'
                       '-Name/design: designator of the NEA\n'
                       '-Planet:  planet or massive asteroid is '
                       'involved in the close approach\n'
-                      '-Date: close encounter date in YYYY.yyyyyy '
+                      '-Date: close encounter date in datetime '
                       'format\n'
                       '-Time approach: close encounter date in '
                       'MJD2000\n'
@@ -477,7 +490,7 @@ def parse_impacted(data_byte_d):
     # Read data as csv
     neocc_lst = pd.read_csv(data_byte_d, header=None,
                             delim_whitespace=True)
-    
+
     # Convert column with date to datetime variable
     neocc_lst[1] = pd.to_datetime(neocc_lst[1])
 
