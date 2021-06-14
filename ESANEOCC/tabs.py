@@ -565,9 +565,17 @@ class PhysicalProperties:
                   'object. Re-attempting...')
             # Wait and re-try
             time.sleep(5)
-            # Obtain DataFrame with the obtained properties and html parsed
-            parsed_html = PhysicalProperties._get_property_names(url)[0]
-            df_names = PhysicalProperties._get_property_names(url)[1]
+            contents = requests.get(url, timeout=90).content
+            parsed_html = BeautifulSoup(contents, 'lxml')
+            for i in range(2):
+                subtag = parsed_html.find('sub')
+                i += 1
+                if subtag:
+                    parsed_html.sub.decompose()
+            props_names = parsed_html.find_all("div",
+                                        {"class":
+                                         "col-lg-3 font-weight-bold"
+                                         " d-none d-lg-block"})
             if df_names.empty:
                 logging.warning('Required properties file is not '
                                 'found for this object. Check object name.')
