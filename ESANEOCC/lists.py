@@ -45,8 +45,8 @@ def get_list_url(list_name):
     ----------
     list_name : str
         Name of the requested list. Valid names are: *nea_list,
-        risk_list, risk_list_special, close_appr_upcoming,
-        close_appr_recent, priority_list, priority_list_faint*.
+        risk_list, risk_list_special, close_approaches_upcoming,
+        close_approaches_recent, priority_list, priority_list_faint*.
 
     Returns
     -------
@@ -65,8 +65,8 @@ def get_list_url(list_name):
         "monthly_update": 'monthly_update.done',
         "risk_list": 'esa_risk_list',
         "risk_list_special": 'esa_special_risk_list',
-        "close_appr_upcoming": 'esa_upcoming_close_app',
-        "close_appr_recent": 'esa_recent_close_app',
+        "close_approaches_upcoming": 'esa_upcoming_close_app',
+        "close_approaches_recent": 'esa_recent_close_app',
         "priority_list": 'esa_priority_neo_list',
         "priority_list_faint": 'esa_faint_neo_list',
         "close_encounter" : 'close_encounter2.txt',
@@ -76,7 +76,7 @@ def get_list_url(list_name):
     if list_name not in lists_dict:
         raise KeyError('Valid list names are nea_list, updated_nea, '
                        'monthly_update, risk_list, risk_list_special, '
-                       'close_appr_upcoming, close_appr_recent, '
+                       'close_approaches_upcoming, close_approaches_recent, '
                        'priority_list, priority_list_faint, '
                        'close_encounter and impacted_objects')
     # Get url
@@ -180,7 +180,8 @@ def parse_list(list_name, data_byte_d):
     elif list_name in ("risk_list", "risk_list_special"):
         neocc_lst = parse_risk(data_byte_d)
 
-    elif list_name in ("close_appr_upcoming", "close_appr_recent"):
+    elif list_name in ("close_approaches_upcoming",
+                       "close_approaches_recent"):
         neocc_lst = parse_clo(data_byte_d)
 
     elif list_name in ("priority_list", "priority_list_faint"):

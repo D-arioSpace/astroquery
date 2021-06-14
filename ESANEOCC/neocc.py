@@ -49,8 +49,8 @@ def query_list(list_name):
     * Monthly computation date: *monthly_update*
     * Risk list (normal): *risk_list*
     * Risk list (special): *risk_list_special*
-    * Close approaches (upcoming): *close_appr_upcoming*
-    * Close approaches (recent): *close_appr_recent*
+    * Close approaches (upcoming): *close_approaches_upcoming*
+    * Close approaches (recent): *close_approaches_recent*
     * Priotiry list (normal): *priority_list*
     * Priority list (faint): *priority_list_faint*
     * Close encounter list: *close_encounter*
@@ -63,7 +63,7 @@ def query_list(list_name):
     list_name : str
         Name of the requested list. Valid names are: *nea_list,
         updated_nea, monthly_update, risk_list, risk_list_special,
-        close_appr_upcoming, close_appr_recent, priority_list,
+        close_approaches_upcoming, close_approaches_recent, priority_list,
         priority_list_faint, close_encounter and impacted_objects*.
 
     Returns
@@ -103,7 +103,7 @@ def query_list(list_name):
     contains the information of the requested list.
 
     >>> from ESANEOCC import neocc
-    >>> list_data = neocc.query_list(list_name='close_appr_upcoming')
+    >>> list_data = neocc.query_list(list_name='close_approaches_upcoming')
     >>> list_data
              Object Name         Date   ...   Rel. vel in km/s
     0             2021DE  2021.156164  ...                26.0
