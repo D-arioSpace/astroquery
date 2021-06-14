@@ -43,6 +43,7 @@ import pandas as pd
 from parse import parse
 import requests
 from bs4 import BeautifulSoup
+from datetime import datetime, timedelta
 
 # Define the base URL for NEOCC
 BASE_URL = 'https://neo.ssa.esa.int/PSDB-portlet/download?file='
@@ -347,6 +348,15 @@ class Impacts:
             df_impacts['en.'] = pd.to_numeric(df_impacts['en.'])
             df_impacts['PS'] = pd.to_numeric(df_impacts['PS'])
 
+        # Convert Date column to datetime format
+        # Create auxilary columns
+        df_impacts[['date1','date2']] = df_impacts['date']\
+                                   .str.split(".",expand=True)
+        # Convert each auxiliary column to datetime format and add
+        df_impacts['date'] = pd.to_datetime(df_impacts['date1'],
+                                       format='%Y/%m/%d') +\
+                        (df_impacts['date2'].astype(float)/1e3)\
+                                           .map(timedelta)    
         # Add number of decimals
         df_impacts['dist'].map(lambda x: f"{x:.2f}")
         df_impacts['width'].map(lambda x: f"{x:.3f}")
@@ -361,7 +371,7 @@ class Impacts:
         df_impacts.help = ('Data frame with possible impacts '
                            'information:\n'
                            '-Date: date for the potential impact in '
-                           'YYYY-MM-DD.ddd format\n'
+                           'datetime format\n'
                            '-MJD: Modified Julian Day for the '
                            'potential impact\n'
                            '-sigma: approximate location along the '
@@ -395,8 +405,16 @@ class Impacts:
         # Get info from footer
         footer = self._get_footer(data_obj)
         # Assign parsed data to attributes
-        self.arc_start = footer[1]['start']
-        self.arc_end = footer[1]['end']
+        # Change format to datetime and show in isoformat()
+        arc_start = footer[1]['start'].split('.')
+        arc_start = datetime.strptime(arc_start[0], '%Y/%m/%y') +\
+                    timedelta(float(arc_start[1])/1e3)
+        self.arc_start = arc_start.isoformat()
+        # Change format to datetime and show in isoformat()
+        arc_end = footer[1]['end'].split('.')
+        arc_end = datetime.strptime(arc_end[0], '%Y/%m/%y') +\
+                    timedelta(float(arc_end[1])/1e3)
+        self.arc_end = arc_start.isoformat()
         self.observation_accepted = int(footer[0]['total']) - \
             int(footer[0]['rejected'])
         self.observation_rejected = int(footer[0]['rejected'])
