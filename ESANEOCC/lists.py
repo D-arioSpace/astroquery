@@ -475,6 +475,7 @@ def parse_encounter(data_byte_d):
 
     return neocc_lst
 
+
 def parse_impacted(data_byte_d):
     """Parse impacted objects list.
 
