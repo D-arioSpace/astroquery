@@ -410,7 +410,7 @@ class CloseApproaches:
     """This class contains information of object close approaches.
     """
     @staticmethod
-    def clo_appr_parser(data_obj, name):
+    def clo_appr_parser(data_obj):
         """Parse and arrange the close approaches data.
 
         Parameters
@@ -543,10 +543,11 @@ class PhysicalProperties:
         contents = requests.get(url, timeout=90).content
         # Parse html using BS
         parsed_html = BeautifulSoup(contents, 'lxml')
-        # Check if there is a tag sub for term A1 and A2 if so, 
+        # Check if there is a tag sub for term A1 and A2 if so,
         # decompose html i.e., remove that properties from parsing
-        for i in range (2):
+        for i in range(2):
             subtag = parsed_html.find('sub')
+            i += 1
             if subtag:
                 parsed_html.sub.decompose()
         # Search for property names using div and class
