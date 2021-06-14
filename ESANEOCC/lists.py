@@ -477,5 +477,8 @@ def parse_impacted(data_byte_d):
     # Read data as csv
     neocc_lst = pd.read_csv(data_byte_d, header=None,
                             delim_whitespace=True)
+    
+    # Convert column with date to datetime variable
+    neocc_lst[1] = pd.to_datetime(neocc_lst[1])
 
     return neocc_lst
