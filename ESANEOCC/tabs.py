@@ -781,7 +781,7 @@ class AsteroidObservations:
         parse_ver = 'version =   {ver}'
         # Parse required data for attributes
         ver = parse(parse_ver, df_head[0][0])
-        ver = int(ver['ver'])
+        ver = float(ver['ver'])
         # Template for errmod
         parse_err = "errmod  = '{err}'"
         # Parse required data for attributes
