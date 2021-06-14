@@ -381,9 +381,6 @@ def parse_pri(data_byte_d):
     # Convert column with date to datetime variable
     neocc_lst[7] = pd.to_datetime(neocc_lst[7])
 
-    # Convert from datetime to YYYY.yyyyyy
-    neocc_lst[7] = neocc_lst[7].map(get_dec_year)
-
     # Rename columns
     neocc_lst.columns = ['Priority', 'Object',
                          'R.A. in arcsec', 'Decl. in deg',
