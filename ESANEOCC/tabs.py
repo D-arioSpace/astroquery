@@ -886,10 +886,22 @@ class AsteroidObservations:
                                      engine='python', header=None,
                                      colspecs=cols_s)
             # Rename columns as in file
-            df_sat_obs.columns = ['Design.', 'K', 'T', 'N', 'YYYY',
+            df_sat_obs.columns = ['Design.', 'K', 'T', 'N', 'Date',
                                   'MM', 'DD.dddddd',
                                   'Parallax info.', 'X', 'Y',
                                   'Z', 'Obs Code']
+            # Create and Convert Date column to datetime format
+            # Create date column in YYYY-MM format
+            df_sat_obs['Date'] = df_sat_obs['Date'].astype(str) +\
+                                    '/' + df_sat_obs['MM'].astype(str)
+            # Convert to datetime and add timedelta for days substracting
+            # the day added in the datetime conversion for YYYY-MM
+            df_sat_obs['Date'] = pd.to_datetime(df_sat_obs['Date'],
+                                                    format='%Y/%m') +\
+                                    df_sat_obs['DD.dddddd']\
+                                    .map(timedelta)-timedelta(days=1)
+            # Remove columns for months and days
+            df_sat_obs = df_sat_obs.drop(['MM','DD.dddddd'], axis=1)
             # For satellite observations columns "T" contains
             # whitespacese. Strip them
             df_sat_obs['T'] = df_sat_obs['T'].str.strip()
