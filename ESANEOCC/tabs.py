@@ -1459,7 +1459,7 @@ class OrbitProperties:
         # MAG - Rename columns and indexes
         mag.index = ['MAG']
         mag.columns = ['', '']
-        self.mag = mag
+        self.mag = mag.astype(float)
         # LSP
         # Get LSP index
         lsp_index = get_indexes(df_orb, 'LSP')[0][0]
@@ -1467,7 +1467,7 @@ class OrbitProperties:
         if int(df_orb.iloc[lsp_index,3]) == 7:
             lsp = df_orb.iloc[lsp_index:lsp_index+1, 1:5]
             lsp.columns = ['model used', 'number of model parameters',
-                       'dimension', '']
+                       'dimension', 'list of parameters determined']
             ngr = df_orb.iloc[lsp_index+3:lsp_index+4, 1:3]
             ngr.index = ['NGR']
             ngr.columns = ['Area-to-mass ratio in m^2/ton',
@@ -1475,7 +1475,7 @@ class OrbitProperties:
         elif int(df_orb.iloc[lsp_index,3]) == 8:
             lsp = df_orb.iloc[lsp_index:lsp_index+1, 1:6]
             lsp.columns = ['model used', 'number of model parameters',
-                        'dimension', '', '']
+                        'dimension', 'list of parameters determined', '']
             ngr = df_orb.iloc[lsp_index+3:lsp_index+4, 1:3]
             ngr.index = ['NGR']
             ngr.columns = ['Area-to-mass ratio in m^2/ton',
@@ -1488,9 +1488,9 @@ class OrbitProperties:
                         'calculated for this object')
         # Rename indexes
         lsp.index = ['LSP']
-        self.lsp = lsp
+        self.lsp = lsp.astype(int)
         # Non-gravitational parameters
-        self.ngr = ngr
+        self.ngr = ngr.astype(float)
 
 
 class KeplerianOrbitProperties(OrbitProperties):
@@ -1582,32 +1582,32 @@ class KeplerianOrbitProperties(OrbitProperties):
         keplerian.columns = ['a', 'e', 'i', 'long. node',
                             'arg.s peric.', 'mean anomaly']
         keplerian.index = ['KEP']
-        self.kep = keplerian
+        self.kep = keplerian.astype(float)
         # Get perihelion index to provide location for rest of attributes
         perihelion_index = get_indexes(df_orb, 'PERIHELION')[0][0]
         # Perihelion
-        self.perihelion = df_orb.iloc[perihelion_index, 2]
+        self.perihelion = float(df_orb.iloc[perihelion_index, 2])
         # Aphelion
-        self.aphelion = df_orb.iloc[perihelion_index+1, 2]
+        self.aphelion = float(df_orb.iloc[perihelion_index+1, 2])
         # Ascending node - Earth Separation
-        self.anode = df_orb.iloc[perihelion_index+2, 2]
+        self.anode = float(df_orb.iloc[perihelion_index+2, 2])
         # Descending node - Earth Separation
-        self.dnode = df_orb.iloc[perihelion_index+3, 2]
+        self.dnode = float(df_orb.iloc[perihelion_index+3, 2])
         # MOID (Minimum Orbit Intersection Distance)
-        self.moid = df_orb.iloc[perihelion_index+4, 2]
+        self.moid = float(df_orb.iloc[perihelion_index+4, 2])
         # Period
-        self.period = df_orb.iloc[perihelion_index+5, 2]
+        self.period = float(df_orb.iloc[perihelion_index+5, 2])
         # PHA (Potential Hazardous Asteroid)
         self.pha = df_orb.iloc[perihelion_index+6, 2]
         # Vinfty
-        self.vinfty = df_orb.iloc[perihelion_index+7, 2]
+        self.vinfty = float(df_orb.iloc[perihelion_index+7, 2])
         # U_par
         check_upar = get_indexes(df_orb, 'U_PAR')
         # Check if U_par parameter is assigned
         if bool(check_upar) is False:
             self.u_par = 'There is no u_par assigned to this object'
         else:
-            self.u_par = df_orb.iloc[check_upar[0][0], 2]
+            self.u_par = float(df_orb.iloc[check_upar[0][0], 2])
 
         # Get index for RMS
         rms_index = get_indexes(df_orb, 'RMS')[0][0]
@@ -1643,13 +1643,15 @@ class KeplerianOrbitProperties(OrbitProperties):
 
         # RMS - Rename indexes
         rms.index = ['RMS']
-        self.rms = rms
+        self.rms = rms.astype(float)
         # Covariance matrix
         self.cov = self._get_matrix(df_orb, 'cov', matrix_dimension,
-                                   'keplerian', ngr=ngr_parameter)
+                                   'keplerian', ngr=ngr_parameter)\
+                       .astype(float)
         # Correlation matrix
         self.cor = self._get_matrix(df_orb, 'cor', matrix_dimension,
-                                   'keplerian', ngr=ngr_parameter)
+                                   'keplerian', ngr=ngr_parameter)\
+                       .astype(float)
 
 
 class EquinoctialOrbitProperties(OrbitProperties):
