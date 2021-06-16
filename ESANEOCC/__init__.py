@@ -9,7 +9,6 @@ Created on 16 Jun. 2021
 
 """
 from astropy import config as _config
-from .core import neocc, ESAneoccClass
 
 class Conf(_config.ConfigNamespace):
     """
@@ -32,5 +31,7 @@ class Conf(_config.ConfigNamespace):
     TIMEOUT = 60
 
 conf = Conf()
+
+from .core import neocc, ESAneoccClass
 
 __all__ = ['neocc', 'ESAneoccClass', 'Conf', 'conf']
