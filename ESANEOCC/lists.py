@@ -36,8 +36,9 @@ import pandas as pd
 import requests
 from . import conf
 
-# Import BASE URL
+# Import BASE URL and TIMEOUT
 BASE_URL = conf.BASE_URL
+TIMEOUT = conf.TIMEOUT
 
 
 def get_list_url(list_name):
@@ -103,7 +104,7 @@ def get_list_data(url, list_name):
         Data frame which contains the data of the requested list.
     """
     # Get data from URL
-    data_list = requests.get(BASE_URL + url, timeout=90).content
+    data_list = requests.get(BASE_URL + url, TIMEOUT).content
 
     # Decode the data using UTF-8
     data_list_d = io.StringIO(data_list.decode('utf-8'))
