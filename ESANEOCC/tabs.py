@@ -860,9 +860,21 @@ class AsteroidObservations:
                                         engine='python', header=None,
                                         colspecs=cols_v)
             # Rename columns as in file
-            df_roving_obs.columns = ['Design.', 'K', 'T', 'N', 'YYYY',
+            df_roving_obs.columns = ['Design.', 'K', 'T', 'N', 'Date',
                                      'MM', 'DD.dddddd', 'E longitude',
                                      'Latitude', 'Altitude', 'Obs Code']
+            # Create and Convert Date column to datetime format
+            # Create date column in YYYY-MM format
+            df_roving_obs['Date'] = df_roving_obs['Date'].astype(str) +\
+                                    '/' + df_roving_obs['MM'].astype(str)
+            # Convert to datetime and add timedelta for days substracting
+            # the day added in the datetime conversion for YYYY-MM
+            df_roving_obs['Date'] = pd.to_datetime(df_roving_obs['Date'],
+                                                    format='%Y/%m') +\
+                                    df_roving_obs['DD.dddddd']\
+                                    .map(timedelta)-timedelta(days=1)
+            # Remove columns for months and days
+            df_roving_obs = df_roving_obs.drop(['MM','DD.dddddd'], axis=1)
 
         # Satellite Observations
         if not s_indexes:
