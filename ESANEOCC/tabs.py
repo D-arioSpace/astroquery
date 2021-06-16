@@ -409,14 +409,14 @@ class Impacts:
         # Assign parsed data to attributes
         # Change format to datetime and show in isoformat()
         arc_start = footer[1]['start'].split('.')
-        arc_start = datetime.strptime(arc_start[0], '%Y/%m/%y') +\
+        arc_start = datetime.strptime(arc_start[0], '%Y/%m/%d') +\
                     timedelta(float(arc_start[1])/1e3)
         self.arc_start = arc_start.isoformat()
         # Change format to datetime and show in isoformat()
         arc_end = footer[1]['end'].split('.')
-        arc_end = datetime.strptime(arc_end[0], '%Y/%m/%y') +\
+        arc_end = datetime.strptime(arc_end[0], '%Y/%m/%d') +\
                     timedelta(float(arc_end[1])/1e3)
-        self.arc_end = arc_start.isoformat()
+        self.arc_end = arc_end.isoformat()
         self.observation_accepted = int(footer[0]['total']) - \
             int(footer[0]['rejected'])
         self.observation_rejected = int(footer[0]['rejected'])
