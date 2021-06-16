@@ -472,13 +472,13 @@ def query_object(name, tab, **kwargs):
         # Raise error if no elements are provided
         if 'orbital_elements' not in kwargs:
             raise KeyError('Please specify type of orbital_elements: '
-                           'keplerian or equinoctial.'
-                           'E.g., orbital_elements="keplerian"')
+                           'keplerian or equinoctial '
+                           '(e.g., orbital_elements="keplerian")')
         # Raise error if no epoch is provided
         if 'orbit_epoch' not in kwargs:
             raise KeyError('Please specify type of orbit_epoch: '
-                           'present or middle.'
-                           'E.g., orbit_epoch="middle"')
+                           'present or middle '
+                           '(e.g., orbit_epoch="middle")')
         # Get URL to obtain the data from NEOCC
         url = tabs.get_object_url(name, tab,
                                   orbital_elements=kwargs['orbital_elements'],
@@ -511,11 +511,11 @@ def query_object(name, tab, **kwargs):
     # Ephemerides
     elif tab == 'ephemerides':
         # Create dictionary for kwargs
-        args_dict = {'observatory': 'observatory',
-                     'start': 'start date',
-                     'stop': 'end date',
-                     'step': 'time step',
-                     'step_unit': 'step unit'}
+        args_dict = {'observatory': 'observatory (e.g., observatory="500")',
+                     'start': 'start date (e.g., start="2021-05-17 00:00")',
+                     'stop': 'end date (e.g., stop="2021-05-18 00:00")',
+                     'step': 'time step (e.g., step="1")',
+                     'step_unit': 'step unit (e.g., step_unit="days")'}
         # Check if any kwargs is missing
         for element in args_dict:
             if element not in kwargs:
