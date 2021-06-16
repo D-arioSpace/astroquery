@@ -37,13 +37,15 @@ All rights reserved
 import time
 from . import lists
 from . import tabs
-from . import conf
 
-__all__ = ['neocc', 'ESANEOCCClass']
+__all__ = ['neocc', 'ESAneoccClass']
 
 class ESAneoccClass():
-
-    def query_list(self, list_name):
+    """
+    Class to init ESA NEOCC Python interface library
+    """
+    @staticmethod
+    def query_list(list_name):
         """Get requested list data from ESA NEOCC.
 
         Different lists that can be requested are:
@@ -184,8 +186,8 @@ class ESAneoccClass():
 
             return neocc_list
 
-
-    def query_object(self, name, tab, **kwargs):
+    @staticmethod
+    def query_object(name, tab, **kwargs):
         """Get requested object data from ESA NEOCC.
 
         Parameters
