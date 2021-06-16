@@ -14,18 +14,19 @@ class Conf(_config.ConfigNamespace):
     """
     Configuration parameters for 'ESANEOCC'
     """
+    BASE_URL = 'https://neo.ssa.esa.int/'
 
-    BASE_URL = _config.ConfigItem('https://neo.ssa.esa.int/'
-                                  'PSDB-portlet/download?file=')
+    API_URL = _config.ConfigItem(BASE_URL +
+                                 'PSDB-portlet/download?file=')
 
-    PROPERTIES_URL = _config.ConfigItem('https://neo.ssa.esa.int/'
+    PROPERTIES_URL = _config.ConfigItem(BASE_URL +
                                         'search-for-asteroids?tab='
                                         'physprops&des=')
 
-    EPHEM_URL = _config.ConfigItem('https://neo.ssa.esa.int/'
+    EPHEM_URL = _config.ConfigItem(BASE_URL +
                                    'PSDB-portlet/ephemerides?des=')
 
-    SUMMARY_URL = _config.ConfigItem('https://neo.ssa.esa.int/'
+    SUMMARY_URL = _config.ConfigItem(BASE_URL +
                                      'search-for-asteroids?sum=1&des=')
 
     TIMEOUT = 60

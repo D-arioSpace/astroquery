@@ -55,7 +55,7 @@ from bs4 import BeautifulSoup
 from . import conf
 
 # Import URLs and TIMEOUT
-BASE_URL = conf.BASE_URL
+API_URL = conf.API_URL
 PROPERTIES_URL = conf.PROPERTIES_URL
 EPHEM_URL = conf.EPHEM_URL
 SUMMARY_URL = conf.SUMMARY_URL
@@ -151,7 +151,7 @@ def get_object_data(url):
         Object in byte format.
     """
     # Get data from URL
-    data_obj = requests.get(BASE_URL + url, timeout=TIMEOUT).content
+    data_obj = requests.get(API_URL + url, timeout=TIMEOUT).content
     # Parse data and assign attributes to object
 
     return data_obj
@@ -210,10 +210,10 @@ class Impacts:
         Starting date for optical observations.
     arc_end : str
         End date for optical observations.
-    observations_accepted : int
+    observation_accepted : int
         Total number of observations subtracting rejected
         observations.
-    observations_rejected : int
+    observation_rejected : int
         Number of observations rejected.
     computation : str
         Date of computation (in format YYYYMMDD MJD TimeSys)
@@ -836,7 +836,7 @@ class AsteroidObservations:
         # Decode data for check v and s optical observations
         df_check = io.StringIO(data_obj.decode('utf-8'))
         # Set attributes
-        df_obs = pd.read_fwf(df_check, sep=' ', skiprows=[0,1,2,3,4,5],
+        df_obs = pd.read_fwf(df_check, sep=' ', skiprows=head,
                                engine='python', skipfooter=diff)
         # Check if there are "Roving Observer" observations
         df_index = df_obs.iloc[:,1:4]

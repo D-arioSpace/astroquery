@@ -15,12 +15,6 @@ from astropy.table import QTable
 
 start_time = time.time()
 
-BASE_URL = 'https://neo.ssa.esa.int/PSDB-portlet/download?file='
-PROPERTIES_URL = 'https://neo.ssa.esa.int/search-for-asteroids?tab=physprops&des='
-
-
-contents = requests.get('https://dummyimage.com/300x250/000/fff.png', timeout=90).content
-print(contents)
 # name1 = 'impactedObjectsList.txt'
 # url1 = BASE_URL + str(name1)
 # data_list = requests.get(url1).content
@@ -28,8 +22,9 @@ print(contents)
 # a = pd.read_(data_list_d, header=None, delim_whitespace=True)
 # print(a)
 
-a = neocc.query_list(list_name='close_encounter')
-print(a.info())
+a = neocc.query_object(name='2010BB42', tab='observations')
+print(a.optical_observations['MAG Val'])
+print(a.sat_observations)
 # a['Date'] = datetime.strptime(a['Date'][0][0], '%Y/%m/%d')
 # a['Date'][0][1] = timedelta(days=(float(a['Date'][0][1])/1e5))
 # a['Date'][0][0] = a['Date'][0][0]+a['Date'][0][1]
