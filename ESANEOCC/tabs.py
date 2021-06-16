@@ -1476,7 +1476,7 @@ class OrbitProperties:
             lsp = df_orb.iloc[lsp_index:lsp_index+1, 1:5]
             lsp.columns = ['model used', 'number of model parameters',
                        'dimension', 'list of parameters determined']
-            ngr = df_orb.iloc[lsp_index+3:lsp_index+4, 1:3]
+            ngr = df_orb.iloc[lsp_index+3:lsp_index+4, 1:3].astype(float)
             ngr.index = ['NGR']
             ngr.columns = ['Area-to-mass ratio in m^2/ton',
                            'Yarkovsky parameter in 1E-10au/day^2']
@@ -1484,7 +1484,7 @@ class OrbitProperties:
             lsp = df_orb.iloc[lsp_index:lsp_index+1, 1:6]
             lsp.columns = ['model used', 'number of model parameters',
                         'dimension', 'list of parameters determined', '']
-            ngr = df_orb.iloc[lsp_index+3:lsp_index+4, 1:3]
+            ngr = df_orb.iloc[lsp_index+3:lsp_index+4, 1:3].astype(float)
             ngr.index = ['NGR']
             ngr.columns = ['Area-to-mass ratio in m^2/ton',
                            'Yarkov sky parameter in 1E-10au/day^2']
@@ -1498,7 +1498,7 @@ class OrbitProperties:
         lsp.index = ['LSP']
         self.lsp = lsp.astype(int)
         # Non-gravitational parameters
-        self.ngr = ngr.astype(float)
+        self.ngr = ngr
 
 
 class KeplerianOrbitProperties(OrbitProperties):
