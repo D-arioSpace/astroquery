@@ -44,14 +44,14 @@ import pandas as pd
 from parse import parse
 import requests
 from bs4 import BeautifulSoup
+from . import conf
 
-# Define the base URL for NEOCC
-BASE_URL = 'https://neo.ssa.esa.int/PSDB-portlet/download?file='
-# Define specific URLs for parsing HTMLs and for ephemerides
-PROPERTIES_URL = 'https://neo.ssa.esa.int/'\
-                 'search-for-asteroids?tab=physprops&des='
-EPHEM_URL = 'https://neo.ssa.esa.int/PSDB-portlet/ephemerides?des='
-SUMMARY_URL = 'https://neo.ssa.esa.int/search-for-asteroids?sum=1&des='
+# Import URLs and TIMEOUT
+BASE_URL = conf.BASE_URL
+PROPERTIES_URL = conf.PROPERTIES_URL
+EPHEM_URL = conf.EPHEM_URL
+SUMMARY_URL = conf.SUMMARY_URL
+TIMEOUT = conf.TIMEOUT
 
 def get_object_url(name, tab, **kwargs):
     """Get url from requested object and tab name.
@@ -143,7 +143,7 @@ def get_object_data(url):
         Object in byte format.
     """
     # Get data from URL
-    data_obj = requests.get(BASE_URL + url, timeout=90).content
+    data_obj = requests.get(BASE_URL + url, timeout=TIMEOUT).content
     # Parse data and assign attributes to object
 
     return data_obj
@@ -574,7 +574,7 @@ class PhysicalProperties:
                 BeautifulSoup object with the requested information
         """
         # Get contents from url
-        contents = requests.get(url, timeout=90).content
+        contents = requests.get(url, timeout=TIMEOUT).content
         # Parse html using BS
         parsed_html = BeautifulSoup(contents, 'lxml')
         # Check if there is a tag sub for term A1 and A2 if so,
@@ -599,7 +599,7 @@ class PhysicalProperties:
                   'object. Re-attempting...')
             # Wait and re-try
             time.sleep(5)
-            contents = requests.get(url, timeout=90).content
+            contents = requests.get(url, timeout=TIMEOUT).content
             parsed_html = BeautifulSoup(contents, 'lxml')
             for i in range(2):
                 subtag = parsed_html.find('sub')
@@ -1912,7 +1912,7 @@ class Ephemerides:
         # Request data two times if the first attempt fails
         try:
             # Get object data
-            data_obj = requests.get(url_ephe, timeout=90).content
+            data_obj = requests.get(url_ephe, timeout=TIMEOUT).content
 
         except ConnectionError:
             print('Initial attempt to obtain object data failed. '
@@ -1922,7 +1922,7 @@ class Ephemerides:
             # Wait 5 seconds
             time.sleep(5)
             # Get object data
-            data_obj = requests.get(url_ephe, timeout=90).content
+            data_obj = requests.get(url_ephe, timeout=TIMEOUT).content
 
         # Check if file contains errors due to bad URL keys
         check = io.StringIO(data_obj.decode('utf-8'))
@@ -2042,7 +2042,7 @@ class Summary:
 
         # Read the url as html
         try:
-            contents = requests.get(url, timeout=90).content
+            contents = requests.get(url, timeout=TIMEOUT).content
         except contents.DoesNotExist as contents_not_exist:
             logging.warning('Object not found: the name of the '
                             'object is wrong or misspelt')
