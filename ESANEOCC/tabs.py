@@ -1734,7 +1734,7 @@ class EquinoctialOrbitProperties(OrbitProperties):
                                'tan(i/2)*sin(LN)', 'tan(i/2)*cos(LN)',
                                'mean long.']
         equinoctial.index = ['EQU']
-        self.equinoctial = equinoctial
+        self.equinoctial = equinoctial.astype(float)
         # Get index for RMS
         rms_index = get_indexes(df_orb, 'RMS')[0][0]
         # Check the dimension of the matrix to give complete RMS
@@ -1787,19 +1787,21 @@ class EquinoctialOrbitProperties(OrbitProperties):
         rms.columns = eig.columns = wea.columns = column_names
         # RMS - Rename indexes
         rms.index = ['RMS']
-        self.rms = rms
+        self.rms = rms.astype(float)
         # EIG - Rename indexes
         eig.index = ['EIG']
-        self.eig = eig
+        self.eig = eig.astype(float)
         # EIG - Rename indexes
         wea.index = ['WEA']
-        self.wea = wea
+        self.wea = wea.astype(float)
         # Covariance matrix
         self.cov = self._get_matrix(df_orb, 'cov', matrix_dimension,
-                                   'equinoctial', ngr=ngr_parameter)
+                                   'equinoctial', ngr=ngr_parameter)\
+                       .astype(float)
         # Correlation matrix
         self.nor = self._get_matrix(df_orb, 'nor', matrix_dimension,
-                                   'equinoctial', ngr=ngr_parameter)
+                                   'equinoctial', ngr=ngr_parameter)\
+                       .astype(float)
 
 
 class Ephemerides:
