@@ -34,9 +34,10 @@ from datetime import datetime as dt
 import time
 import pandas as pd
 import requests
+from . import conf
 
-# Define the base URL for NEOCC
-BASE_URL = 'https://neo.ssa.esa.int/PSDB-portlet/download?file='
+# Import BASE URL
+BASE_URL = conf.BASE_URL
 
 
 def get_list_url(list_name):
