@@ -1948,9 +1948,14 @@ class Ephemerides:
                          'Glat (deg)', 'Glon (deg)', 'R (au)',
                          'Delta (au)', 'Ra*cosDE ("/min)',
                          'DEC ("/min)', 'Err1', 'Err2', 'PA']
-        # Convert Date to datetime format and show it as in portal
-        ephem['Date'] = pd.to_datetime(ephem['Date'], format="%d %b %Y")
-        ephem['Date'] = ephem['Date'].dt.strftime("%d %b %Y")
+        # Convert Date to datetime iso format
+        ephem['Date'] = pd.to_datetime(ephem['Date'])
+        # Convert Hout column to days
+        ephem['Hour'] = ephem['Hour']/24
+        # Add hours to date
+        ephem['Date'] = ephem['Date'] + ephem['Hour'].map(timedelta)
+        # Remove Hour column
+        ephem = ephem.drop(['Hour'], axis=1)
         # Remove mid whitespaces from declination, if any, and apply int
         # format
         if ephem['DEC D'].dtype == str:
