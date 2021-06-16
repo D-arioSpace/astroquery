@@ -29,13 +29,13 @@ Version    Date          Change History
                          has been modified to include cases with more
                          information.\n
                          Adding timeout of 90 seconds.
-1.3        16-06-2021    URLs and timeout from configuration file for 
+1.3        16-06-2021    URLs and timeout from configuration file for
                          astroquery implementation.\n
                          Change time format to datetime isoformat.\n
-                         Change to correct types in attributes (e.g., 
+                         Change to correct types in attributes (e.g.,
                          matrices, etc.)\n
                          Change ephemerides skyfooter to fix bug.\n
-                         Change *get_matrix* from *orbit_properties* for 
+                         Change *get_matrix* from *orbit_properties* for
                          objects with 2 non-gravitational parameters.
 ========   ===========   =====================================================
 
@@ -1463,33 +1463,49 @@ class OrbitProperties:
         # Epoch in MJD
         self.epoch = df_orb.iloc[1, 1] + ' MJD'
         # MAG
-        mag = df_orb.iloc[2:3, 1:3].reset_index(drop=True)
-        # MAG - Rename columns and indexes
-        mag.index = ['MAG']
-        mag.columns = ['', '']
-        self.mag = mag.astype(float)
+        # Get MAG index
+        mag_index = get_indexes(df_orb, 'MAG')
+        # Check if U_par parameter is assigned
+        if bool(mag_index) is False:
+            self.mag = 'There is no MAG assigned to this object'
+            if 'SOLUTION' in df_check.iloc[0][0]:
+                last_skip_rows = [0,1,2,3,4,5,9]
+            else:
+                last_skip_rows = [0,1,2,3,4,8]
+        else:
+            mag = df_orb.iloc[2:3, 1:3].reset_index(drop=True)
+            # MAG - Rename columns and indexes
+            mag.index = ['MAG']
+            mag.columns = ['', '']
+            self.mag = mag.astype(float)
+        # Decode data using UTF-8 and store in memory for lsp
+        df_new_d = io.StringIO(data_obj.decode('utf-8'))
+        # Read data as csv
+        df_new = pd.read_csv(df_new_d, delim_whitespace=True,
+                             skiprows=last_skip_rows,
+                             engine='python')
         # LSP
         # Get LSP index
-        lsp_index = get_indexes(df_orb, 'LSP')[0][0]
+        lsp_index = get_indexes(df_new, 'LSP')[0][0]
         # Check if there are additional non-gravitational parameters
-        if int(df_orb.iloc[lsp_index,3]) == 7:
-            lsp = df_orb.iloc[lsp_index:lsp_index+1, 1:5]
+        if int(df_new.iloc[lsp_index,3]) == 7:
+            lsp = df_new.iloc[lsp_index:lsp_index+1, 1:5]
             lsp.columns = ['model used', 'number of model parameters',
                        'dimension', 'list of parameters determined']
-            ngr = df_orb.iloc[lsp_index+3:lsp_index+4, 1:3].astype(float)
+            ngr = df_new.iloc[lsp_index+3:lsp_index+4, 1:3].astype(float)
             ngr.index = ['NGR']
             ngr.columns = ['Area-to-mass ratio in m^2/ton',
                            'Yarkovsky parameter in 1E-10au/day^2']
-        elif int(df_orb.iloc[lsp_index,3]) == 8:
-            lsp = df_orb.iloc[lsp_index:lsp_index+1, 1:6]
+        elif int(df_new.iloc[lsp_index,3]) == 8:
+            lsp = df_new.iloc[lsp_index:lsp_index+1, 1:6]
             lsp.columns = ['model used', 'number of model parameters',
                         'dimension', 'list of parameters determined', '']
-            ngr = df_orb.iloc[lsp_index+3:lsp_index+4, 1:3].astype(float)
+            ngr = df_new.iloc[lsp_index+3:lsp_index+4, 1:3].astype(float)
             ngr.index = ['NGR']
             ngr.columns = ['Area-to-mass ratio in m^2/ton',
                            'Yarkov sky parameter in 1E-10au/day^2']
         else:
-            lsp = df_orb.iloc[lsp_index:lsp_index+1, 1:4]
+            lsp = df_new.iloc[lsp_index:lsp_index+1, 1:4]
             lsp.columns = ['model used', 'number of model parameters',
                        'dimension']
             ngr = ('There are no gravitational parameters '
