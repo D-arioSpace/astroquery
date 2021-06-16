@@ -912,8 +912,8 @@ class AsteroidObservations:
         # Replace NaN values for blank values
         df_optical_obs = df_optical_obs.fillna('')
         # Rename Columns as in file
-        df_optical_obs.columns = ['Design.', 'K', 'T', 'N', 'YYYY',
-                                  'MM', 'DD.dddddddddd',
+        df_optical_obs.columns = ['Design.', 'K', 'T', 'N', 'Date',
+                                  'MM', 'DD.ddd',
                                   'Date Accuracy', 'RA HH',
                                   'RA MM', 'RA SS.sss', 'RA Accuracy',
                                   'RA RMS', 'RA F', 'RA Bias',
@@ -923,6 +923,19 @@ class AsteroidObservations:
                                   'DEC Resid', 'MAG Val', 'MAG B',
                                   'MAG RMS', 'MAG Resid', 'Ast Cat',
                                   'Obs Code', 'Chi', 'A', 'M']
+        # Create and Convert Date column to datetime format
+        # Create date column in YYYY-MM format
+        df_optical_obs['Date'] = df_optical_obs['Date'].astype(str) +\
+                                 '/' + df_optical_obs['MM'].astype(str)
+        # Convert to datetime and add timedelta for days substracting
+        # the day added in the datetime conversion for YYYY-MM
+        df_optical_obs['Date'] = pd.to_datetime(df_optical_obs['Date'],
+                                                 format='%Y/%m') +\
+                                  df_optical_obs['DD.ddd']\
+                                  .map(timedelta)-timedelta(days=1)
+        # Remove columns for months and days
+        df_optical_obs = df_optical_obs.drop(['MM','DD.ddd'], axis=1)
+        # Create help attribute for dataframe
         df_optical_obs.help = ('This dataframe shows the information of '
                                'optical observations. The fields are:\n'
                                '-Designation: number or the provisional '
@@ -932,7 +945,7 @@ class AsteroidObservations:
                                'satellite (s) and roving (v) observations'
                                'there are 2 additional dataframes which '
                                'contain the information given by the MPC.\n'
-                               '-Date: date in UTC format.\n'
+                               '-Date: date in UTC iso format.\n'
                                '-Right Ascension: The data provided include'
                                ' the observation, the a priori accuracy (as'
                                ' supplied by the MPC), the a priori RMS '
