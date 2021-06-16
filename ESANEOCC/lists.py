@@ -104,7 +104,7 @@ def get_list_data(url, list_name):
         Data frame which contains the data of the requested list.
     """
     # Get data from URL
-    data_list = requests.get(BASE_URL + url, TIMEOUT).content
+    data_list = requests.get(BASE_URL + url, timeout=TIMEOUT).content
 
     # Decode the data using UTF-8
     data_list_d = io.StringIO(data_list.decode('utf-8'))
