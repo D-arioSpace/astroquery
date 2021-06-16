@@ -10,8 +10,8 @@ within this module.
 * Property: European Space Agency (ESA)
 * Developed by: Elecnor Deimos
 * Author: C. Álvaro Arroyo Parejo
-* Issue: 1.2
-* Date: 17-05-2021
+* Issue: 1.3
+* Date: 16-06-2021
 * Purpose: Module which request and parse list data from ESA NEOCC
 * Module: tabs.py
 * History:
@@ -29,6 +29,14 @@ Version    Date          Change History
                          has been modified to include cases with more
                          information.\n
                          Adding timeout of 90 seconds.
+1.3        16-06-2021    URLs and timeout from configuration file for 
+                         astroquery implementation.\n
+                         Change time format to datetime isoformat.\n
+                         Change to correct types in attributes (e.g., 
+                         matrices, etc.)\n
+                         Change ephemerides skyfooter to fix bug.\n
+                         Change *get_matrix* from *orbit_properties* for 
+                         objects with 2 non-gravitational parameters.
 ========   ===========   =====================================================
 
 © Copyright [European Space Agency][2021]

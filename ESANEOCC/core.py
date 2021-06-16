@@ -9,8 +9,8 @@ portal: https://neo.ssa.esa.int/.
 * Property: European Space Agency (ESA)
 * Developed by: Elecnor Deimos
 * Author: C. Álvaro Arroyo Parejo
-* Issue: 1.2
-* Date: 17-05-2021
+* Issue: 1.3
+* Date: 16-06-2021
 * Purpose: Main module which gets NEAs data from https://neo.ssa.esa.int/
 * Module: neocc.py
 * History:
@@ -27,6 +27,9 @@ Version    Date          Change History
                          changes to *orbital_elements*.\n
                          Adding impacted objects lists.\n
                          Minor typos changes.
+1.3        16-06-2021    Adding class type as for astroquery 
+                         implementation.\n
+                         Define methods as static.\n
 ========   ===========   ============================================
 
 

@@ -7,7 +7,7 @@ obtain it from the ESA NEOCC portal and parse it to show it properly.
 * Property: European Space Agency (ESA)
 * Developed by: Elecnor Deimos
 * Author: C. Álvaro Arroyo Parejo
-* Issue: 1.2
+* Issue: 1.3
 * Date: 17-05-2021
 * Purpose: Module which request and parse list data from ESA NEOCC
 * Module: lists.py
@@ -21,7 +21,10 @@ Version    Date          Change History
 1.2        17-05-2021    Adding *help* property for dataframes.\n
                          Adding timeout of 90 seconds.\n
                          Adding *parse_impacted* function for new
-                         list
+                         list.
+1.3        16-06-2021    URL and Timeout from configuration file 
+                         for astroquery implementation.\n
+                         Change dateformat to datetime isoformat
 ========   ===========   ==========================================
 
 © Copyright [European Space Agency][2021]
