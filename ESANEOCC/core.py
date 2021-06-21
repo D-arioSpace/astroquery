@@ -12,7 +12,7 @@ portal: https://neo.ssa.esa.int/.
 * Issue: 1.3
 * Date: 16-06-2021
 * Purpose: Main module which gets NEAs data from https://neo.ssa.esa.int/
-* Module: neocc.py
+* Module: core.py
 * History:
 
 ========   ===========   ============================================
