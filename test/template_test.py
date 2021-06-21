@@ -21,9 +21,9 @@ for asteroid in asteroid_set:
         try:
                 ast = neocc.query_object(name=asteroid, tab='physical_properties')
                 #, observatory='500', start='2019-05-08 01:30', stop='2019-05-23 01:30', step='1', step_unit='days')
-                logging.info('Object ' + str(asteroid) + ' gets physical properties')
-        except:
-                logging.error('Object ' + str(asteroid) + ' does NOT get physical properties file')
+                logging.info('The physical properties for object' + str(asteroid) + ' have been successfully retrieved')
+        except Exception as error:
+                logging.error('The physical properties for object' + str(asteroid) + ' have NOT been successfully retrieved')
                 continue
 
 print("--- %s seconds ---" % (time.time() - start_time))
