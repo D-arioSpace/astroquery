@@ -1,0 +1,751 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>ESANEOCC.core &mdash; ESA NEOCC Python Interface 1.3.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> ESA NEOCC Python Interface
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.3
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">ESA NEOCC Python Interface</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>ESANEOCC.core</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for ESANEOCC.core</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Main module from ESA NEOCCS library. This module contains the two main</span>
+<span class="sd">methods of the library: *query_list* and *query_object*. The information</span>
+<span class="sd">is obtained from ESA Near-Earth Object Coordination Centre&#39;s (NEOCC) web</span>
+<span class="sd">portal: https://neo.ssa.esa.int/.</span>
+
+<span class="sd">* Project: NEOCC portal Python interface</span>
+<span class="sd">* Property: European Space Agency (ESA)</span>
+<span class="sd">* Developed by: Elecnor Deimos</span>
+<span class="sd">* Author: C. Álvaro Arroyo Parejo</span>
+<span class="sd">* Issue: 1.3</span>
+<span class="sd">* Date: 16-06-2021</span>
+<span class="sd">* Purpose: Main module which gets NEAs data from https://neo.ssa.esa.int/</span>
+<span class="sd">* Module: neocc.py</span>
+<span class="sd">* History:</span>
+
+<span class="sd">========   ===========   ============================================</span>
+<span class="sd">Version    Date          Change History</span>
+<span class="sd">========   ===========   ============================================</span>
+<span class="sd">1.0        26-02-2021    Initial version</span>
+<span class="sd">1.1        26-03-2021    Adding new docstrings</span>
+<span class="sd">1.2        17-05-2021    Adding new docstrings for *help*</span>
+<span class="sd">                         property in dataframes and *&lt;tab&gt;*</span>
+<span class="sd">                         specification for obtaining attributes.\n</span>
+<span class="sd">                         For orbit properties *orbit_elements*</span>
+<span class="sd">                         changes to *orbital_elements*.\n</span>
+<span class="sd">                         Adding impacted objects lists.\n</span>
+<span class="sd">                         Minor typos changes.</span>
+<span class="sd">1.3        16-06-2021    Renamed module from *neocc* to *core*.\n</span>
+<span class="sd">                         Adding class type as for astroquery</span>
+<span class="sd">                         implementation.\n</span>
+<span class="sd">                         Define methods as static.\n</span>
+<span class="sd">========   ===========   ============================================</span>
+
+
+<span class="sd">© Copyright [European Space Agency][2021]</span>
+<span class="sd">All rights reserved</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">lists</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">tabs</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;neocc&#39;</span><span class="p">,</span> <span class="s1">&#39;ESAneoccClass&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="ESAneoccClass"><a class="viewcode-back" href="../../index.html#ESANEOCC.core.ESAneoccClass">[docs]</a><span class="k">class</span> <span class="nc">ESAneoccClass</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to init ESA NEOCC Python interface library</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ESAneoccClass.query_list"><a class="viewcode-back" href="../../index.html#ESANEOCC.core.ESAneoccClass.query_list">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">query_list</span><span class="p">(</span><span class="n">list_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get requested list data from ESA NEOCC.</span>
+
+<span class="sd">        Different lists that can be requested are:</span>
+
+<span class="sd">        * All NEA list: *nea_list*</span>
+<span class="sd">        * Updated NEA list: *updated_nea*</span>
+<span class="sd">        * Monthly computation date: *monthly_update*</span>
+<span class="sd">        * Risk list (normal): *risk_list*</span>
+<span class="sd">        * Risk list (special): *risk_list_special*</span>
+<span class="sd">        * Close approaches (upcoming): *close_approaches_upcoming*</span>
+<span class="sd">        * Close approaches (recent): *close_approaches_recent*</span>
+<span class="sd">        * Priotiry list (normal): *priority_list*</span>
+<span class="sd">        * Priority list (faint): *priority_list_faint*</span>
+<span class="sd">        * Close encounter list: *close_encounter*</span>
+<span class="sd">        * Impacted objects: *impacted_objects*</span>
+
+<span class="sd">        These lists are referenced in https://neo.ssa.esa.int/computer-access</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        list_name : str</span>
+<span class="sd">            Name of the requested list. Valid names are: *nea_list,</span>
+<span class="sd">            updated_nea, monthly_update, risk_list, risk_list_special,</span>
+<span class="sd">            close_approaches_upcoming, close_approaches_recent, priority_list,</span>
+<span class="sd">            priority_list_faint, close_encounter and impacted_objects*.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        neocc_lst : *pandas.Series* or *pandas.DataFrame*</span>
+<span class="sd">            Data Frame which contains the information of the requested list</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        **NEA list, Updated NEA list, Monthly computation date:** The output</span>
+<span class="sd">        of this list is a *pandas.Series* which contains the list of all NEAs</span>
+<span class="sd">        currently considered in the NEOCC system.</span>
+
+<span class="sd">        &gt;&gt;&gt; from ESANEOCC import neocc</span>
+<span class="sd">        &gt;&gt;&gt; list_data = neocc.query_list(list_name=&#39;nea_list&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; list_data</span>
+<span class="sd">        0            433 Eros</span>
+<span class="sd">        1          719 Albert</span>
+<span class="sd">        2          887 Alinda</span>
+<span class="sd">        3        1036 Ganymed</span>
+<span class="sd">        4           1221 Amor</span>
+<span class="sd">                    ...</span>
+<span class="sd">        25191          2021DY</span>
+<span class="sd">        25192         2021DY1</span>
+<span class="sd">        25193          2021DZ</span>
+<span class="sd">        25194         2021DZ1</span>
+<span class="sd">        25195         6344P-L</span>
+<span class="sd">        Name: 0, Length: 25196, dtype: object</span>
+
+<span class="sd">        Each asteroid can be accessed using its index. This information can</span>
+<span class="sd">        be used as input for *query_object* method.</span>
+
+<span class="sd">        &gt;&gt;&gt; list_data[4]</span>
+<span class="sd">        &#39;1221 Amor&#39;</span>
+
+<span class="sd">        **Other lists:**  The output of this list is a *pandas.DataFrame* which</span>
+<span class="sd">        contains the information of the requested list.</span>
+
+<span class="sd">        &gt;&gt;&gt; from ESANEOCC import neocc</span>
+<span class="sd">        &gt;&gt;&gt; list_data = neocc.query_list(list_name=&#39;close_approaches_upcoming&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; list_data</span>
+<span class="sd">                Object Name         Date   ...   Rel. vel in km/s</span>
+<span class="sd">        0             2021DE  2021.156164  ...                26.0</span>
+<span class="sd">        1             2021DM  2021.158904  ...                10.2</span>
+<span class="sd">        2             2011DW  2021.161644  ...                13.6</span>
+<span class="sd">        3           2011EH17  2021.161644  ...                16.8</span>
+<span class="sd">        4            2016DV1  2021.164384  ...                18.6</span>
+<span class="sd">        ..               ...          ...  ...                 ...</span>
+<span class="sd">        141           2020DF  2022.120548  ...                 8.6</span>
+<span class="sd">        142          2018CW2  2022.131507  ...                10.8</span>
+<span class="sd">        143          2020CX1  2022.131507  ...                 8.2</span>
+<span class="sd">        144  455176 1999VF22  2022.142466  ...                25.1</span>
+<span class="sd">        145          2017CX1  2022.145205  ...                 5.0</span>
+<span class="sd">        [146 rows x 10 columns]</span>
+
+<span class="sd">        The information of the columns can be accessed through (see</span>
+<span class="sd">        `pandas &lt;https://pandas.pydata.org/pandas-docs/stable/index.html&gt;`_</span>
+<span class="sd">        for further information about data access):</span>
+
+<span class="sd">        &gt;&gt;&gt; list_data[&#39;Object Name&#39;]</span>
+<span class="sd">        0               2021DE</span>
+<span class="sd">        1               2021DM</span>
+<span class="sd">        2               2011DW</span>
+<span class="sd">        3             2011EH17</span>
+<span class="sd">        4              2016DV1</span>
+<span class="sd">                    ...</span>
+<span class="sd">        141             2020DF</span>
+<span class="sd">        142            2018CW2</span>
+<span class="sd">        143            2020CX1</span>
+<span class="sd">        144    455176 1999VF22</span>
+<span class="sd">        145            2017CX1</span>
+<span class="sd">        Name: Object Name, Length: 146, dtype: object</span>
+
+<span class="sd">        And the information of the rows can be accessed using:</span>
+
+<span class="sd">        &gt;&gt;&gt; list_data.iloc[2]</span>
+<span class="sd">        Object Name              2011DW</span>
+<span class="sd">        Date                    2021.16</span>
+<span class="sd">        Miss Distance in km     5333057</span>
+<span class="sd">        Miss Distance in au    0.035649</span>
+<span class="sd">        Miss Distance in LD      13.874</span>
+<span class="sd">        Diameter in m                90</span>
+<span class="sd">        *=Yes                         *</span>
+<span class="sd">        H                          22.9</span>
+<span class="sd">        Max Bright                 16.4</span>
+<span class="sd">        Rel. vel in km/s           13.6</span>
+<span class="sd">        Name: 2, dtype: object</span>
+
+<span class="sd">        Note</span>
+<span class="sd">        ----</span>
+<span class="sd">        If the contents request fails the following message will be printed:</span>
+
+<span class="sd">        *Initial attempt to obtain list failed. Reattempting...*</span>
+
+<span class="sd">        Then a second request will be automatically sent to the NEOCC portal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Get URL to obtain the data from NEOCC</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">lists</span><span class="o">.</span><span class="n">get_list_url</span><span class="p">(</span><span class="n">list_name</span><span class="p">)</span>
+
+        <span class="c1"># Request list two times if the first attempt fails</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Parse decoded data</span>
+            <span class="n">neocc_list</span> <span class="o">=</span> <span class="n">lists</span><span class="o">.</span><span class="n">get_list_data</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">list_name</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">neocc_list</span>
+
+        <span class="k">except</span> <span class="ne">ConnectionError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Initial attempt to obtain list failed. Reattempting...&#39;</span><span class="p">)</span>
+            <span class="c1"># Wait 5 seconds</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+            <span class="c1"># Parse decoded data</span>
+            <span class="n">neocc_list</span> <span class="o">=</span> <span class="n">lists</span><span class="o">.</span><span class="n">get_list_data</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">list_name</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">neocc_list</span></div>
+
+<div class="viewcode-block" id="ESAneoccClass.query_object"><a class="viewcode-back" href="../../index.html#ESANEOCC.core.ESAneoccClass.query_object">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">query_object</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tab</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get requested object data from ESA NEOCC.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            Name of the requested object</span>
+<span class="sd">        tab : str</span>
+<span class="sd">            Name of the request tab. Valid names are:summary,</span>
+<span class="sd">            orbit_properties, physical_properties, observations,</span>
+<span class="sd">            ephemerides, close_approaches and impacts.</span>
+<span class="sd">        **kwargs : str</span>
+<span class="sd">            Tabs orbit_properties and ephemerides tabs required additional</span>
+<span class="sd">            arguments to work:</span>
+
+<span class="sd">            * *orbit_properties*: the required additional arguments are:</span>
+
+<span class="sd">                * *orbital_elements* : str (keplerian or equinoctial)</span>
+<span class="sd">                * *orbit_epoch* : str (present or middle)</span>
+
+<span class="sd">            * *ephemerides*: the required additional arguments are:</span>
+
+<span class="sd">                * *observatory* : str (observatory code, e.g. &#39;500&#39;, &#39;J04&#39;, etc.)</span>
+<span class="sd">                * *start* : str (start date in YYYY-MM-DD HH:MM)</span>
+<span class="sd">                * *stop* : str (end date in YYYY-MM-DD HH:MM)</span>
+<span class="sd">                * *step* : str (time step, e.g. &#39;2&#39;, &#39;15&#39;, etc.)</span>
+<span class="sd">                * *step_unit* : str (e.g. &#39;days&#39;, &#39;minutes&#39;, etc.)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        neocc_obj : object</span>
+<span class="sd">            Object data which contains different attributes depending on</span>
+<span class="sd">            the tab selected.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        **Impacts, Physical Properties and Observations**: This example</span>
+<span class="sd">        tries to summarize how to access the data of this tabs and how to</span>
+<span class="sd">        use it. Note that this classes only require as inputs the name of</span>
+<span class="sd">        the object and the requested tab.</span>
+
+<span class="sd">        The information can be obtained introducing directly the name of</span>
+<span class="sd">        the object, but it can be also added from the output of a</span>
+<span class="sd">        *query_list* search:</span>
+
+<span class="sd">        &gt;&gt;&gt; from ESANEOCC import neocc</span>
+<span class="sd">        &gt;&gt;&gt; ast_impacts = neocc.query_object(name=&#39;1979XB&#39;, tab=&#39;impacts&#39;)</span>
+
+<span class="sd">        or</span>
+
+<span class="sd">        &gt;&gt;&gt; nea_list = neocc.query_list(list_name=&#39;nea_list&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; nea_list[2921]</span>
+<span class="sd">        &#39;1979XB&#39;</span>
+<span class="sd">        &gt;&gt;&gt; ast_impacts = neocc.query_object(name=nea_list[2921], tab=&#39;impacts&#39;)</span>
+
+<span class="sd">        or</span>
+
+<span class="sd">        &gt;&gt;&gt; risk_list = neocc.query_list(list_name=&#39;risk_list&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; risk_list[&#39;Object Name&#39;][1]</span>
+<span class="sd">        &#39;1979XB&#39;</span>
+<span class="sd">        &gt;&gt;&gt; ast_impacts = neocc.query_object(name=risk_list[&#39;Object Name&#39;][1],</span>
+<span class="sd">                                            tab=&#39;impacts&#39;)</span>
+
+<span class="sd">        The output provides an object with the different attributes:</span>
+
+<span class="sd">        &gt;&gt;&gt; ast_impacts.&lt;tab&gt;</span>
+<span class="sd">        ast.additional_note       ast.impacts</span>
+<span class="sd">        ast.arc_end               ast.info</span>
+<span class="sd">        ast.arc_start             ast.observation_accepted</span>
+<span class="sd">        ast.computation           ast.observation_rejected</span>
+
+<span class="sd">        By adding the attribute its information can be accessed:</span>
+
+<span class="sd">        &gt;&gt;&gt; ast_impacts.impacts</span>
+<span class="sd">                    date        MJD  sigma  ...  Exp. Energy in MT    PS  TS</span>
+<span class="sd">        0  2056-12-12.902  72344.902  0.255  ...           0.011500 -3.22   0</span>
+<span class="sd">        1  2065-12-16.462  75635.463 -1.110  ...           0.000090 -5.36   0</span>
+<span class="sd">        2  2086-12-16.663  83305.664 -1.101  ...           0.002390 -4.03   0</span>
+<span class="sd">        3  2101-12-14.203  88781.204 -0.384  ...           0.000131 -5.36   0</span>
+<span class="sd">        4  2105-12-12.764  90240.765  1.003  ...           0.000574 -4.75   0</span>
+<span class="sd">        5  2113-12-14.753  93164.753 -0.706  ...           0.018500 -3.25   0</span>
+<span class="sd">        6  2113-12-14.756  93164.756 -0.708  ...           0.000163 -5.30   0</span>
+<span class="sd">        7  2117-12-15.496  94626.496 -1.316  ...           0.000069 -5.68   0</span>
+<span class="sd">        [8 rows x 11 columns]</span>
+
+<span class="sd">        Note</span>
+<span class="sd">        ----</span>
+<span class="sd">            Most of the dataframes of the object tabs contain the</span>
+<span class="sd">            &#39;help&#39; property which contains information about the fields</span>
+<span class="sd">            of the dataframe.</span>
+
+<span class="sd">            &gt;&gt;&gt; print(ast_impacts.impacts.help)</span>
+<span class="sd">            Data frame with possible impacts information:</span>
+<span class="sd">            -Date: date for the potential impact in YYYY-MM-DD.ddd format</span>
+<span class="sd">            -MJD: Modified Julian Day for the potential impact</span>
+<span class="sd">            -sigma: approximate location along the Line Of Variation (LOV)</span>
+<span class="sd">            in sigma space</span>
+<span class="sd">            -sigimp: The lateral distance in sigma-space from the LOV to</span>
+<span class="sd">            the Earth surface. A zero implies that the LOV passes through</span>
+<span class="sd">            the Earth-dist: Minimum Distance in Earth radii. The lateral</span>
+<span class="sd">            distance from the LOV to the center of the Earth</span>
+<span class="sd">            -width: one-sigma semi-width of the Target Plane confidence</span>
+<span class="sd">            region in Earth radii</span>
+<span class="sd">            -stretch: Stretching factor. It indicates how much the</span>
+<span class="sd">            confidence region at the epoch has been stretched by the time</span>
+<span class="sd">            of the approach. This is a close cousin of the Lyapounov</span>
+<span class="sd">            exponent. Units are in Earth radii divided by sigma (RE/sig)</span>
+<span class="sd">            -p_RE: probability of Earth Impact (IP)</span>
+<span class="sd">            -Exp. Energy in MT: Expected energy. It is the product of the</span>
+<span class="sd">            impact energy and the impact probability</span>
+<span class="sd">            -PS: Palermo Scale</span>
+<span class="sd">            -TS: Torino Scale</span>
+
+<span class="sd">        Another example is shown to obtain the physical properties:</span>
+
+<span class="sd">        &gt;&gt;&gt; from ESANEOCC import neocc</span>
+<span class="sd">        &gt;&gt;&gt; properties = neocc.query_object(name=&#39;433&#39;, tab=&#39;physical_properties&#39;)</span>
+
+<span class="sd">        Again, the output provides an object with different attributes:</span>
+
+<span class="sd">        &gt;&gt;&gt; properties.&lt;tab&gt;</span>
+<span class="sd">        properties.physical_properties  properties.sources</span>
+<span class="sd">        &gt;&gt;&gt; properties.physical_properties</span>
+<span class="sd">                        Property     Values Unit Source</span>
+<span class="sd">        0           Rotation Period       5.27    h    [4]</span>
+<span class="sd">        1                   Quality          4    -    [4]</span>
+<span class="sd">        2                 Amplitude  0.04-1.49  mag    [4]</span>
+<span class="sd">        3        Rotation Direction        PRO    -    [1]</span>
+<span class="sd">        4              Spinvector L         16  deg    [1]</span>
+<span class="sd">        5              Spinvector B          9  deg    [1]</span>
+<span class="sd">        6                  Taxonomy         Sq    -    [2]</span>
+<span class="sd">        7            Taxonomy (all)          S    -    [3]</span>
+<span class="sd">        8    Absolute Magnitude (H)      10.31  mag    [5]</span>
+<span class="sd">        9       Slope Parameter (G)     0.46**  mag    [6]</span>
+<span class="sd">        10                   Albedo       0.24    -    [9]</span>
+<span class="sd">        11                 Diameter      23300    m   [10]</span>
+<span class="sd">        12  Color Index Information       0.39  R-I   [11]</span>
+<span class="sd">        13                Sightings   Visual S    -   [13]</span>
+
+<span class="sd">        Note</span>
+<span class="sd">        ----</span>
+<span class="sd">            Some physical properties (e.g. *Absolute Mangnitude (H)*, *Slope</span>
+<span class="sd">            Parameter (G)*, etc) may have several values which come from different</span>
+<span class="sd">            sources. Currently, the library will only show one value as it is done</span>
+<span class="sd">            in the NEOCC portal.</span>
+
+<span class="sd">        Note</span>
+<span class="sd">        ----</span>
+<span class="sd">            For the case of tab Observations there are objects which contain</span>
+<span class="sd">            &quot;Roving observer&quot; and satellite observations. In the original</span>
+<span class="sd">            requested data the information of these observations produces two</span>
+<span class="sd">            lines of data, where the second line does not fit the structure of</span>
+<span class="sd">            the data frame</span>
+<span class="sd">            (https://www.minorplanetcenter.org/iau/info/OpticalObs.html).</span>
+<span class="sd">            In order to solve this problem those second lines</span>
+<span class="sd">            have been extracted in another attribute (e.g. sat_observations or</span>
+<span class="sd">            roving_observations) to make the data more readable.</span>
+
+<span class="sd">            Since this information can be requested in pairs, i.e. it is needed</span>
+<span class="sd">            to access both lines of data, this can be made using the date of the</span>
+<span class="sd">            observations which will be the same for both attributes:</span>
+
+<span class="sd">            &gt;&gt;&gt; ast_observations = neocc.query_object(name=&#39;99942&#39;,</span>
+<span class="sd">            tab=&#39;observations&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; sat_obs = ast_observations.sat_observations</span>
+<span class="sd">            &gt;&gt;&gt; sat_obs</span>
+<span class="sd">                Design.  K  T  N  YYYY  MM  DD.dddddd  ... Obs Code</span>
+<span class="sd">            0     99942  S  s     2020  12   18.97667  ...      C51</span>
+<span class="sd">            1     99942  S  s     2020  12   19.10732  ...      C51</span>
+<span class="sd">            ...     ...            ...            ...  ...      ...</span>
+<span class="sd">            10    99942  S  s     2021   1   16.92315  ...      C53</span>
+<span class="sd">            11    99942  S  s     2021   1   19.36233  ...      C53</span>
+<span class="sd">            12    99942  S  s     2021   1   19.36927  ...      C53</span>
+<span class="sd">            &gt;&gt;&gt; opt_obs = ast_ast_observations.optical_observations</span>
+<span class="sd">            &gt;&gt;&gt; opt_obs.loc[opt_obs[&#39;DD.dddddd&#39;] == sat_obs[&#39;DD.dddddd&#39;][0]]</span>
+<span class="sd">                    Design.  K  T N  YYYY  MM  ...  Obs Code   Chi  A  M</span>
+<span class="sd">            4582    99942    S  S    2020  12  ...       C51  1.13  1  1</span>
+<span class="sd">            [1 rows x 33 columns]</span>
+
+<span class="sd">        **Close Approaches**: This example corresponds to the class close</span>
+<span class="sd">        approaches. As for the previous example, the information can be</span>
+<span class="sd">        obtained by directly introducing the name of the object or from a</span>
+<span class="sd">        previous *query_list* search.</span>
+
+<span class="sd">        In this particular case, there are no attributes and the data obtained is</span>
+<span class="sd">        a DataFrame which contains the information for close approaches:</span>
+
+<span class="sd">        &gt;&gt;&gt; close_appr = neocc.query_object(name=&#39;99942&#39;, tab=&#39;close_approaches&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; close_appr</span>
+<span class="sd">            BODY     CALENDAR-TIME  ...         WIDTH  PROBABILITY</span>
+<span class="sd">        0   EARTH  1957/04/01.13908  ...  1.318000e-08        1.000</span>
+<span class="sd">        1   EARTH  1964/10/24.90646  ...  1.119000e-08        1.000</span>
+<span class="sd">        2   EARTH  1965/02/11.51118  ...  4.004000e-09        1.000</span>
+<span class="sd">        ...   ...               ...  ...           ...          ...</span>
+<span class="sd">        16  EARTH  2080/05/09.23878  ...  1.206000e-06        0.821</span>
+<span class="sd">        17  EARTH  2087/04/07.54747  ...  1.254000e-08        0.327</span>
+<span class="sd">        [18 rows x 10 columns]</span>
+
+<span class="sd">        **Orbit Properties:** In order to access the orbit properties</span>
+<span class="sd">        information, it is necessary to provide two additional inputs to</span>
+<span class="sd">        *query_object* method: **orbital_elements** and **orbit_epoch**.</span>
+
+<span class="sd">        It is mandatory to write these two paramters as: *orbit_epoch=&#39; &#39;*</span>
+<span class="sd">        to make the library works.</span>
+
+<span class="sd">        &gt;&gt;&gt; ast_orbit_prop = neocc.query_object(name=&#39;99942&#39;,</span>
+<span class="sd">        tab=&#39;orbit_properties&#39;,orbital_elements=&#39;keplerian&#39;, orbit_epoch=&#39;present&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; ast_orbit_prop.&lt;tab&gt;</span>
+<span class="sd">        ast_orbit_prop.anode       ast_orbit_prop.moid</span>
+<span class="sd">        ast_orbit_prop.aphelion    ast_orbit_prop.ngr</span>
+<span class="sd">        ast_orbit_prop.cor         ast_orbit_prop.perihelion</span>
+<span class="sd">        ast_orbit_prop.cov         ast_orbit_prop.period</span>
+<span class="sd">        ast_orbit_prop.dnode       ast_orbit_prop.pha</span>
+<span class="sd">        ast_orbit_prop.epoch       ast_orbit_prop.rectype</span>
+<span class="sd">        ast_orbit_prop.form        ast_orbit_prop.refsys</span>
+<span class="sd">        ast_orbit_prop.kep         ast_orbit_prop.rms</span>
+<span class="sd">        ast_orbit_prop.lsp         ast_orbit_prop.u_par</span>
+<span class="sd">        ast_orbit_prop.mag         ast_orbit_prop.vinfty</span>
+
+<span class="sd">        **Ephemerides:** In order to access ephemerides information, it</span>
+<span class="sd">        is necessary to provide five additional inputs to *query_object*</span>
+<span class="sd">        method: **observatory**, **start**, **stop**, **step** and</span>
+<span class="sd">        **step_unit***.</span>
+
+<span class="sd">        It is mandatory to write these five paramters as: *observatory=&#39; &#39;*</span>
+<span class="sd">        to make the library works.</span>
+
+<span class="sd">        &gt;&gt;&gt; ast_ephemerides = neocc.query_object(name=&#39;99942&#39;,</span>
+<span class="sd">        tab=&#39;ephemerides&#39;, observatory=&#39;500&#39;, start=&#39;2019-05-08 01:30&#39;,</span>
+<span class="sd">        stop=&#39;2019-05-23 01:30&#39;, step=&#39;1&#39;, step_unit=&#39;days&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; ast_ephemerides.&lt;tab&gt;</span>
+<span class="sd">        ast_ephemerides.ephemerides  ast_ephemerides.tinit</span>
+<span class="sd">        ast_ephemerides.observatory  ast_ephemerides.tstep</span>
+<span class="sd">        ast_ephemerides.tfinal</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Define a list with all possible tabs to be requested</span>
+        <span class="n">tab_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;impacts&#39;</span><span class="p">,</span> <span class="s1">&#39;close_approaches&#39;</span><span class="p">,</span> <span class="s1">&#39;observations&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;physical_properties&#39;</span><span class="p">,</span> <span class="s1">&#39;orbit_properties&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;ephemerides&#39;</span><span class="p">,</span> <span class="s1">&#39;summary&#39;</span><span class="p">]</span>
+        <span class="c1"># Check the input of the method if tab is not in the list</span>
+        <span class="c1"># print and error and show the valid names</span>
+        <span class="k">if</span> <span class="n">tab</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tab_list</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;Please introduce a valid tab name. &#39;</span>
+                        <span class="s1">&#39;valid tabs names are: &#39;</span> <span class="o">+</span>\
+                            <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">tab_list</span><span class="p">]))</span>
+        <span class="c1"># Depending on the tab selected the information will be requested</span>
+        <span class="c1"># following different methods. Create &quot;switch&quot; for each case:</span>
+
+        <span class="c1"># Impacts, close approaches and observations</span>
+        <span class="k">if</span> <span class="n">tab</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;impacts&#39;</span><span class="p">,</span> <span class="s1">&#39;close_approaches&#39;</span><span class="p">,</span> <span class="s1">&#39;observations&#39;</span><span class="p">):</span>
+            <span class="c1"># Get URL to obtain the data from NEOCC</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="n">tabs</span><span class="o">.</span><span class="n">get_object_url</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tab</span><span class="p">)</span>
+
+            <span class="c1"># Request data two times if the first attempt fails</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># Get object data</span>
+                <span class="n">data_obj</span> <span class="o">=</span> <span class="n">tabs</span><span class="o">.</span><span class="n">get_object_data</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ConnectionError</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Initial attempt to obtain object data failed. &#39;</span>
+                    <span class="s1">&#39;Reattempting...&#39;</span><span class="p">)</span>
+                <span class="c1"># Wait 5 seconds</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+                <span class="c1"># Get object data</span>
+                <span class="n">data_obj</span> <span class="o">=</span> <span class="n">tabs</span><span class="o">.</span><span class="n">get_object_data</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">tab</span> <span class="o">==</span> <span class="s1">&#39;impacts&#39;</span><span class="p">:</span>
+                <span class="c1"># Create empty object with class Impacts</span>
+                <span class="n">neocc_obj</span> <span class="o">=</span> <span class="n">tabs</span><span class="o">.</span><span class="n">Impacts</span><span class="p">()</span>
+                <span class="c1"># Parse the requested data using Impacts parser</span>
+                <span class="n">neocc_obj</span><span class="o">.</span><span class="n">_impacts_parser</span><span class="p">(</span><span class="n">data_obj</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">tab</span> <span class="o">==</span> <span class="s1">&#39;close_approaches&#39;</span><span class="p">:</span>
+                <span class="c1"># Parse the requested data using Close Approaches parser</span>
+                <span class="n">neocc_obj</span> <span class="o">=</span> <span class="n">tabs</span><span class="o">.</span><span class="n">CloseApproaches</span><span class="o">.</span><span class="n">clo_appr_parser</span><span class="p">(</span><span class="n">data_obj</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">tab</span> <span class="o">==</span> <span class="s1">&#39;observations&#39;</span><span class="p">:</span>
+                <span class="c1"># Create empty object</span>
+                <span class="n">neocc_obj</span> <span class="o">=</span> <span class="n">tabs</span><span class="o">.</span><span class="n">AsteroidObservations</span><span class="p">()</span>
+                <span class="c1"># Get object with attributes from data</span>
+                <span class="n">neocc_obj</span><span class="o">.</span><span class="n">_ast_obs_parser</span><span class="p">(</span><span class="n">data_obj</span><span class="p">)</span>
+
+        <span class="c1"># Physical properties</span>
+        <span class="k">elif</span> <span class="n">tab</span> <span class="o">==</span> <span class="s1">&#39;physical_properties&#39;</span><span class="p">:</span>
+            <span class="c1"># Create empty object with class Physical properties</span>
+            <span class="n">neocc_obj</span> <span class="o">=</span> <span class="n">tabs</span><span class="o">.</span><span class="n">PhysicalProperties</span><span class="p">()</span>
+            <span class="c1"># Parse the requested data using Physical properties parser</span>
+            <span class="n">neocc_obj</span><span class="o">.</span><span class="n">_phys_prop_parser</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="c1"># Orbit properties</span>
+        <span class="k">elif</span> <span class="n">tab</span> <span class="o">==</span> <span class="s1">&#39;orbit_properties&#39;</span><span class="p">:</span>
+            <span class="c1"># Raise error if no elements are provided</span>
+            <span class="k">if</span> <span class="s1">&#39;orbital_elements&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;Please specify type of orbital_elements: &#39;</span>
+                            <span class="s1">&#39;keplerian or equinoctial &#39;</span>
+                            <span class="s1">&#39;(e.g., orbital_elements=&quot;keplerian&quot;)&#39;</span><span class="p">)</span>
+            <span class="c1"># Raise error if no epoch is provided</span>
+            <span class="k">if</span> <span class="s1">&#39;orbit_epoch&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;Please specify type of orbit_epoch: &#39;</span>
+                            <span class="s1">&#39;present or middle &#39;</span>
+                            <span class="s1">&#39;(e.g., orbit_epoch=&quot;middle&quot;)&#39;</span><span class="p">)</span>
+            <span class="c1"># Get URL to obtain the data from NEOCC</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="n">tabs</span><span class="o">.</span><span class="n">get_object_url</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tab</span><span class="p">,</span>
+                                    <span class="n">orbital_elements</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;orbital_elements&#39;</span><span class="p">],</span>
+                                    <span class="n">orbit_epoch</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;orbit_epoch&#39;</span><span class="p">])</span>
+
+            <span class="c1"># Request data two times if the first attempt fails</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># Get object data</span>
+                <span class="n">data_obj</span> <span class="o">=</span> <span class="n">tabs</span><span class="o">.</span><span class="n">get_object_data</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ConnectionError</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Initial attempt to obtain object data failed. &#39;</span>
+                    <span class="s1">&#39;Reattempting...&#39;</span><span class="p">)</span>
+                <span class="c1"># Wait 5 seconds</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+                <span class="c1"># Get object data</span>
+                <span class="n">data_obj</span> <span class="o">=</span> <span class="n">tabs</span><span class="o">.</span><span class="n">get_object_data</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+
+            <span class="c1"># Assign orbit properties depending on the elements requested</span>
+            <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;orbital_elements&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;keplerian&quot;</span><span class="p">:</span>
+                <span class="c1"># Create empty object with class Orbit properties</span>
+                <span class="n">neocc_obj</span> <span class="o">=</span> <span class="n">tabs</span><span class="o">.</span><span class="n">KeplerianOrbitProperties</span><span class="p">()</span>
+                <span class="c1"># Parse the requested data using Orbit properties parser</span>
+                <span class="n">neocc_obj</span><span class="o">.</span><span class="n">_orb_kep_prop_parser</span><span class="p">(</span><span class="n">data_obj</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;orbital_elements&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;equinoctial&quot;</span><span class="p">:</span>
+                <span class="c1"># Create empty object with class Orbit properties</span>
+                <span class="n">neocc_obj</span> <span class="o">=</span> <span class="n">tabs</span><span class="o">.</span><span class="n">EquinoctialOrbitProperties</span><span class="p">()</span>
+                <span class="c1"># Parse the requested data using Orbit properties parser</span>
+                <span class="n">neocc_obj</span><span class="o">.</span><span class="n">_orb_equi_prop_parser</span><span class="p">(</span><span class="n">data_obj</span><span class="p">)</span>
+
+        <span class="c1"># Ephemerides</span>
+        <span class="k">elif</span> <span class="n">tab</span> <span class="o">==</span> <span class="s1">&#39;ephemerides&#39;</span><span class="p">:</span>
+            <span class="c1"># Create dictionary for kwargs</span>
+            <span class="n">args_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;observatory&#39;</span><span class="p">:</span> <span class="s1">&#39;observatory (e.g., observatory=&quot;500&quot;)&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="s1">&#39;start date (e.g., start=&quot;2021-05-17 00:00&quot;)&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;stop&#39;</span><span class="p">:</span> <span class="s1">&#39;end date (e.g., stop=&quot;2021-05-18 00:00&quot;)&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;step&#39;</span><span class="p">:</span> <span class="s1">&#39;time step (e.g., step=&quot;1&quot;)&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;step_unit&#39;</span><span class="p">:</span> <span class="s1">&#39;step unit (e.g., step_unit=&quot;days&quot;)&#39;</span><span class="p">}</span>
+            <span class="c1"># Check if any kwargs is missing</span>
+            <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">args_dict</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">element</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">KeyError</span> <span class="p">(</span><span class="s1">&#39;Please specify &#39;</span> <span class="o">+</span> <span class="n">args_dict</span><span class="p">[</span><span class="n">element</span><span class="p">]</span>
+                                    <span class="o">+</span> <span class="s1">&#39; for ephemerides&#39;</span><span class="p">)</span>
+
+            <span class="c1"># Create empty object with class Ephemerides</span>
+            <span class="n">neocc_obj</span> <span class="o">=</span> <span class="n">tabs</span><span class="o">.</span><span class="n">Ephemerides</span><span class="p">()</span>
+            <span class="c1"># Parse the requested data using Ephemerides parser</span>
+            <span class="n">neocc_obj</span><span class="o">.</span><span class="n">_ephem_parser</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">observatory</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;observatory&#39;</span><span class="p">],</span>
+                                <span class="n">start</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span> <span class="n">stop</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;stop&#39;</span><span class="p">],</span>
+                                <span class="n">step</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;step&#39;</span><span class="p">],</span>
+                                <span class="n">step_unit</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;step_unit&#39;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">tab</span> <span class="o">==</span> <span class="s1">&#39;summary&#39;</span><span class="p">:</span>
+            <span class="c1"># Create empty object with class Summary</span>
+            <span class="n">neocc_obj</span> <span class="o">=</span> <span class="n">tabs</span><span class="o">.</span><span class="n">Summary</span><span class="p">()</span>
+            <span class="c1"># Parse the requested data using Summary parser</span>
+            <span class="n">neocc_obj</span><span class="o">.</span><span class="n">_summary_parser</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">neocc_obj</span></div></div>
+
+
+<span class="n">neocc</span> <span class="o">=</span> <span class="n">ESAneoccClass</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright European Space Agency ESA.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

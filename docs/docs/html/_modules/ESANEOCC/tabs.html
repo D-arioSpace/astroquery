@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>ESANEOCC.tabs &mdash; ESA NEOCC Python Interface 1.2.0 documentation</title>
+  <title>ESANEOCC.tabs &mdash; ESA NEOCC Python Interface 1.3.0 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.2
+                1.3
               </div>
             
           
@@ -164,8 +164,8 @@
 <span class="sd">* Property: European Space Agency (ESA)</span>
 <span class="sd">* Developed by: Elecnor Deimos</span>
 <span class="sd">* Author: C. Álvaro Arroyo Parejo</span>
-<span class="sd">* Issue: 1.2</span>
-<span class="sd">* Date: 17-05-2021</span>
+<span class="sd">* Issue: 1.3</span>
+<span class="sd">* Date: 16-06-2021</span>
 <span class="sd">* Purpose: Module which request and parse list data from ESA NEOCC</span>
 <span class="sd">* Module: tabs.py</span>
 <span class="sd">* History:</span>
@@ -183,6 +183,14 @@
 <span class="sd">                         has been modified to include cases with more</span>
 <span class="sd">                         information.\n</span>
 <span class="sd">                         Adding timeout of 90 seconds.</span>
+<span class="sd">1.3        16-06-2021    URLs and timeout from configuration file for</span>
+<span class="sd">                         astroquery implementation.\n</span>
+<span class="sd">                         Change time format to datetime isoformat.\n</span>
+<span class="sd">                         Change to correct types in attributes (e.g.,</span>
+<span class="sd">                         matrices, etc.)\n</span>
+<span class="sd">                         Change ephemerides skyfooter to fix bug.\n</span>
+<span class="sd">                         Change *get_matrix* from *orbit_properties* for</span>
+<span class="sd">                         objects with 2 non-gravitational parameters.</span>
 <span class="sd">========   ===========   =====================================================</span>
 
 <span class="sd">© Copyright [European Space Agency][2021]</span>
@@ -193,18 +201,19 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">parse</span> <span class="kn">import</span> <span class="n">parse</span>
 <span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">conf</span>
 
-<span class="c1"># Define the base URL for NEOCC</span>
-<span class="n">BASE_URL</span> <span class="o">=</span> <span class="s1">&#39;https://neo.ssa.esa.int/PSDB-portlet/download?file=&#39;</span>
-<span class="c1"># Define specific URLs for parsing HTMLs and for ephemerides</span>
-<span class="n">PROPERTIES_URL</span> <span class="o">=</span> <span class="s1">&#39;https://neo.ssa.esa.int/&#39;</span>\
-                 <span class="s1">&#39;search-for-asteroids?tab=physprops&amp;des=&#39;</span>
-<span class="n">EPHEM_URL</span> <span class="o">=</span> <span class="s1">&#39;https://neo.ssa.esa.int/PSDB-portlet/ephemerides?des=&#39;</span>
-<span class="n">SUMMARY_URL</span> <span class="o">=</span> <span class="s1">&#39;https://neo.ssa.esa.int/search-for-asteroids?sum=1&amp;des=&#39;</span>
+<span class="c1"># Import URLs and TIMEOUT</span>
+<span class="n">API_URL</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">API_URL</span>
+<span class="n">PROPERTIES_URL</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">PROPERTIES_URL</span>
+<span class="n">EPHEM_URL</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">EPHEM_URL</span>
+<span class="n">SUMMARY_URL</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">SUMMARY_URL</span>
+<span class="n">TIMEOUT</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">TIMEOUT</span>
 
 <div class="viewcode-block" id="get_object_url"><a class="viewcode-back" href="../../index.html#ESANEOCC.tabs.get_object_url">[docs]</a><span class="k">def</span> <span class="nf">get_object_url</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tab</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Get url from requested object and tab name.</span>
@@ -296,7 +305,7 @@
 <span class="sd">        Object in byte format.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Get data from URL</span>
-    <span class="n">data_obj</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">BASE_URL</span> <span class="o">+</span> <span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
+    <span class="n">data_obj</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">API_URL</span> <span class="o">+</span> <span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
     <span class="c1"># Parse data and assign attributes to object</span>
 
     <span class="k">return</span> <span class="n">data_obj</span></div>
@@ -355,10 +364,10 @@
 <span class="sd">        Starting date for optical observations.</span>
 <span class="sd">    arc_end : str</span>
 <span class="sd">        End date for optical observations.</span>
-<span class="sd">    observations_accepted : int</span>
+<span class="sd">    observation_accepted : int</span>
 <span class="sd">        Total number of observations subtracting rejected</span>
 <span class="sd">        observations.</span>
-<span class="sd">    observations_rejected : int</span>
+<span class="sd">    observation_rejected : int</span>
 <span class="sd">        Number of observations rejected.</span>
 <span class="sd">    computation : str</span>
 <span class="sd">        Date of computation (in format YYYYMMDD MJD TimeSys)</span>
@@ -501,6 +510,17 @@
             <span class="n">df_impacts</span><span class="p">[</span><span class="s1">&#39;en.&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">df_impacts</span><span class="p">[</span><span class="s1">&#39;en.&#39;</span><span class="p">])</span>
             <span class="n">df_impacts</span><span class="p">[</span><span class="s1">&#39;PS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">df_impacts</span><span class="p">[</span><span class="s1">&#39;PS&#39;</span><span class="p">])</span>
 
+        <span class="c1"># Convert Date column to datetime format</span>
+        <span class="c1"># Create auxilary columns</span>
+        <span class="n">df_impacts</span><span class="p">[[</span><span class="s1">&#39;date1&#39;</span><span class="p">,</span><span class="s1">&#39;date2&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">df_impacts</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span>\
+                                   <span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span><span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># Convert each auxiliary column to datetime format and add</span>
+        <span class="n">df_impacts</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df_impacts</span><span class="p">[</span><span class="s1">&#39;date1&#39;</span><span class="p">],</span>
+                                       <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;%Y/%m/</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span> <span class="o">+</span>\
+                        <span class="p">(</span><span class="n">df_impacts</span><span class="p">[</span><span class="s1">&#39;date2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">/</span><span class="mf">1e3</span><span class="p">)</span>\
+                                           <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">timedelta</span><span class="p">)</span>
+        <span class="c1"># Remove auxiliary columns</span>
+        <span class="n">df_impacts</span> <span class="o">=</span> <span class="n">df_impacts</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;date1&#39;</span><span class="p">,</span><span class="s1">&#39;date2&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="c1"># Add number of decimals</span>
         <span class="n">df_impacts</span><span class="p">[</span><span class="s1">&#39;dist&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">df_impacts</span><span class="p">[</span><span class="s1">&#39;width&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -515,7 +535,7 @@
         <span class="n">df_impacts</span><span class="o">.</span><span class="n">help</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Data frame with possible impacts &#39;</span>
                            <span class="s1">&#39;information:</span><span class="se">\n</span><span class="s1">&#39;</span>
                            <span class="s1">&#39;-Date: date for the potential impact in &#39;</span>
-                           <span class="s1">&#39;YYYY-MM-DD.ddd format</span><span class="se">\n</span><span class="s1">&#39;</span>
+                           <span class="s1">&#39;datetime format</span><span class="se">\n</span><span class="s1">&#39;</span>
                            <span class="s1">&#39;-MJD: Modified Julian Day for the &#39;</span>
                            <span class="s1">&#39;potential impact</span><span class="se">\n</span><span class="s1">&#39;</span>
                            <span class="s1">&#39;-sigma: approximate location along the &#39;</span>
@@ -549,8 +569,16 @@
         <span class="c1"># Get info from footer</span>
         <span class="n">footer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_footer</span><span class="p">(</span><span class="n">data_obj</span><span class="p">)</span>
         <span class="c1"># Assign parsed data to attributes</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">arc_start</span> <span class="o">=</span> <span class="n">footer</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;start&#39;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">arc_end</span> <span class="o">=</span> <span class="n">footer</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;end&#39;</span><span class="p">]</span>
+        <span class="c1"># Change format to datetime and show in isoformat()</span>
+        <span class="n">arc_start</span> <span class="o">=</span> <span class="n">footer</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;start&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="n">arc_start</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">arc_start</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;%Y/%m/</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span> <span class="o">+</span>\
+                    <span class="n">timedelta</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">arc_start</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="mf">1e3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arc_start</span> <span class="o">=</span> <span class="n">arc_start</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+        <span class="c1"># Change format to datetime and show in isoformat()</span>
+        <span class="n">arc_end</span> <span class="o">=</span> <span class="n">footer</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;end&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="n">arc_end</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">arc_end</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;%Y/%m/</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span> <span class="o">+</span>\
+                    <span class="n">timedelta</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">arc_end</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="mf">1e3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arc_end</span> <span class="o">=</span> <span class="n">arc_end</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">observation_accepted</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">footer</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;total&#39;</span><span class="p">])</span> <span class="o">-</span> \
             <span class="nb">int</span><span class="p">(</span><span class="n">footer</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;rejected&#39;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">observation_rejected</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">footer</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;rejected&#39;</span><span class="p">])</span>
@@ -564,7 +592,7 @@
     <span class="sd">&quot;&quot;&quot;This class contains information of object close approaches.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="CloseApproaches.clo_appr_parser"><a class="viewcode-back" href="../../index.html#ESANEOCC.tabs.CloseApproaches.clo_appr_parser">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">clo_appr_parser</span><span class="p">(</span><span class="n">data_obj</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">clo_appr_parser</span><span class="p">(</span><span class="n">data_obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Parse and arrange the close approaches data.</span>
 
 <span class="sd">        Parameters</span>
@@ -586,38 +614,49 @@
         <span class="n">df_impacts_d</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">data_obj</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
         <span class="c1"># Check if the decoded data is empty before reading</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">df_impacts_d</span><span class="o">.</span><span class="n">getvalue</span><span class="p">():</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Required close approach file is &#39;</span>
-                            <span class="s1">&#39;empty for </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Required close approach file is &#39;</span>
-                             <span class="s1">&#39;empty for &#39;</span> <span class="o">+</span> <span class="n">name</span><span class="p">)</span>
-
-        <span class="c1"># Read data as csv</span>
-        <span class="n">df_close_appr</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">df_impacts_d</span><span class="p">,</span>
-                                    <span class="n">delim_whitespace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">df_close_appr</span><span class="o">.</span><span class="n">help</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Close approaches data frame contains:</span><span class="se">\n</span><span class="s1">&#39;</span>
-                              <span class="s1">&#39;-BODY:  planet or massive asteroid is &#39;</span>
-                              <span class="s1">&#39;involved in the close approach</span><span class="se">\n</span><span class="s1">&#39;</span>
-                              <span class="s1">&#39;-CALENDAR-TIME: date of the close &#39;</span>
-                              <span class="s1">&#39;approach in YYYY/MM/DD.ddddd format</span><span class="se">\n</span><span class="s1">&#39;</span>
-                              <span class="s1">&#39;-MJD-TIME: Modified Julian Date of the&#39;</span>
-                              <span class="s1">&#39;approach</span><span class="se">\n</span><span class="s1">&#39;</span>
-                              <span class="s1">&#39;-TIME-UNCERT.: time uncertainty in &#39;</span>
-                              <span class="s1">&#39;MJD2000</span><span class="se">\n</span><span class="s1">&#39;</span>
-                              <span class="s1">&#39;-NOM.-DISTANCE: Nominal distance at &#39;</span>
-                              <span class="s1">&#39;the close approach in au</span><span class="se">\n</span><span class="s1">&#39;</span>
-                              <span class="s1">&#39;-MIN.-POSS.-DIST.: Minimum possible &#39;</span>
-                              <span class="s1">&#39;distance at the close approach in au</span><span class="se">\n</span><span class="s1">&#39;</span>
-                              <span class="s1">&#39;-DIST.-UNCERT.: distance uncertainty in &#39;</span>
-                              <span class="s1">&#39;au</span><span class="se">\n</span><span class="s1">&#39;</span>
-                              <span class="s1">&#39;-STRETCH: It indicates how much the &#39;</span>
-                              <span class="s1">&#39;confidence region at the epoch has &#39;</span>
-                              <span class="s1">&#39;been stretched by the time of the &#39;</span>
-                              <span class="s1">&#39;approach. This is a close cousin of &#39;</span>
-                              <span class="s1">&#39;the Lyapounov exponent. Units in au</span><span class="se">\n</span><span class="s1">&#39;</span>
-                              <span class="s1">&#39;-WIDTH: width of the stretching</span><span class="se">\n</span><span class="s1">&#39;</span>
-                              <span class="s1">&#39;-PROBABITLIY: Close approach &#39;</span>
-                              <span class="s1">&#39;probability. A value of 1 indicates a &#39;</span>
-                              <span class="s1">&#39;certain close approach&#39;</span><span class="p">)</span>
+            <span class="n">df_close_appr</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Read data as csv</span>
+            <span class="n">df_close_appr</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">df_impacts_d</span><span class="p">,</span>
+                                        <span class="n">delim_whitespace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="c1"># Convert Date column to datetime format</span>
+            <span class="c1"># Create auxilary columns</span>
+            <span class="n">df_close_appr</span><span class="p">[[</span><span class="s1">&#39;date1&#39;</span><span class="p">,</span><span class="s1">&#39;date2&#39;</span><span class="p">]]</span> <span class="o">=</span>\
+                <span class="n">df_close_appr</span><span class="p">[</span><span class="s1">&#39;CALENDAR-TIME&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span>
+                                                         <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="c1"># Convert each auxiliary column to datetime format and add</span>
+            <span class="n">df_close_appr</span><span class="p">[</span><span class="s1">&#39;CALENDAR-TIME&#39;</span><span class="p">]</span> <span class="o">=</span>\
+                <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df_close_appr</span><span class="p">[</span><span class="s1">&#39;date1&#39;</span><span class="p">],</span>
+                               <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;%Y/%m/</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span> <span class="o">+</span>\
+                              <span class="p">(</span><span class="n">df_close_appr</span><span class="p">[</span><span class="s1">&#39;date2&#39;</span><span class="p">]</span><span class="o">.</span>\
+                               <span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">/</span><span class="mf">1e5</span><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">timedelta</span><span class="p">)</span>
+            <span class="c1"># Remove auxiliary columns</span>
+            <span class="n">df_close_appr</span> <span class="o">=</span> <span class="n">df_close_appr</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;date1&#39;</span><span class="p">,</span><span class="s1">&#39;date2&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># Create help attribute</span>
+            <span class="n">df_close_appr</span><span class="o">.</span><span class="n">help</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Close approaches data frame contains:</span><span class="se">\n</span><span class="s1">&#39;</span>
+                                <span class="s1">&#39;-BODY:  planet or massive asteroid is &#39;</span>
+                                <span class="s1">&#39;involved in the close approach</span><span class="se">\n</span><span class="s1">&#39;</span>
+                                <span class="s1">&#39;-CALENDAR-TIME: date of the close &#39;</span>
+                                <span class="s1">&#39;approach in datetime format</span><span class="se">\n</span><span class="s1">&#39;</span>
+                                <span class="s1">&#39;-MJD-TIME: Modified Julian Date of the&#39;</span>
+                                <span class="s1">&#39;approach</span><span class="se">\n</span><span class="s1">&#39;</span>
+                                <span class="s1">&#39;-TIME-UNCERT.: time uncertainty in &#39;</span>
+                                <span class="s1">&#39;MJD2000</span><span class="se">\n</span><span class="s1">&#39;</span>
+                                <span class="s1">&#39;-NOM.-DISTANCE: Nominal distance at &#39;</span>
+                                <span class="s1">&#39;the close approach in au</span><span class="se">\n</span><span class="s1">&#39;</span>
+                                <span class="s1">&#39;-MIN.-POSS.-DIST.: Minimum possible &#39;</span>
+                                <span class="s1">&#39;distance at the close approach in au</span><span class="se">\n</span><span class="s1">&#39;</span>
+                                <span class="s1">&#39;-DIST.-UNCERT.: distance uncertainty in &#39;</span>
+                                <span class="s1">&#39;au</span><span class="se">\n</span><span class="s1">&#39;</span>
+                                <span class="s1">&#39;-STRETCH: It indicates how much the &#39;</span>
+                                <span class="s1">&#39;confidence region at the epoch has &#39;</span>
+                                <span class="s1">&#39;been stretched by the time of the &#39;</span>
+                                <span class="s1">&#39;approach. This is a close cousin of &#39;</span>
+                                <span class="s1">&#39;the Lyapounov exponent. Units in au</span><span class="se">\n</span><span class="s1">&#39;</span>
+                                <span class="s1">&#39;-WIDTH: width of the stretching</span><span class="se">\n</span><span class="s1">&#39;</span>
+                                <span class="s1">&#39;-PROBABITLIY: Close approach &#39;</span>
+                                <span class="s1">&#39;probability. A value of 1 indicates a &#39;</span>
+                                <span class="s1">&#39;certain close approach&#39;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">df_close_appr</span></div></div>
 
@@ -697,14 +736,16 @@
 <span class="sd">                BeautifulSoup object with the requested information</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Get contents from url</span>
-        <span class="n">contents</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
+        <span class="n">contents</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
         <span class="c1"># Parse html using BS</span>
         <span class="n">parsed_html</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">contents</span><span class="p">,</span> <span class="s1">&#39;lxml&#39;</span><span class="p">)</span>
-        <span class="c1"># Check if there is a tag sub for term A2 if so, decompose html</span>
-        <span class="c1"># i.e., remove that properties from parsing</span>
-        <span class="n">subtag</span> <span class="o">=</span> <span class="n">parsed_html</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;sub&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">subtag</span><span class="p">:</span>
-            <span class="n">parsed_html</span><span class="o">.</span><span class="n">sub</span><span class="o">.</span><span class="n">decompose</span><span class="p">()</span>
+        <span class="c1"># Check if there is a tag sub for term A1 and A2 if so,</span>
+        <span class="c1"># decompose html i.e., remove that properties from parsing</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+            <span class="n">subtag</span> <span class="o">=</span> <span class="n">parsed_html</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;sub&#39;</span><span class="p">)</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">subtag</span><span class="p">:</span>
+                <span class="n">parsed_html</span><span class="o">.</span><span class="n">sub</span><span class="o">.</span><span class="n">decompose</span><span class="p">()</span>
         <span class="c1"># Search for property names using div and class</span>
         <span class="n">props_names</span> <span class="o">=</span> <span class="n">parsed_html</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">,</span>
                                         <span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span>
@@ -720,9 +761,17 @@
                   <span class="s1">&#39;object. Re-attempting...&#39;</span><span class="p">)</span>
             <span class="c1"># Wait and re-try</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-            <span class="c1"># Obtain DataFrame with the obtained properties and html parsed</span>
-            <span class="n">parsed_html</span> <span class="o">=</span> <span class="n">PhysicalProperties</span><span class="o">.</span><span class="n">_get_property_names</span><span class="p">(</span><span class="n">url</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">df_names</span> <span class="o">=</span> <span class="n">PhysicalProperties</span><span class="o">.</span><span class="n">_get_property_names</span><span class="p">(</span><span class="n">url</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">contents</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
+            <span class="n">parsed_html</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">contents</span><span class="p">,</span> <span class="s1">&#39;lxml&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+                <span class="n">subtag</span> <span class="o">=</span> <span class="n">parsed_html</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;sub&#39;</span><span class="p">)</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">subtag</span><span class="p">:</span>
+                    <span class="n">parsed_html</span><span class="o">.</span><span class="n">sub</span><span class="o">.</span><span class="n">decompose</span><span class="p">()</span>
+            <span class="n">props_names</span> <span class="o">=</span> <span class="n">parsed_html</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">,</span>
+                                        <span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span>
+                                         <span class="s2">&quot;col-lg-3 font-weight-bold&quot;</span>
+                                         <span class="s2">&quot; d-none d-lg-block&quot;</span><span class="p">})</span>
             <span class="k">if</span> <span class="n">df_names</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Required properties file is not &#39;</span>
                                 <span class="s1">&#39;found for this object. Check object name.&#39;</span><span class="p">)</span>
@@ -894,7 +943,7 @@
         <span class="n">parse_ver</span> <span class="o">=</span> <span class="s1">&#39;version =   </span><span class="si">{ver}</span><span class="s1">&#39;</span>
         <span class="c1"># Parse required data for attributes</span>
         <span class="n">ver</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">parse_ver</span><span class="p">,</span> <span class="n">df_head</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
-        <span class="n">ver</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ver</span><span class="p">[</span><span class="s1">&#39;ver&#39;</span><span class="p">])</span>
+        <span class="n">ver</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ver</span><span class="p">[</span><span class="s1">&#39;ver&#39;</span><span class="p">])</span>
         <span class="c1"># Template for errmod</span>
         <span class="n">parse_err</span> <span class="o">=</span> <span class="s2">&quot;errmod  = &#39;</span><span class="si">{err}</span><span class="s2">&#39;&quot;</span>
         <span class="c1"># Parse required data for attributes</span>
@@ -941,7 +990,7 @@
         <span class="c1"># Decode data for check v and s optical observations</span>
         <span class="n">df_check</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">data_obj</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
         <span class="c1"># Set attributes</span>
-        <span class="n">df_obs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_fwf</span><span class="p">(</span><span class="n">df_check</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span>
+        <span class="n">df_obs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_fwf</span><span class="p">(</span><span class="n">df_check</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="n">head</span><span class="p">,</span>
                                <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;python&#39;</span><span class="p">,</span> <span class="n">skipfooter</span><span class="o">=</span><span class="n">diff</span><span class="p">)</span>
         <span class="c1"># Check if there are &quot;Roving Observer&quot; observations</span>
         <span class="n">df_index</span> <span class="o">=</span> <span class="n">df_obs</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
@@ -973,9 +1022,21 @@
                                         <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;python&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                         <span class="n">colspecs</span><span class="o">=</span><span class="n">cols_v</span><span class="p">)</span>
             <span class="c1"># Rename columns as in file</span>
-            <span class="n">df_roving_obs</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Design.&#39;</span><span class="p">,</span> <span class="s1">&#39;K&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">,</span> <span class="s1">&#39;YYYY&#39;</span><span class="p">,</span>
+            <span class="n">df_roving_obs</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Design.&#39;</span><span class="p">,</span> <span class="s1">&#39;K&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">,</span> <span class="s1">&#39;Date&#39;</span><span class="p">,</span>
                                      <span class="s1">&#39;MM&#39;</span><span class="p">,</span> <span class="s1">&#39;DD.dddddd&#39;</span><span class="p">,</span> <span class="s1">&#39;E longitude&#39;</span><span class="p">,</span>
                                      <span class="s1">&#39;Latitude&#39;</span><span class="p">,</span> <span class="s1">&#39;Altitude&#39;</span><span class="p">,</span> <span class="s1">&#39;Obs Code&#39;</span><span class="p">]</span>
+            <span class="c1"># Create and Convert Date column to datetime format</span>
+            <span class="c1"># Create date column in YYYY-MM format</span>
+            <span class="n">df_roving_obs</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_roving_obs</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span> <span class="o">+</span>\
+                                    <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">df_roving_obs</span><span class="p">[</span><span class="s1">&#39;MM&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+            <span class="c1"># Convert to datetime and add timedelta for days substracting</span>
+            <span class="c1"># the day added in the datetime conversion for YYYY-MM</span>
+            <span class="n">df_roving_obs</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df_roving_obs</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">],</span>
+                                                    <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;%Y/%m&#39;</span><span class="p">)</span> <span class="o">+</span>\
+                                    <span class="n">df_roving_obs</span><span class="p">[</span><span class="s1">&#39;DD.dddddd&#39;</span><span class="p">]</span>\
+                                    <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">timedelta</span><span class="p">)</span><span class="o">-</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># Remove columns for months and days</span>
+            <span class="n">df_roving_obs</span> <span class="o">=</span> <span class="n">df_roving_obs</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;MM&#39;</span><span class="p">,</span><span class="s1">&#39;DD.dddddd&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
         <span class="c1"># Satellite Observations</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">s_indexes</span><span class="p">:</span>
@@ -999,10 +1060,22 @@
                                      <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;python&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                      <span class="n">colspecs</span><span class="o">=</span><span class="n">cols_s</span><span class="p">)</span>
             <span class="c1"># Rename columns as in file</span>
-            <span class="n">df_sat_obs</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Design.&#39;</span><span class="p">,</span> <span class="s1">&#39;K&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">,</span> <span class="s1">&#39;YYYY&#39;</span><span class="p">,</span>
+            <span class="n">df_sat_obs</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Design.&#39;</span><span class="p">,</span> <span class="s1">&#39;K&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">,</span> <span class="s1">&#39;Date&#39;</span><span class="p">,</span>
                                   <span class="s1">&#39;MM&#39;</span><span class="p">,</span> <span class="s1">&#39;DD.dddddd&#39;</span><span class="p">,</span>
                                   <span class="s1">&#39;Parallax info.&#39;</span><span class="p">,</span> <span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span>
                                   <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;Obs Code&#39;</span><span class="p">]</span>
+            <span class="c1"># Create and Convert Date column to datetime format</span>
+            <span class="c1"># Create date column in YYYY-MM format</span>
+            <span class="n">df_sat_obs</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_sat_obs</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span> <span class="o">+</span>\
+                                    <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">df_sat_obs</span><span class="p">[</span><span class="s1">&#39;MM&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+            <span class="c1"># Convert to datetime and add timedelta for days substracting</span>
+            <span class="c1"># the day added in the datetime conversion for YYYY-MM</span>
+            <span class="n">df_sat_obs</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df_sat_obs</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">],</span>
+                                                    <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;%Y/%m&#39;</span><span class="p">)</span> <span class="o">+</span>\
+                                    <span class="n">df_sat_obs</span><span class="p">[</span><span class="s1">&#39;DD.dddddd&#39;</span><span class="p">]</span>\
+                                    <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">timedelta</span><span class="p">)</span><span class="o">-</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># Remove columns for months and days</span>
+            <span class="n">df_sat_obs</span> <span class="o">=</span> <span class="n">df_sat_obs</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;MM&#39;</span><span class="p">,</span><span class="s1">&#39;DD.dddddd&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
             <span class="c1"># For satellite observations columns &quot;T&quot; contains</span>
             <span class="c1"># whitespacese. Strip them</span>
             <span class="n">df_sat_obs</span><span class="p">[</span><span class="s1">&#39;T&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_sat_obs</span><span class="p">[</span><span class="s1">&#39;T&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
@@ -1025,8 +1098,8 @@
         <span class="c1"># Replace NaN values for blank values</span>
         <span class="n">df_optical_obs</span> <span class="o">=</span> <span class="n">df_optical_obs</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
         <span class="c1"># Rename Columns as in file</span>
-        <span class="n">df_optical_obs</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Design.&#39;</span><span class="p">,</span> <span class="s1">&#39;K&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">,</span> <span class="s1">&#39;YYYY&#39;</span><span class="p">,</span>
-                                  <span class="s1">&#39;MM&#39;</span><span class="p">,</span> <span class="s1">&#39;DD.dddddddddd&#39;</span><span class="p">,</span>
+        <span class="n">df_optical_obs</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Design.&#39;</span><span class="p">,</span> <span class="s1">&#39;K&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">,</span> <span class="s1">&#39;Date&#39;</span><span class="p">,</span>
+                                  <span class="s1">&#39;MM&#39;</span><span class="p">,</span> <span class="s1">&#39;DD.ddd&#39;</span><span class="p">,</span>
                                   <span class="s1">&#39;Date Accuracy&#39;</span><span class="p">,</span> <span class="s1">&#39;RA HH&#39;</span><span class="p">,</span>
                                   <span class="s1">&#39;RA MM&#39;</span><span class="p">,</span> <span class="s1">&#39;RA SS.sss&#39;</span><span class="p">,</span> <span class="s1">&#39;RA Accuracy&#39;</span><span class="p">,</span>
                                   <span class="s1">&#39;RA RMS&#39;</span><span class="p">,</span> <span class="s1">&#39;RA F&#39;</span><span class="p">,</span> <span class="s1">&#39;RA Bias&#39;</span><span class="p">,</span>
@@ -1036,6 +1109,19 @@
                                   <span class="s1">&#39;DEC Resid&#39;</span><span class="p">,</span> <span class="s1">&#39;MAG Val&#39;</span><span class="p">,</span> <span class="s1">&#39;MAG B&#39;</span><span class="p">,</span>
                                   <span class="s1">&#39;MAG RMS&#39;</span><span class="p">,</span> <span class="s1">&#39;MAG Resid&#39;</span><span class="p">,</span> <span class="s1">&#39;Ast Cat&#39;</span><span class="p">,</span>
                                   <span class="s1">&#39;Obs Code&#39;</span><span class="p">,</span> <span class="s1">&#39;Chi&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">]</span>
+        <span class="c1"># Create and Convert Date column to datetime format</span>
+        <span class="c1"># Create date column in YYYY-MM format</span>
+        <span class="n">df_optical_obs</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_optical_obs</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span> <span class="o">+</span>\
+                                 <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">df_optical_obs</span><span class="p">[</span><span class="s1">&#39;MM&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+        <span class="c1"># Convert to datetime and add timedelta for days substracting</span>
+        <span class="c1"># the day added in the datetime conversion for YYYY-MM</span>
+        <span class="n">df_optical_obs</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df_optical_obs</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">],</span>
+                                                 <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;%Y/%m&#39;</span><span class="p">)</span> <span class="o">+</span>\
+                                  <span class="n">df_optical_obs</span><span class="p">[</span><span class="s1">&#39;DD.ddd&#39;</span><span class="p">]</span>\
+                                  <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">timedelta</span><span class="p">)</span><span class="o">-</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># Remove columns for months and days</span>
+        <span class="n">df_optical_obs</span> <span class="o">=</span> <span class="n">df_optical_obs</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;MM&#39;</span><span class="p">,</span><span class="s1">&#39;DD.ddd&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># Create help attribute for dataframe</span>
         <span class="n">df_optical_obs</span><span class="o">.</span><span class="n">help</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;This dataframe shows the information of &#39;</span>
                                <span class="s1">&#39;optical observations. The fields are:</span><span class="se">\n</span><span class="s1">&#39;</span>
                                <span class="s1">&#39;-Designation: number or the provisional &#39;</span>
@@ -1045,7 +1131,7 @@
                                <span class="s1">&#39;satellite (s) and roving (v) observations&#39;</span>
                                <span class="s1">&#39;there are 2 additional dataframes which &#39;</span>
                                <span class="s1">&#39;contain the information given by the MPC.</span><span class="se">\n</span><span class="s1">&#39;</span>
-                               <span class="s1">&#39;-Date: date in UTC format.</span><span class="se">\n</span><span class="s1">&#39;</span>
+                               <span class="s1">&#39;-Date: date in UTC iso format.</span><span class="se">\n</span><span class="s1">&#39;</span>
                                <span class="s1">&#39;-Right Ascension: The data provided include&#39;</span>
                                <span class="s1">&#39; the observation, the a priori accuracy (as&#39;</span>
                                <span class="s1">&#39; supplied by the MPC), the a priori RMS &#39;</span>
@@ -1400,22 +1486,22 @@
                                     <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
                                     <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
                                     <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]],</span>
-                                <span class="n">mat_var</span><span class="p">[</span><span class="n">orbit_element</span><span class="p">][</span><span class="mi">5</span><span class="p">]:</span>
+                                <span class="n">mat_var</span><span class="p">[</span><span class="n">orbit_element</span><span class="p">][</span><span class="mi">1</span><span class="p">]:</span>
                                     <span class="p">[</span><span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
                                     <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
                                     <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
                                     <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">]],</span>
-                                <span class="n">mat_var</span><span class="p">[</span><span class="n">orbit_element</span><span class="p">][</span><span class="mi">5</span><span class="p">]:</span>
+                                <span class="n">mat_var</span><span class="p">[</span><span class="n">orbit_element</span><span class="p">][</span><span class="mi">2</span><span class="p">]:</span>
                                     <span class="p">[</span><span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
                                     <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
                                     <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
                                     <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">6</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">]],</span>
-                                <span class="n">mat_var</span><span class="p">[</span><span class="n">orbit_element</span><span class="p">][</span><span class="mi">5</span><span class="p">]:</span>
+                                <span class="n">mat_var</span><span class="p">[</span><span class="n">orbit_element</span><span class="p">][</span><span class="mi">3</span><span class="p">]:</span>
                                     <span class="p">[</span><span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
                                     <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
                                     <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">7</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
                                     <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">8</span><span class="p">,</span> <span class="mi">2</span><span class="p">]],</span>
-                                <span class="n">mat_var</span><span class="p">[</span><span class="n">orbit_element</span><span class="p">][</span><span class="mi">5</span><span class="p">]:</span>
+                                <span class="n">mat_var</span><span class="p">[</span><span class="n">orbit_element</span><span class="p">][</span><span class="mi">4</span><span class="p">]:</span>
                                     <span class="p">[</span><span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
                                     <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
                                     <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">8</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">dfd</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">9</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
@@ -1531,40 +1617,56 @@
         <span class="c1"># Epoch in MJD</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">epoch</span> <span class="o">=</span> <span class="n">df_orb</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39; MJD&#39;</span>
         <span class="c1"># MAG</span>
-        <span class="n">mag</span> <span class="o">=</span> <span class="n">df_orb</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="c1"># MAG - Rename columns and indexes</span>
-        <span class="n">mag</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;MAG&#39;</span><span class="p">]</span>
-        <span class="n">mag</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mag</span> <span class="o">=</span> <span class="n">mag</span>
+        <span class="c1"># Get MAG index</span>
+        <span class="n">mag_index</span> <span class="o">=</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">df_orb</span><span class="p">,</span> <span class="s1">&#39;MAG&#39;</span><span class="p">)</span>
+        <span class="c1"># Check if U_par parameter is assigned</span>
+        <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="n">mag_index</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mag</span> <span class="o">=</span> <span class="s1">&#39;There is no MAG assigned to this object&#39;</span>
+            <span class="k">if</span> <span class="s1">&#39;SOLUTION&#39;</span> <span class="ow">in</span> <span class="n">df_check</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">last_skip_rows</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">9</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">last_skip_rows</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mag</span> <span class="o">=</span> <span class="n">df_orb</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="c1"># MAG - Rename columns and indexes</span>
+            <span class="n">mag</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;MAG&#39;</span><span class="p">]</span>
+            <span class="n">mag</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mag</span> <span class="o">=</span> <span class="n">mag</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+        <span class="c1"># Decode data using UTF-8 and store in memory for lsp</span>
+        <span class="n">df_new_d</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">data_obj</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+        <span class="c1"># Read data as csv</span>
+        <span class="n">df_new</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">df_new_d</span><span class="p">,</span> <span class="n">delim_whitespace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                             <span class="n">skiprows</span><span class="o">=</span><span class="n">last_skip_rows</span><span class="p">,</span>
+                             <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;python&#39;</span><span class="p">)</span>
         <span class="c1"># LSP</span>
         <span class="c1"># Get LSP index</span>
-        <span class="n">lsp_index</span> <span class="o">=</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">df_orb</span><span class="p">,</span> <span class="s1">&#39;LSP&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">lsp_index</span> <span class="o">=</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">df_new</span><span class="p">,</span> <span class="s1">&#39;LSP&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="c1"># Check if there are additional non-gravitational parameters</span>
-        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">df_orb</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">lsp_index</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span> <span class="o">==</span> <span class="mi">7</span><span class="p">:</span>
-            <span class="n">lsp</span> <span class="o">=</span> <span class="n">df_orb</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">lsp_index</span><span class="p">:</span><span class="n">lsp_index</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">df_new</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">lsp_index</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span> <span class="o">==</span> <span class="mi">7</span><span class="p">:</span>
+            <span class="n">lsp</span> <span class="o">=</span> <span class="n">df_new</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">lsp_index</span><span class="p">:</span><span class="n">lsp_index</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span>
             <span class="n">lsp</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;model used&#39;</span><span class="p">,</span> <span class="s1">&#39;number of model parameters&#39;</span><span class="p">,</span>
-                       <span class="s1">&#39;dimension&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">]</span>
-            <span class="n">ngr</span> <span class="o">=</span> <span class="n">df_orb</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">lsp_index</span><span class="o">+</span><span class="mi">3</span><span class="p">:</span><span class="n">lsp_index</span><span class="o">+</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>
+                       <span class="s1">&#39;dimension&#39;</span><span class="p">,</span> <span class="s1">&#39;list of parameters determined&#39;</span><span class="p">]</span>
+            <span class="n">ngr</span> <span class="o">=</span> <span class="n">df_new</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">lsp_index</span><span class="o">+</span><span class="mi">3</span><span class="p">:</span><span class="n">lsp_index</span><span class="o">+</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
             <span class="n">ngr</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;NGR&#39;</span><span class="p">]</span>
             <span class="n">ngr</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Area-to-mass ratio in m^2/ton&#39;</span><span class="p">,</span>
                            <span class="s1">&#39;Yarkovsky parameter in 1E-10au/day^2&#39;</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="nb">int</span><span class="p">(</span><span class="n">df_orb</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">lsp_index</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span> <span class="o">==</span> <span class="mi">8</span><span class="p">:</span>
-            <span class="n">lsp</span> <span class="o">=</span> <span class="n">df_orb</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">lsp_index</span><span class="p">:</span><span class="n">lsp_index</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">int</span><span class="p">(</span><span class="n">df_new</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">lsp_index</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span> <span class="o">==</span> <span class="mi">8</span><span class="p">:</span>
+            <span class="n">lsp</span> <span class="o">=</span> <span class="n">df_new</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">lsp_index</span><span class="p">:</span><span class="n">lsp_index</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span>
             <span class="n">lsp</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;model used&#39;</span><span class="p">,</span> <span class="s1">&#39;number of model parameters&#39;</span><span class="p">,</span>
-                        <span class="s1">&#39;dimension&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">]</span>
-            <span class="n">ngr</span> <span class="o">=</span> <span class="n">df_orb</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">lsp_index</span><span class="o">+</span><span class="mi">3</span><span class="p">:</span><span class="n">lsp_index</span><span class="o">+</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+                        <span class="s1">&#39;dimension&#39;</span><span class="p">,</span> <span class="s1">&#39;list of parameters determined&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">]</span>
+            <span class="n">ngr</span> <span class="o">=</span> <span class="n">df_new</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">lsp_index</span><span class="o">+</span><span class="mi">3</span><span class="p">:</span><span class="n">lsp_index</span><span class="o">+</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
             <span class="n">ngr</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;NGR&#39;</span><span class="p">]</span>
             <span class="n">ngr</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Area-to-mass ratio in m^2/ton&#39;</span><span class="p">,</span>
                            <span class="s1">&#39;Yarkov sky parameter in 1E-10au/day^2&#39;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">lsp</span> <span class="o">=</span> <span class="n">df_orb</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">lsp_index</span><span class="p">:</span><span class="n">lsp_index</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+            <span class="n">lsp</span> <span class="o">=</span> <span class="n">df_new</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">lsp_index</span><span class="p">:</span><span class="n">lsp_index</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
             <span class="n">lsp</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;model used&#39;</span><span class="p">,</span> <span class="s1">&#39;number of model parameters&#39;</span><span class="p">,</span>
                        <span class="s1">&#39;dimension&#39;</span><span class="p">]</span>
             <span class="n">ngr</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;There are no gravitational parameters &#39;</span>
                         <span class="s1">&#39;calculated for this object&#39;</span><span class="p">)</span>
         <span class="c1"># Rename indexes</span>
         <span class="n">lsp</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;LSP&#39;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lsp</span> <span class="o">=</span> <span class="n">lsp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lsp</span> <span class="o">=</span> <span class="n">lsp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
         <span class="c1"># Non-gravitational parameters</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ngr</span> <span class="o">=</span> <span class="n">ngr</span></div>
 
@@ -1658,32 +1760,32 @@
         <span class="n">keplerian</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="s1">&#39;long. node&#39;</span><span class="p">,</span>
                             <span class="s1">&#39;arg.s peric.&#39;</span><span class="p">,</span> <span class="s1">&#39;mean anomaly&#39;</span><span class="p">]</span>
         <span class="n">keplerian</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;KEP&#39;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">kep</span> <span class="o">=</span> <span class="n">keplerian</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kep</span> <span class="o">=</span> <span class="n">keplerian</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
         <span class="c1"># Get perihelion index to provide location for rest of attributes</span>
         <span class="n">perihelion_index</span> <span class="o">=</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">df_orb</span><span class="p">,</span> <span class="s1">&#39;PERIHELION&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="c1"># Perihelion</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">perihelion</span> <span class="o">=</span> <span class="n">df_orb</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">perihelion_index</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">perihelion</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">df_orb</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">perihelion_index</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
         <span class="c1"># Aphelion</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">aphelion</span> <span class="o">=</span> <span class="n">df_orb</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">perihelion_index</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aphelion</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">df_orb</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">perihelion_index</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
         <span class="c1"># Ascending node - Earth Separation</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">anode</span> <span class="o">=</span> <span class="n">df_orb</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">perihelion_index</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">anode</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">df_orb</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">perihelion_index</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
         <span class="c1"># Descending node - Earth Separation</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dnode</span> <span class="o">=</span> <span class="n">df_orb</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">perihelion_index</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dnode</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">df_orb</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">perihelion_index</span><span class="o">+</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
         <span class="c1"># MOID (Minimum Orbit Intersection Distance)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">moid</span> <span class="o">=</span> <span class="n">df_orb</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">perihelion_index</span><span class="o">+</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">moid</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">df_orb</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">perihelion_index</span><span class="o">+</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
         <span class="c1"># Period</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">period</span> <span class="o">=</span> <span class="n">df_orb</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">perihelion_index</span><span class="o">+</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">period</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">df_orb</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">perihelion_index</span><span class="o">+</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
         <span class="c1"># PHA (Potential Hazardous Asteroid)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pha</span> <span class="o">=</span> <span class="n">df_orb</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">perihelion_index</span><span class="o">+</span><span class="mi">6</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
         <span class="c1"># Vinfty</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">vinfty</span> <span class="o">=</span> <span class="n">df_orb</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">perihelion_index</span><span class="o">+</span><span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vinfty</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">df_orb</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">perihelion_index</span><span class="o">+</span><span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
         <span class="c1"># U_par</span>
         <span class="n">check_upar</span> <span class="o">=</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">df_orb</span><span class="p">,</span> <span class="s1">&#39;U_PAR&#39;</span><span class="p">)</span>
         <span class="c1"># Check if U_par parameter is assigned</span>
         <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="n">check_upar</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">u_par</span> <span class="o">=</span> <span class="s1">&#39;There is no u_par assigned to this object&#39;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">u_par</span> <span class="o">=</span> <span class="n">df_orb</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">check_upar</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">u_par</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">df_orb</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">check_upar</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">])</span>
 
         <span class="c1"># Get index for RMS</span>
         <span class="n">rms_index</span> <span class="o">=</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">df_orb</span><span class="p">,</span> <span class="s1">&#39;RMS&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
@@ -1719,13 +1821,15 @@
 
         <span class="c1"># RMS - Rename indexes</span>
         <span class="n">rms</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;RMS&#39;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rms</span> <span class="o">=</span> <span class="n">rms</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rms</span> <span class="o">=</span> <span class="n">rms</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
         <span class="c1"># Covariance matrix</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cov</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_matrix</span><span class="p">(</span><span class="n">df_orb</span><span class="p">,</span> <span class="s1">&#39;cov&#39;</span><span class="p">,</span> <span class="n">matrix_dimension</span><span class="p">,</span>
-                                   <span class="s1">&#39;keplerian&#39;</span><span class="p">,</span> <span class="n">ngr</span><span class="o">=</span><span class="n">ngr_parameter</span><span class="p">)</span>
+                                   <span class="s1">&#39;keplerian&#39;</span><span class="p">,</span> <span class="n">ngr</span><span class="o">=</span><span class="n">ngr_parameter</span><span class="p">)</span>\
+                       <span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
         <span class="c1"># Correlation matrix</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_matrix</span><span class="p">(</span><span class="n">df_orb</span><span class="p">,</span> <span class="s1">&#39;cor&#39;</span><span class="p">,</span> <span class="n">matrix_dimension</span><span class="p">,</span>
-                                   <span class="s1">&#39;keplerian&#39;</span><span class="p">,</span> <span class="n">ngr</span><span class="o">=</span><span class="n">ngr_parameter</span><span class="p">)</span></div>
+                                   <span class="s1">&#39;keplerian&#39;</span><span class="p">,</span> <span class="n">ngr</span><span class="o">=</span><span class="n">ngr_parameter</span><span class="p">)</span>\
+                       <span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="EquinoctialOrbitProperties"><a class="viewcode-back" href="../../index.html#ESANEOCC.tabs.EquinoctialOrbitProperties">[docs]</a><span class="k">class</span> <span class="nc">EquinoctialOrbitProperties</span><span class="p">(</span><span class="n">OrbitProperties</span><span class="p">):</span>
@@ -1808,7 +1912,7 @@
                                <span class="s1">&#39;tan(i/2)*sin(LN)&#39;</span><span class="p">,</span> <span class="s1">&#39;tan(i/2)*cos(LN)&#39;</span><span class="p">,</span>
                                <span class="s1">&#39;mean long.&#39;</span><span class="p">]</span>
         <span class="n">equinoctial</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;EQU&#39;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">equinoctial</span> <span class="o">=</span> <span class="n">equinoctial</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">equinoctial</span> <span class="o">=</span> <span class="n">equinoctial</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
         <span class="c1"># Get index for RMS</span>
         <span class="n">rms_index</span> <span class="o">=</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">df_orb</span><span class="p">,</span> <span class="s1">&#39;RMS&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="c1"># Check the dimension of the matrix to give complete RMS</span>
@@ -1861,19 +1965,21 @@
         <span class="n">rms</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">eig</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">wea</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">column_names</span>
         <span class="c1"># RMS - Rename indexes</span>
         <span class="n">rms</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;RMS&#39;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rms</span> <span class="o">=</span> <span class="n">rms</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rms</span> <span class="o">=</span> <span class="n">rms</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
         <span class="c1"># EIG - Rename indexes</span>
         <span class="n">eig</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;EIG&#39;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">eig</span> <span class="o">=</span> <span class="n">eig</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eig</span> <span class="o">=</span> <span class="n">eig</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
         <span class="c1"># EIG - Rename indexes</span>
         <span class="n">wea</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;WEA&#39;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">wea</span> <span class="o">=</span> <span class="n">wea</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wea</span> <span class="o">=</span> <span class="n">wea</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
         <span class="c1"># Covariance matrix</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cov</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_matrix</span><span class="p">(</span><span class="n">df_orb</span><span class="p">,</span> <span class="s1">&#39;cov&#39;</span><span class="p">,</span> <span class="n">matrix_dimension</span><span class="p">,</span>
-                                   <span class="s1">&#39;equinoctial&#39;</span><span class="p">,</span> <span class="n">ngr</span><span class="o">=</span><span class="n">ngr_parameter</span><span class="p">)</span>
+                                   <span class="s1">&#39;equinoctial&#39;</span><span class="p">,</span> <span class="n">ngr</span><span class="o">=</span><span class="n">ngr_parameter</span><span class="p">)</span>\
+                       <span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
         <span class="c1"># Correlation matrix</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_matrix</span><span class="p">(</span><span class="n">df_orb</span><span class="p">,</span> <span class="s1">&#39;nor&#39;</span><span class="p">,</span> <span class="n">matrix_dimension</span><span class="p">,</span>
-                                   <span class="s1">&#39;equinoctial&#39;</span><span class="p">,</span> <span class="n">ngr</span><span class="o">=</span><span class="n">ngr_parameter</span><span class="p">)</span></div>
+                                   <span class="s1">&#39;equinoctial&#39;</span><span class="p">,</span> <span class="n">ngr</span><span class="o">=</span><span class="n">ngr_parameter</span><span class="p">)</span>\
+                       <span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Ephemerides"><a class="viewcode-back" href="../../index.html#ESANEOCC.tabs.Ephemerides">[docs]</a><span class="k">class</span> <span class="nc">Ephemerides</span><span class="p">:</span>
@@ -1984,7 +2090,7 @@
         <span class="c1"># Request data two times if the first attempt fails</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># Get object data</span>
-            <span class="n">data_obj</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url_ephe</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
+            <span class="n">data_obj</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url_ephe</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
 
         <span class="k">except</span> <span class="ne">ConnectionError</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Initial attempt to obtain object data failed. &#39;</span>
@@ -1994,7 +2100,7 @@
             <span class="c1"># Wait 5 seconds</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
             <span class="c1"># Get object data</span>
-            <span class="n">data_obj</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url_ephe</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
+            <span class="n">data_obj</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url_ephe</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
 
         <span class="c1"># Check if file contains errors due to bad URL keys</span>
         <span class="n">check</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">data_obj</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
@@ -2015,8 +2121,7 @@
                      <span class="p">(</span><span class="mi">170</span><span class="p">,</span><span class="mi">178</span><span class="p">),</span> <span class="p">(</span><span class="mi">178</span><span class="p">,</span><span class="mi">184</span><span class="p">)]</span>
         <span class="c1"># Read pandas as txt</span>
         <span class="n">ephem</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_fwf</span><span class="p">(</span><span class="n">ephems_d</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
-                            <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;python&#39;</span><span class="p">,</span> <span class="n">colspecs</span><span class="o">=</span><span class="n">col_space</span><span class="p">,</span>
-                            <span class="n">skipfooter</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+                            <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;python&#39;</span><span class="p">,</span> <span class="n">colspecs</span><span class="o">=</span><span class="n">col_space</span><span class="p">)</span>
         <span class="c1"># Rename columns</span>
         <span class="n">ephem</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">,</span> <span class="s1">&#39;Hour&#39;</span><span class="p">,</span> <span class="s1">&#39;MJD&#39;</span><span class="p">,</span> <span class="s1">&#39;RA H&#39;</span><span class="p">,</span> <span class="s1">&#39;RA M&#39;</span><span class="p">,</span> <span class="s1">&#39;RA S&#39;</span><span class="p">,</span>
                          <span class="s1">&#39;DEC D&#39;</span><span class="p">,</span> <span class="s1">&#39;DEC </span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;DEC &quot;&#39;</span><span class="p">,</span>
@@ -2025,9 +2130,14 @@
                          <span class="s1">&#39;Glat (deg)&#39;</span><span class="p">,</span> <span class="s1">&#39;Glon (deg)&#39;</span><span class="p">,</span> <span class="s1">&#39;R (au)&#39;</span><span class="p">,</span>
                          <span class="s1">&#39;Delta (au)&#39;</span><span class="p">,</span> <span class="s1">&#39;Ra*cosDE (&quot;/min)&#39;</span><span class="p">,</span>
                          <span class="s1">&#39;DEC (&quot;/min)&#39;</span><span class="p">,</span> <span class="s1">&#39;Err1&#39;</span><span class="p">,</span> <span class="s1">&#39;Err2&#39;</span><span class="p">,</span> <span class="s1">&#39;PA&#39;</span><span class="p">]</span>
-        <span class="c1"># Convert Date to datetime format and show it as in portal</span>
-        <span class="n">ephem</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">ephem</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> %b %Y&quot;</span><span class="p">)</span>
-        <span class="n">ephem</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ephem</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> %b %Y&quot;</span><span class="p">)</span>
+        <span class="c1"># Convert Date to datetime iso format</span>
+        <span class="n">ephem</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">ephem</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">])</span>
+        <span class="c1"># Convert Hout column to days</span>
+        <span class="n">ephem</span><span class="p">[</span><span class="s1">&#39;Hour&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ephem</span><span class="p">[</span><span class="s1">&#39;Hour&#39;</span><span class="p">]</span><span class="o">/</span><span class="mi">24</span>
+        <span class="c1"># Add hours to date</span>
+        <span class="n">ephem</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ephem</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">ephem</span><span class="p">[</span><span class="s1">&#39;Hour&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">timedelta</span><span class="p">)</span>
+        <span class="c1"># Remove Hour column</span>
+        <span class="n">ephem</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;Hour&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="c1"># Remove mid whitespaces from declination, if any, and apply int</span>
         <span class="c1"># format</span>
         <span class="k">if</span> <span class="n">ephem</span><span class="p">[</span><span class="s1">&#39;DEC D&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
@@ -2110,7 +2220,7 @@
 
         <span class="c1"># Read the url as html</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">contents</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
+            <span class="n">contents</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
         <span class="k">except</span> <span class="n">contents</span><span class="o">.</span><span class="n">DoesNotExist</span> <span class="k">as</span> <span class="n">contents_not_exist</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Object not found: the name of the &#39;</span>
                             <span class="s1">&#39;object is wrong or misspelt&#39;</span><span class="p">)</span>

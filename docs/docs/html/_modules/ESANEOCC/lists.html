@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>ESANEOCC.lists &mdash; ESA NEOCC Python Interface 1.2.0 documentation</title>
+  <title>ESANEOCC.lists &mdash; ESA NEOCC Python Interface 1.3.0 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.2
+                1.3
               </div>
             
           
@@ -161,7 +161,7 @@
 <span class="sd">* Property: European Space Agency (ESA)</span>
 <span class="sd">* Developed by: Elecnor Deimos</span>
 <span class="sd">* Author: C. Álvaro Arroyo Parejo</span>
-<span class="sd">* Issue: 1.2</span>
+<span class="sd">* Issue: 1.3</span>
 <span class="sd">* Date: 17-05-2021</span>
 <span class="sd">* Purpose: Module which request and parse list data from ESA NEOCC</span>
 <span class="sd">* Module: lists.py</span>
@@ -175,7 +175,10 @@
 <span class="sd">1.2        17-05-2021    Adding *help* property for dataframes.\n</span>
 <span class="sd">                         Adding timeout of 90 seconds.\n</span>
 <span class="sd">                         Adding *parse_impacted* function for new</span>
-<span class="sd">                         list</span>
+<span class="sd">                         list.</span>
+<span class="sd">1.3        16-06-2021    URL and Timeout from configuration file</span>
+<span class="sd">                         for astroquery implementation.\n</span>
+<span class="sd">                         Change dateformat to datetime isoformat</span>
 <span class="sd">========   ===========   ==========================================</span>
 
 <span class="sd">© Copyright [European Space Agency][2021]</span>
@@ -183,13 +186,16 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timedelta</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span> <span class="k">as</span> <span class="n">dt</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">conf</span>
 
-<span class="c1"># Define the base URL for NEOCC</span>
-<span class="n">BASE_URL</span> <span class="o">=</span> <span class="s1">&#39;https://neo.ssa.esa.int/PSDB-portlet/download?file=&#39;</span>
+<span class="c1"># Import BASE URL and TIMEOUT</span>
+<span class="n">API_URL</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">API_URL</span>
+<span class="n">TIMEOUT</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">TIMEOUT</span>
 
 
 <div class="viewcode-block" id="get_list_url"><a class="viewcode-back" href="../../index.html#ESANEOCC.lists.get_list_url">[docs]</a><span class="k">def</span> <span class="nf">get_list_url</span><span class="p">(</span><span class="n">list_name</span><span class="p">):</span>
@@ -199,8 +205,8 @@
 <span class="sd">    ----------</span>
 <span class="sd">    list_name : str</span>
 <span class="sd">        Name of the requested list. Valid names are: *nea_list,</span>
-<span class="sd">        risk_list, risk_list_special, close_appr_upcoming,</span>
-<span class="sd">        close_appr_recent, priority_list, priority_list_faint*.</span>
+<span class="sd">        risk_list, risk_list_special, close_approaches_upcoming,</span>
+<span class="sd">        close_approaches_recent, priority_list, priority_list_faint*.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -219,8 +225,8 @@
         <span class="s2">&quot;monthly_update&quot;</span><span class="p">:</span> <span class="s1">&#39;monthly_update.done&#39;</span><span class="p">,</span>
         <span class="s2">&quot;risk_list&quot;</span><span class="p">:</span> <span class="s1">&#39;esa_risk_list&#39;</span><span class="p">,</span>
         <span class="s2">&quot;risk_list_special&quot;</span><span class="p">:</span> <span class="s1">&#39;esa_special_risk_list&#39;</span><span class="p">,</span>
-        <span class="s2">&quot;close_appr_upcoming&quot;</span><span class="p">:</span> <span class="s1">&#39;esa_upcoming_close_app&#39;</span><span class="p">,</span>
-        <span class="s2">&quot;close_appr_recent&quot;</span><span class="p">:</span> <span class="s1">&#39;esa_recent_close_app&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;close_approaches_upcoming&quot;</span><span class="p">:</span> <span class="s1">&#39;esa_upcoming_close_app&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;close_approaches_recent&quot;</span><span class="p">:</span> <span class="s1">&#39;esa_recent_close_app&#39;</span><span class="p">,</span>
         <span class="s2">&quot;priority_list&quot;</span><span class="p">:</span> <span class="s1">&#39;esa_priority_neo_list&#39;</span><span class="p">,</span>
         <span class="s2">&quot;priority_list_faint&quot;</span><span class="p">:</span> <span class="s1">&#39;esa_faint_neo_list&#39;</span><span class="p">,</span>
         <span class="s2">&quot;close_encounter&quot;</span> <span class="p">:</span> <span class="s1">&#39;close_encounter2.txt&#39;</span><span class="p">,</span>
@@ -230,7 +236,7 @@
     <span class="k">if</span> <span class="n">list_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lists_dict</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;Valid list names are nea_list, updated_nea, &#39;</span>
                        <span class="s1">&#39;monthly_update, risk_list, risk_list_special, &#39;</span>
-                       <span class="s1">&#39;close_appr_upcoming, close_appr_recent, &#39;</span>
+                       <span class="s1">&#39;close_approaches_upcoming, close_approaches_recent, &#39;</span>
                        <span class="s1">&#39;priority_list, priority_list_faint, &#39;</span>
                        <span class="s1">&#39;close_encounter and impacted_objects&#39;</span><span class="p">)</span>
     <span class="c1"># Get url</span>
@@ -255,7 +261,7 @@
 <span class="sd">        Data frame which contains the data of the requested list.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Get data from URL</span>
-    <span class="n">data_list</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">BASE_URL</span> <span class="o">+</span> <span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
+    <span class="n">data_list</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">API_URL</span> <span class="o">+</span> <span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
 
     <span class="c1"># Decode the data using UTF-8</span>
     <span class="n">data_list_d</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">data_list</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
@@ -334,7 +340,8 @@
     <span class="k">elif</span> <span class="n">list_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;risk_list&quot;</span><span class="p">,</span> <span class="s2">&quot;risk_list_special&quot;</span><span class="p">):</span>
         <span class="n">neocc_lst</span> <span class="o">=</span> <span class="n">parse_risk</span><span class="p">(</span><span class="n">data_byte_d</span><span class="p">)</span>
 
-    <span class="k">elif</span> <span class="n">list_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;close_appr_upcoming&quot;</span><span class="p">,</span> <span class="s2">&quot;close_appr_recent&quot;</span><span class="p">):</span>
+    <span class="k">elif</span> <span class="n">list_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;close_approaches_upcoming&quot;</span><span class="p">,</span>
+                       <span class="s2">&quot;close_approaches_recent&quot;</span><span class="p">):</span>
         <span class="n">neocc_lst</span> <span class="o">=</span> <span class="n">parse_clo</span><span class="p">(</span><span class="n">data_byte_d</span><span class="p">)</span>
 
     <span class="k">elif</span> <span class="n">list_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;priority_list&quot;</span><span class="p">,</span> <span class="s2">&quot;priority_list_faint&quot;</span><span class="p">):</span>
@@ -348,7 +355,7 @@
 
 
 <div class="viewcode-block" id="parse_nea"><a class="viewcode-back" href="../../index.html#ESANEOCC.lists.parse_nea">[docs]</a><span class="k">def</span> <span class="nf">parse_nea</span><span class="p">(</span><span class="n">data_byte_d</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Parse and arrange NEA lists.</span>
+    <span class="sd">&quot;&quot;&quot;Parse and arrange NEA list, updated NEA and monthly update.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -405,8 +412,21 @@
 
     <span class="c1"># Convert column with date to datetime variable</span>
     <span class="n">neocc_lst</span><span class="p">[</span><span class="s1">&#39;Date/Time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">neocc_lst</span><span class="p">[</span><span class="s1">&#39;Date/Time&#39;</span><span class="p">])</span>
-    <span class="c1"># Convert from datetime to YYYY.yyyyyy</span>
-    <span class="n">neocc_lst</span><span class="p">[</span><span class="s1">&#39;Date/Time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">neocc_lst</span><span class="p">[</span><span class="s1">&#39;Date/Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">get_dec_year</span><span class="p">)</span>
+    <span class="c1"># Split Years into 2 columns to avoid dashed between integers</span>
+    <span class="c1"># Check dataframe is not empty (for special list)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">neocc_lst</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">neocc_lst</span><span class="p">[[</span><span class="s1">&#39;First year&#39;</span><span class="p">,</span> <span class="s1">&#39;Last year&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">neocc_lst</span><span class="p">[</span><span class="s1">&#39;Years&#39;</span><span class="p">]</span>\
+                                                    <span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span>
+                                                    <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>\
+                                                    <span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="c1"># Drop split column</span>
+        <span class="n">neocc_lst</span> <span class="o">=</span> <span class="n">neocc_lst</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;Years&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># Reorder columns</span>
+        <span class="n">neocc_lst</span> <span class="o">=</span> <span class="n">neocc_lst</span><span class="p">[[</span><span class="s1">&#39;Object Name&#39;</span><span class="p">,</span> <span class="s1">&#39;Diameter in m&#39;</span><span class="p">,</span> <span class="s1">&#39;*=Y&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;Date/Time&#39;</span><span class="p">,</span> <span class="s1">&#39;IP max&#39;</span><span class="p">,</span> <span class="s1">&#39;PS max&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;First year&#39;</span><span class="p">,</span> <span class="s1">&#39;Last year&#39;</span><span class="p">,</span> <span class="s1">&#39;IP cum&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;PS cum&#39;</span><span class="p">]]</span>
+
     <span class="c1"># Adding metadata</span>
     <span class="n">neocc_lst</span><span class="o">.</span><span class="n">help</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Risk lists contain a data frame with the &#39;</span>
                       <span class="s1">&#39;following information:</span><span class="se">\n</span><span class="s1">&#39;</span>
@@ -414,13 +434,14 @@
                       <span class="s1">&#39;-Diamater in m: approximate diameter in meters</span><span class="se">\n</span><span class="s1">&#39;</span>
                       <span class="s1">&#39;-*=Y: recording an asterisk if the value has &#39;</span>
                       <span class="s1">&#39;been estimated from the absolute magnitude</span><span class="se">\n</span><span class="s1">&#39;</span>
-                      <span class="s1">&#39;-Date/Time: predicted impact date in YYYY.yyyyyy &#39;</span>
+                      <span class="s1">&#39;-Date/Time: predicted impact date in datetime &#39;</span>
                       <span class="s1">&#39;format</span><span class="se">\n</span><span class="s1">&#39;</span>
                       <span class="s1">&#39;-IP max: Maximum Impact Probability</span><span class="se">\n</span><span class="s1">&#39;</span>
                       <span class="s1">&#39;-PS max: Palermo scale rating</span><span class="se">\n</span><span class="s1">&#39;</span>
                       <span class="s1">&#39;-Vel in km/s: Impact velocity at atmospheric entry&#39;</span>
                       <span class="s1">&#39; in km/s</span><span class="se">\n</span><span class="s1">&#39;</span>
-                      <span class="s1">&#39;-Years: Time span of detected impacts</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-First year: first year of possible impacts</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Last year: last year of possible impacts</span><span class="se">\n</span><span class="s1">&#39;</span>
                       <span class="s1">&#39;-IP cum: Cumulative Impact Probability</span><span class="se">\n</span><span class="s1">&#39;</span>
                       <span class="s1">&#39;-PS cum: Cumulative Palermo Scale&#39;</span><span class="p">)</span>
 
@@ -465,13 +486,11 @@
 
     <span class="c1"># Convert column with date to datetime variable</span>
     <span class="n">neocc_lst</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">neocc_lst</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">])</span>
-    <span class="c1"># Convert from datetime to YYYY.yyyyyy</span>
-    <span class="n">neocc_lst</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">neocc_lst</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">get_dec_year</span><span class="p">)</span>
     <span class="c1"># Adding metadata</span>
     <span class="n">neocc_lst</span><span class="o">.</span><span class="n">help</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Close approches lists contain a data frame with&#39;</span>
                       <span class="s1">&#39; the following information:</span><span class="se">\n</span><span class="s1">&#39;</span>
                       <span class="s1">&#39;-Object Name: name of the NEA</span><span class="se">\n</span><span class="s1">&#39;</span>
-                      <span class="s1">&#39;-Date: close approach date in YYYY.yyyyyy &#39;</span>
+                      <span class="s1">&#39;-Date: close approach date in datetime &#39;</span>
                       <span class="s1">&#39;format</span><span class="se">\n</span><span class="s1">&#39;</span>
                       <span class="s1">&#39;-Miss distance in km: miss distance in kilometers&#39;</span>
                       <span class="s1">&#39; with precision of 1 km</span><span class="se">\n</span><span class="s1">&#39;</span>
@@ -521,9 +540,6 @@
 
     <span class="c1"># Convert column with date to datetime variable</span>
     <span class="n">neocc_lst</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">neocc_lst</span><span class="p">[</span><span class="mi">7</span><span class="p">])</span>
-
-    <span class="c1"># Convert from datetime to YYYY.yyyyyy</span>
-    <span class="n">neocc_lst</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="n">neocc_lst</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">get_dec_year</span><span class="p">)</span>
 
     <span class="c1"># Rename columns</span>
     <span class="n">neocc_lst</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Priority&#39;</span><span class="p">,</span> <span class="s1">&#39;Object&#39;</span><span class="p">,</span>
@@ -577,12 +593,24 @@
     <span class="n">neocc_lst</span><span class="p">[</span><span class="n">df_obj</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_obj</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span>
                                              <span class="n">x</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
 
+    <span class="c1"># Convert Date column to datetime format</span>
+    <span class="c1"># Create auxilary columns</span>
+    <span class="n">neocc_lst</span><span class="p">[[</span><span class="s1">&#39;Date1&#39;</span><span class="p">,</span><span class="s1">&#39;Date2&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">neocc_lst</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span>\
+                                   <span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span><span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># Convert each auxiliary column to datetime format and add</span>
+    <span class="n">neocc_lst</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">neocc_lst</span><span class="p">[</span><span class="s1">&#39;Date1&#39;</span><span class="p">],</span>
+                                       <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;%Y/%m/</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span> <span class="o">+</span>\
+                        <span class="p">(</span><span class="n">neocc_lst</span><span class="p">[</span><span class="s1">&#39;Date2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">/</span><span class="mf">1e5</span><span class="p">)</span>\
+                                           <span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">timedelta</span><span class="p">)</span>
+    <span class="c1"># Remove auxiliary columns</span>
+    <span class="n">neocc_lst</span> <span class="o">=</span> <span class="n">neocc_lst</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;Date1&#39;</span><span class="p">,</span><span class="s1">&#39;Date2&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
     <span class="n">neocc_lst</span><span class="o">.</span><span class="n">help</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Close encounter list contains a data frame with&#39;</span>
                       <span class="s1">&#39; the following information:</span><span class="se">\n</span><span class="s1">&#39;</span>
                       <span class="s1">&#39;-Name/design: designator of the NEA</span><span class="se">\n</span><span class="s1">&#39;</span>
                       <span class="s1">&#39;-Planet:  planet or massive asteroid is &#39;</span>
                       <span class="s1">&#39;involved in the close approach</span><span class="se">\n</span><span class="s1">&#39;</span>
-                      <span class="s1">&#39;-Date: close encounter date in YYYY.yyyyyy &#39;</span>
+                      <span class="s1">&#39;-Date: close encounter date in datetime &#39;</span>
                       <span class="s1">&#39;format</span><span class="se">\n</span><span class="s1">&#39;</span>
                       <span class="s1">&#39;-Time approach: close encounter date in &#39;</span>
                       <span class="s1">&#39;MJD2000</span><span class="se">\n</span><span class="s1">&#39;</span>
@@ -606,6 +634,7 @@
 
     <span class="k">return</span> <span class="n">neocc_lst</span></div>
 
+
 <div class="viewcode-block" id="parse_impacted"><a class="viewcode-back" href="../../index.html#ESANEOCC.lists.parse_impacted">[docs]</a><span class="k">def</span> <span class="nf">parse_impacted</span><span class="p">(</span><span class="n">data_byte_d</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Parse impacted objects list.</span>
 
@@ -621,6 +650,9 @@
     <span class="c1"># Read data as csv</span>
     <span class="n">neocc_lst</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">data_byte_d</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                             <span class="n">delim_whitespace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Convert column with date to datetime variable</span>
+    <span class="n">neocc_lst</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">neocc_lst</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
     <span class="k">return</span> <span class="n">neocc_lst</span></div>
 </pre></div>
