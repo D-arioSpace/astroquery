@@ -22,7 +22,7 @@ Version    Date          Change History
                          Adding timeout of 90 seconds.\n
                          Adding *parse_impacted* function for new
                          list.
-1.3        16-06-2021    URL and Timeout from configuration file 
+1.3        16-06-2021    URL and Timeout from configuration file
                          for astroquery implementation.\n
                          Change dateformat to datetime isoformat
 ========   ===========   ==========================================

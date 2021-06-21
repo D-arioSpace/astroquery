@@ -1959,7 +1959,6 @@ class Ephemerides:
         ephems_d = io.StringIO(data_obj.decode('utf-8'))
         # Since ephemerides col space is fixed, it is defined in order
         # to set the length (number of spaces) for each field
-        # TODO ask for appearance of Mag column in some objects (2010LJ25)
         col_space = [(1,12), (13,19), (20,32), (34,37), (37,40),
                      (40,47), (49,52), (52, 55), (55,61), (62,67),
                      (68,73), (74,82), (83, 89), (90,96), (97,103),

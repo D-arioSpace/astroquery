@@ -27,7 +27,7 @@ Version    Date          Change History
                          changes to *orbital_elements*.\n
                          Adding impacted objects lists.\n
                          Minor typos changes.
-1.3        16-06-2021    Adding class type as for astroquery 
+1.3        16-06-2021    Adding class type as for astroquery
                          implementation.\n
                          Define methods as static.\n
 ========   ===========   ============================================
