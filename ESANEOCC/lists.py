@@ -8,7 +8,7 @@ obtain it from the ESA NEOCC portal and parse it to show it properly.
 * Developed by: Elecnor Deimos
 * Author: C. Álvaro Arroyo Parejo
 * Issue: 1.3
-* Date: 17-05-2021
+* Date: 16-06-2021
 * Purpose: Module which request and parse list data from ESA NEOCC
 * Module: lists.py
 * History:
