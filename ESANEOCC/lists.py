@@ -24,7 +24,7 @@ Version    Date          Change History
                          list.
 1.3        16-06-2021    URL and Timeout from configuration file
                          for astroquery implementation.\n
-                         Change dateformat to datetime isoformat
+                         Change dateformat to datetime ISO format
 ========   ===========   ==========================================
 
 © Copyright [European Space Agency][2021]

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Main module from ESA NEOCCS library. This module contains the two main
+Main module from ESA NEOCC library. This module contains the two main
 methods of the library: *query_list* and *query_object*. The information
 is obtained from ESA Near-Earth Object Coordination Centre's (NEOCC) web
 portal: https://neo.ssa.esa.int/.
@@ -61,7 +61,7 @@ class ESAneoccClass():
         * Risk list (special): *risk_list_special*
         * Close approaches (upcoming): *close_approaches_upcoming*
         * Close approaches (recent): *close_approaches_recent*
-        * Priotiry list (normal): *priority_list*
+        * Priority list (normal): *priority_list*
         * Priority list (faint): *priority_list_faint*
         * Close encounter list: *close_encounter*
         * Impacted objects: *impacted_objects*
@@ -199,7 +199,7 @@ class ESAneoccClass():
         name : str
             Name of the requested object
         tab : str
-            Name of the request tab. Valid names are:summary,
+            Name of the request tab. Valid names are: summary,
             orbit_properties, physical_properties, observations,
             ephemerides, close_approaches and impacts.
         **kwargs : str
@@ -291,7 +291,7 @@ class ESAneoccClass():
             -sigimp: The lateral distance in sigma-space from the LOV to
             the Earth surface. A zero implies that the LOV passes through
             the Earth-dist: Minimum Distance in Earth radii. The lateral
-            distance from the LOV to the center of the Earth
+            distance from the LOV to the centre of the Earth
             -width: one-sigma semi-width of the Target Plane confidence
             region in Earth radii
             -stretch: Stretching factor. It indicates how much the
@@ -393,7 +393,7 @@ class ESAneoccClass():
         information, it is necessary to provide two additional inputs to
         *query_object* method: **orbital_elements** and **orbit_epoch**.
 
-        It is mandatory to write these two paramters as: *orbit_epoch=' '*
+        It is mandatory to write these two parameters as: *orbit_epoch=' '*
         to make the library works.
 
         >>> ast_orbit_prop = neocc.query_object(name='99942',
@@ -415,7 +415,7 @@ class ESAneoccClass():
         method: **observatory**, **start**, **stop**, **step** and
         **step_unit***.
 
-        It is mandatory to write these five paramters as: *observatory=' '*
+        It is mandatory to write these five parameters as: *observatory=' '*
         to make the library works.
 
         >>> ast_ephemerides = neocc.query_object(name='99942',

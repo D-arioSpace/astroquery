@@ -31,7 +31,7 @@ Version    Date          Change History
                          Adding timeout of 90 seconds.
 1.3        16-06-2021    URLs and timeout from configuration file for
                          astroquery implementation.\n
-                         Change time format to datetime isoformat.\n
+                         Change time format to datetime ISO format.\n
                          Change to correct types in attributes (e.g.,
                          matrices, etc.)\n
                          Change ephemerides skyfooter to fix bug.\n
@@ -1517,13 +1517,14 @@ class OrbitProperties:
 
 
 class KeplerianOrbitProperties(OrbitProperties):
-    """This class contains information of keplerian asteroid orbit
-    properties. This class inherits the attributes from OrbitProperties.
+    """This class contains information of asteroid orbit
+    properties in Keplerian reference frame. This class inherits the attributes
+    from OrbitProperties.
 
     Attributes
     ----------
     kep : pandas.DataFrame
-        Data frame which contains the keplerian elements information.
+        Data frame which contains the Keplerian elements information.
     perihelion : int
         Orbit perihelion in au.
     aphelion : int
@@ -1543,11 +1544,11 @@ class KeplerianOrbitProperties(OrbitProperties):
     u_par : int
         Uncertainty parameter as defined by MPC.
     rms : pandas.DataFrame
-        Root mean square for keplerian elements
+        Root mean square for Keplerian elements
     cov : pandas.DataFrame
-        Covariance matrix for keplerian elements
+        Covariance matrix for Keplerian elements
     cor : pandas.DataFrame
-        Correlation matrix for keplerian elements
+        Correlation matrix for Keplerian elements
 
     """
 
@@ -1678,8 +1679,9 @@ class KeplerianOrbitProperties(OrbitProperties):
 
 
 class EquinoctialOrbitProperties(OrbitProperties):
-    """This class contains information of equinoctial asteroid orbit
-    properties. This class inherits the attributes from OrbitProperties.
+    """This class contains information of asteroid orbit
+    properties in equinoctial reference frame. This class inherits
+    the attributes from OrbitProperties.
 
     Attributes
     ----------
@@ -1842,7 +1844,7 @@ class Ephemerides:
         Time step and time unit used during ephemerides calculation.
     ephemerides : pandas.DataFrame
         Data frame which contains the information of the object
-        ephemerides
+        ephemerides.
 
     """
 
@@ -1916,9 +1918,9 @@ class Ephemerides:
             stop : str
                 End date from which ephemerides are obtained.
             step : str
-                Value for the time step (e.g. '1', '0.1', etc.)
+                Value for the time step (e.g. '1', '0.1', etc.).
             step_unit : str
-                Units of the time step
+                Units of the time step.
             Raises
             ------
             KeyError
