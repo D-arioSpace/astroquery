@@ -231,7 +231,7 @@ requirements. This will upgrade/downgrade the version of any previous
 installed package that <code class="docutils literal notranslate"><span class="pre">ESANEOCC</span></code> library depends on.</p>
 </div>
 <p>Another installation method that will install the library and will update
-the dependencies is the follwing:</p>
+the dependencies is the following:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install . --upgrade-strategy eager
 </pre></div>
 </div>
@@ -267,7 +267,7 @@ will not work if the dependencies do not satisfy the Requirements.</p>
 <h2>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="module-ESANEOCC.core">
 <span id="esaneocc-core"></span><h3>ESANEOCC.core<a class="headerlink" href="#module-ESANEOCC.core" title="Permalink to this headline">¶</a></h3>
-<p>Main module from ESA NEOCCS library. This module contains the two main
+<p>Main module from ESA NEOCC library. This module contains the two main
 methods of the library: <em>query_list</em> and <em>query_object</em>. The information
 is obtained from ESA Near-Earth Object Coordination Centre’s (NEOCC) web
 portal: <a class="reference external" href="https://neo.ssa.esa.int/">https://neo.ssa.esa.int/</a>.</p>
@@ -343,7 +343,7 @@ All rights reserved</p>
 <li><p>Risk list (special): <em>risk_list_special</em></p></li>
 <li><p>Close approaches (upcoming): <em>close_approaches_upcoming</em></p></li>
 <li><p>Close approaches (recent): <em>close_approaches_recent</em></p></li>
-<li><p>Priotiry list (normal): <em>priority_list</em></p></li>
+<li><p>Priority list (normal): <em>priority_list</em></p></li>
 <li><p>Priority list (faint): <em>priority_list_faint</em></p></li>
 <li><p>Close encounter list: <em>close_encounter</em></p></li>
 <li><p>Impacted objects: <em>impacted_objects</em></p></li>
@@ -459,7 +459,7 @@ for further information about data access):</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>str</em>) – Name of the requested object</p></li>
-<li><p><strong>tab</strong> (<em>str</em>) – Name of the request tab. Valid names are:summary,
+<li><p><strong>tab</strong> (<em>str</em>) – Name of the request tab. Valid names are: summary,
 orbit_properties, physical_properties, observations,
 ephemerides, close_approaches and impacts.</p></li>
 <li><p><strong>**kwargs</strong> (<em>str</em>) – <p>Tabs orbit_properties and ephemerides tabs required additional
@@ -559,7 +559,7 @@ of the dataframe.</p>
 <span class="go">-sigimp: The lateral distance in sigma-space from the LOV to</span>
 <span class="go">the Earth surface. A zero implies that the LOV passes through</span>
 <span class="go">the Earth-dist: Minimum Distance in Earth radii. The lateral</span>
-<span class="go">distance from the LOV to the center of the Earth</span>
+<span class="go">distance from the LOV to the centre of the Earth</span>
 <span class="go">-width: one-sigma semi-width of the Target Plane confidence</span>
 <span class="go">region in Earth radii</span>
 <span class="go">-stretch: Stretching factor. It indicates how much the</span>
@@ -661,7 +661,7 @@ a DataFrame which contains the information for close approaches:</p>
 <p><strong>Orbit Properties:</strong> In order to access the orbit properties
 information, it is necessary to provide two additional inputs to
 <em>query_object</em> method: <strong>orbital_elements</strong> and <strong>orbit_epoch</strong>.</p>
-<p>It is mandatory to write these two paramters as: <em>orbit_epoch=’ ‘</em>
+<p>It is mandatory to write these two parameters as: <em>orbit_epoch=’ ‘</em>
 to make the library works.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ast_orbit_prop</span> <span class="o">=</span> <span class="n">neocc</span><span class="o">.</span><span class="n">query_object</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;99942&#39;</span><span class="p">,</span>
 <span class="go">tab=&#39;orbit_properties&#39;,orbital_elements=&#39;keplerian&#39;, orbit_epoch=&#39;present&#39;)</span>
@@ -682,7 +682,7 @@ to make the library works.</p>
 is necessary to provide five additional inputs to <em>query_object</em>
 method: <strong>observatory</strong>, <strong>start</strong>, <strong>stop</strong>, <strong>step</strong> and
 <strong>step_unit*</strong>.</p>
-<p>It is mandatory to write these five paramters as: <em>observatory=’ ‘</em>
+<p>It is mandatory to write these five parameters as: <em>observatory=’ ‘</em>
 to make the library works.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ast_ephemerides</span> <span class="o">=</span> <span class="n">neocc</span><span class="o">.</span><span class="n">query_object</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;99942&#39;</span><span class="p">,</span>
 <span class="go">tab=&#39;ephemerides&#39;, observatory=&#39;500&#39;, start=&#39;2019-05-08 01:30&#39;,</span>
@@ -746,7 +746,7 @@ list.</p>
 <td><p>16-06-2021</p></td>
 <td><p>URL and Timeout from configuration file
 for astroquery implementation.</p>
-<p>Change dateformat to datetime isoformat</p>
+<p>Change dateformat to datetime ISO format</p>
 </td>
 </tr>
 </tbody>
@@ -990,7 +990,7 @@ information.</p>
 <td><p>16-06-2021</p></td>
 <td><p>URLs and timeout from configuration file for
 astroquery implementation.</p>
-<p>Change time format to datetime isoformat.</p>
+<p>Change time format to datetime ISO format.</p>
 <p>Change to correct types in attributes (e.g.,
 matrices, etc.)</p>
 <p>Change ephemerides skyfooter to fix bug.</p>
@@ -1175,7 +1175,7 @@ observer and satellite observation).</p>
 <dt id="ESANEOCC.tabs.Ephemerides.ephemerides">
 <code class="sig-name descname">ephemerides</code><a class="headerlink" href="#ESANEOCC.tabs.Ephemerides.ephemerides" title="Permalink to this definition">¶</a></dt>
 <dd><p>Data frame which contains the information of the object
-ephemerides</p>
+ephemerides.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>pandas.DataFrame</p>
@@ -1188,8 +1188,9 @@ ephemerides</p>
 <dl class="py class">
 <dt id="ESANEOCC.tabs.EquinoctialOrbitProperties">
 <em class="property">class </em><code class="sig-prename descclassname">ESANEOCC.tabs.</code><code class="sig-name descname">EquinoctialOrbitProperties</code><a class="reference internal" href="_modules/ESANEOCC/tabs.html#EquinoctialOrbitProperties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.tabs.EquinoctialOrbitProperties" title="Permalink to this definition">¶</a></dt>
-<dd><p>This class contains information of equinoctial asteroid orbit
-properties. This class inherits the attributes from OrbitProperties.</p>
+<dd><p>This class contains information of asteroid orbit
+properties in equinoctial reference frame. This class inherits
+the attributes from OrbitProperties.</p>
 <dl class="py attribute">
 <dt id="ESANEOCC.tabs.EquinoctialOrbitProperties.equinoctial">
 <code class="sig-name descname">equinoctial</code><a class="headerlink" href="#ESANEOCC.tabs.EquinoctialOrbitProperties.equinoctial" title="Permalink to this definition">¶</a></dt>
@@ -1357,12 +1358,13 @@ have an additional note after the main footer.</p>
 <dl class="py class">
 <dt id="ESANEOCC.tabs.KeplerianOrbitProperties">
 <em class="property">class </em><code class="sig-prename descclassname">ESANEOCC.tabs.</code><code class="sig-name descname">KeplerianOrbitProperties</code><a class="reference internal" href="_modules/ESANEOCC/tabs.html#KeplerianOrbitProperties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.tabs.KeplerianOrbitProperties" title="Permalink to this definition">¶</a></dt>
-<dd><p>This class contains information of keplerian asteroid orbit
-properties. This class inherits the attributes from OrbitProperties.</p>
+<dd><p>This class contains information of asteroid orbit
+properties in Keplerian reference frame. This class inherits the attributes
+from OrbitProperties.</p>
 <dl class="py attribute">
 <dt id="ESANEOCC.tabs.KeplerianOrbitProperties.kep">
 <code class="sig-name descname">kep</code><a class="headerlink" href="#ESANEOCC.tabs.KeplerianOrbitProperties.kep" title="Permalink to this definition">¶</a></dt>
-<dd><p>Data frame which contains the keplerian elements information.</p>
+<dd><p>Data frame which contains the Keplerian elements information.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>pandas.DataFrame</p>
@@ -1472,7 +1474,7 @@ properties. This class inherits the attributes from OrbitProperties.</p>
 <dl class="py attribute">
 <dt id="ESANEOCC.tabs.KeplerianOrbitProperties.rms">
 <code class="sig-name descname">rms</code><a class="headerlink" href="#ESANEOCC.tabs.KeplerianOrbitProperties.rms" title="Permalink to this definition">¶</a></dt>
-<dd><p>Root mean square for keplerian elements</p>
+<dd><p>Root mean square for Keplerian elements</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>pandas.DataFrame</p>
@@ -1483,7 +1485,7 @@ properties. This class inherits the attributes from OrbitProperties.</p>
 <dl class="py attribute">
 <dt id="ESANEOCC.tabs.KeplerianOrbitProperties.cov">
 <code class="sig-name descname">cov</code><a class="headerlink" href="#ESANEOCC.tabs.KeplerianOrbitProperties.cov" title="Permalink to this definition">¶</a></dt>
-<dd><p>Covariance matrix for keplerian elements</p>
+<dd><p>Covariance matrix for Keplerian elements</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>pandas.DataFrame</p>
@@ -1494,7 +1496,7 @@ properties. This class inherits the attributes from OrbitProperties.</p>
 <dl class="py attribute">
 <dt id="ESANEOCC.tabs.KeplerianOrbitProperties.cor">
 <code class="sig-name descname">cor</code><a class="headerlink" href="#ESANEOCC.tabs.KeplerianOrbitProperties.cor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Correlation matrix for keplerian elements</p>
+<dd><p>Correlation matrix for Keplerian elements</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>pandas.DataFrame</p>
@@ -1914,7 +1916,7 @@ where different examples are shown. It also shows how to obtain the different ty
 <p>Virtual Observatory (VO) tables are a new format developed by the International Virtual Observatory Alliance to store one or more tables.
 This format is included within <a class="reference external" href="https://atpy.readthedocs.io/en/stable/index.html">ATpy</a> library. However, most of ATpy’s functionalities has now been incorporated
 into Astropy library and the developers recommended to use the <a class="reference external" href="https://docs.astropy.org/en/stable/table/">Astropy Tables</a></p>
-<p>Astropy documentation details how to interface with the Pandas library, i.e., how to convert data in <em>pandas.Series</em> or <em>pandas.DataFrame</em> formats into Astropy Tables and viceversa.</p>
+<p>Astropy documentation details how to interface with the Pandas library, i.e., how to convert data in <em>pandas.Series</em> or <em>pandas.DataFrame</em> formats into Astropy Tables and vice versa.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ESANEOCC</span> <span class="kn">import</span> <span class="n">neocc</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">astropy.table</span> <span class="kn">import</span> <span class="n">Table</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ast</span> <span class="o">=</span> <span class="n">neocc</span><span class="o">.</span><span class="n">query_object</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;99942&#39;</span><span class="p">,</span> <span class="n">tab</span><span class="o">=</span><span class="s1">&#39;physical_properties&#39;</span><span class="p">)</span>
@@ -1968,11 +1970,12 @@ into Astropy library and the developers recommended to use the <a class="referen
 <h3>Changes<a class="headerlink" href="#changes" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference external" href="https://pypi.org/project/astropy/">astropy</a> library has been added as required package.</p></li>
-<li><p><em>neocc.py</em> module has been renamed to <em>core.py</em> in order to be consitent with Astroquery.</p></li>
+<li><p><em>neocc.py</em> module has been renamed to <em>core.py</em> in order to be consistent with Astroquery.</p></li>
 <li><p><em>core.py</em> has been modified in order to be consistent with Astroquery (main class and static methods).</p></li>
 <li><p>Dates/time columns or data have been converted to datetime ISO format.</p></li>
 <li><p>Abbreviations contain now complete expressions (e.g., <em>close_appr_upcoming</em> to <em>close approaches_upcoming</em>)</p></li>
 <li><p>The documentation explains how to obtain JSON and Table format from data retrieved from the library.</p></li>
+<li><p>Time performance improvenment in obtaining physical properties.</p></li>
 </ul>
 </div>
 <div class="section" id="bug-fixes">

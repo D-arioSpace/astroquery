@@ -70,7 +70,7 @@ This can be done in one command line:
    installed package that ``ESANEOCC`` library depends on.
 
 Another installation method that will install the library and will update
-the dependencies is the follwing:
+the dependencies is the following:
 
 .. code-block:: bash
 
@@ -292,7 +292,7 @@ Virtual Observatory (VO) tables are a new format developed by the International 
 This format is included within `ATpy <https://atpy.readthedocs.io/en/stable/index.html>`_ library. However, most of ATpy’s functionalities has now been incorporated 
 into Astropy library and the developers recommended to use the `Astropy Tables <https://docs.astropy.org/en/stable/table/>`_
 
-Astropy documentation details how to interface with the Pandas library, i.e., how to convert data in *pandas.Series* or *pandas.DataFrame* formats into Astropy Tables and viceversa.
+Astropy documentation details how to interface with the Pandas library, i.e., how to convert data in *pandas.Series* or *pandas.DataFrame* formats into Astropy Tables and vice versa.
 
 >>> from ESANEOCC import neocc
 >>> from astropy.table import Table
@@ -349,11 +349,12 @@ Changes
 ----------------------
 
 * `astropy <https://pypi.org/project/astropy/>`_ library has been added as required package.
-* *neocc.py* module has been renamed to *core.py* in order to be consitent with Astroquery.
+* *neocc.py* module has been renamed to *core.py* in order to be consistent with Astroquery.
 * *core.py* has been modified in order to be consistent with Astroquery (main class and static methods).
 * Dates/time columns or data have been converted to datetime ISO format.
 * Abbreviations contain now complete expressions (e.g., *close_appr_upcoming* to *close approaches_upcoming*)
 * The documentation explains how to obtain JSON and Table format from data retrieved from the library.
+* Time performance improvenment in obtaining physical properties.
 
 ----------------------
 Bug Fixes

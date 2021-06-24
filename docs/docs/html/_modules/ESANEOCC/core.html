@@ -154,7 +154,7 @@
   <h1>Source code for ESANEOCC.core</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Main module from ESA NEOCCS library. This module contains the two main</span>
+<span class="sd">Main module from ESA NEOCC library. This module contains the two main</span>
 <span class="sd">methods of the library: *query_list* and *query_object*. The information</span>
 <span class="sd">is obtained from ESA Near-Earth Object Coordination Centre&#39;s (NEOCC) web</span>
 <span class="sd">portal: https://neo.ssa.esa.int/.</span>
@@ -215,7 +215,7 @@
 <span class="sd">        * Risk list (special): *risk_list_special*</span>
 <span class="sd">        * Close approaches (upcoming): *close_approaches_upcoming*</span>
 <span class="sd">        * Close approaches (recent): *close_approaches_recent*</span>
-<span class="sd">        * Priotiry list (normal): *priority_list*</span>
+<span class="sd">        * Priority list (normal): *priority_list*</span>
 <span class="sd">        * Priority list (faint): *priority_list_faint*</span>
 <span class="sd">        * Close encounter list: *close_encounter*</span>
 <span class="sd">        * Impacted objects: *impacted_objects*</span>
@@ -353,7 +353,7 @@
 <span class="sd">        name : str</span>
 <span class="sd">            Name of the requested object</span>
 <span class="sd">        tab : str</span>
-<span class="sd">            Name of the request tab. Valid names are:summary,</span>
+<span class="sd">            Name of the request tab. Valid names are: summary,</span>
 <span class="sd">            orbit_properties, physical_properties, observations,</span>
 <span class="sd">            ephemerides, close_approaches and impacts.</span>
 <span class="sd">        **kwargs : str</span>
@@ -445,7 +445,7 @@
 <span class="sd">            -sigimp: The lateral distance in sigma-space from the LOV to</span>
 <span class="sd">            the Earth surface. A zero implies that the LOV passes through</span>
 <span class="sd">            the Earth-dist: Minimum Distance in Earth radii. The lateral</span>
-<span class="sd">            distance from the LOV to the center of the Earth</span>
+<span class="sd">            distance from the LOV to the centre of the Earth</span>
 <span class="sd">            -width: one-sigma semi-width of the Target Plane confidence</span>
 <span class="sd">            region in Earth radii</span>
 <span class="sd">            -stretch: Stretching factor. It indicates how much the</span>
@@ -547,7 +547,7 @@
 <span class="sd">        information, it is necessary to provide two additional inputs to</span>
 <span class="sd">        *query_object* method: **orbital_elements** and **orbit_epoch**.</span>
 
-<span class="sd">        It is mandatory to write these two paramters as: *orbit_epoch=&#39; &#39;*</span>
+<span class="sd">        It is mandatory to write these two parameters as: *orbit_epoch=&#39; &#39;*</span>
 <span class="sd">        to make the library works.</span>
 
 <span class="sd">        &gt;&gt;&gt; ast_orbit_prop = neocc.query_object(name=&#39;99942&#39;,</span>
@@ -569,7 +569,7 @@
 <span class="sd">        method: **observatory**, **start**, **stop**, **step** and</span>
 <span class="sd">        **step_unit***.</span>
 
-<span class="sd">        It is mandatory to write these five paramters as: *observatory=&#39; &#39;*</span>
+<span class="sd">        It is mandatory to write these five parameters as: *observatory=&#39; &#39;*</span>
 <span class="sd">        to make the library works.</span>
 
 <span class="sd">        &gt;&gt;&gt; ast_ephemerides = neocc.query_object(name=&#39;99942&#39;,</span>

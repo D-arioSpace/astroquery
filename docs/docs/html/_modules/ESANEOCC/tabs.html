@@ -185,7 +185,7 @@
 <span class="sd">                         Adding timeout of 90 seconds.</span>
 <span class="sd">1.3        16-06-2021    URLs and timeout from configuration file for</span>
 <span class="sd">                         astroquery implementation.\n</span>
-<span class="sd">                         Change time format to datetime isoformat.\n</span>
+<span class="sd">                         Change time format to datetime ISO format.\n</span>
 <span class="sd">                         Change to correct types in attributes (e.g.,</span>
 <span class="sd">                         matrices, etc.)\n</span>
 <span class="sd">                         Change ephemerides skyfooter to fix bug.\n</span>
@@ -688,15 +688,15 @@
         <span class="c1"># Sources</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_prop_sources</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+    <span class="nd">@staticmethod</span> 
+    <span class="k">def</span> <span class="nf">_get_prop_sources</span><span class="p">(</span><span class="n">contents</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Obtain the sources parsed</span>
 
 <span class="sd">            Parameters</span>
 <span class="sd">            ----------</span>
-<span class="sd">            url : str</span>
-<span class="sd">                Complete url for physical properties</span>
+<span class="sd">            contents : object</span>
+<span class="sd">                Content of the requested url</span>
 
 <span class="sd">            Returns</span>
 <span class="sd">            -------</span>
@@ -705,7 +705,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Read html for obtaining different tables from the portal</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">df_p</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_html</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">keep_default_na</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">df_p</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_html</span><span class="p">(</span><span class="n">contents</span><span class="p">,</span> <span class="n">keep_default_na</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">df_p</span><span class="o">.</span><span class="n">DoesNotExist</span> <span class="k">as</span> <span class="n">df_not_exist</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Object not found: the name of the &#39;</span>
                             <span class="s1">&#39;object is wrong or misspelt&#39;</span><span class="p">)</span>
@@ -719,14 +719,14 @@
         <span class="k">return</span> <span class="n">sources</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_property_names</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_property_names</span><span class="p">(</span><span class="n">contents</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Check and obtain dataframe names</span>
 
 <span class="sd">            Parameters</span>
 <span class="sd">            ----------</span>
-<span class="sd">            url : str</span>
-<span class="sd">                Complete url for physical properties</span>
+<span class="sd">            contents : object</span>
+<span class="sd">                Content of the requested url</span>
 
 <span class="sd">            Returns</span>
 <span class="sd">            -------</span>
@@ -735,8 +735,6 @@
 <span class="sd">            parsed_html : object</span>
 <span class="sd">                BeautifulSoup object with the requested information</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Get contents from url</span>
-        <span class="n">contents</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
         <span class="c1"># Parse html using BS</span>
         <span class="n">parsed_html</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">contents</span><span class="p">,</span> <span class="s1">&#39;lxml&#39;</span><span class="p">)</span>
         <span class="c1"># Check if there is a tag sub for term A1 and A2 if so,</span>
@@ -761,7 +759,6 @@
                   <span class="s1">&#39;object. Re-attempting...&#39;</span><span class="p">)</span>
             <span class="c1"># Wait and re-try</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-            <span class="n">contents</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
             <span class="n">parsed_html</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">contents</span><span class="p">,</span> <span class="s1">&#39;lxml&#39;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
                 <span class="n">subtag</span> <span class="o">=</span> <span class="n">parsed_html</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;sub&#39;</span><span class="p">)</span>
@@ -788,7 +785,7 @@
         <span class="k">return</span> <span class="n">parsed_html</span><span class="p">,</span> <span class="n">df_names</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_physical_props</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_physical_props</span><span class="p">(</span><span class="n">contents</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Obtain the physical properties from the portal</span>
 
@@ -803,8 +800,9 @@
 <span class="sd">                Data structure containing the physical properties</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Obtain DataFrame with the obtained properties and html parsed</span>
-        <span class="n">parsed_html</span> <span class="o">=</span> <span class="n">PhysicalProperties</span><span class="o">.</span><span class="n">_get_property_names</span><span class="p">(</span><span class="n">url</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">df_names</span> <span class="o">=</span> <span class="n">PhysicalProperties</span><span class="o">.</span><span class="n">_get_property_names</span><span class="p">(</span><span class="n">url</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">parsed_html</span><span class="p">,</span> <span class="n">df_names</span> <span class="o">=</span> <span class="n">PhysicalProperties</span>\
+                                <span class="o">.</span><span class="n">_get_property_names</span><span class="p">(</span><span class="n">contents</span><span class="p">)</span>
+        <span class="c1">#df_names = PhysicalProperties._get_property_names(url)[1]</span>
         <span class="c1"># Search for property values, units and sources</span>
         <span class="n">props_value</span> <span class="o">=</span> <span class="n">parsed_html</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">,</span>
                                         <span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;col-12&quot;</span><span class="p">})</span>
@@ -875,10 +873,11 @@
         <span class="c1"># Final url = PROPERTIES_URL + desig in which white spaces,</span>
         <span class="c1"># if any, are replaced by %20 to complete the designator</span>
         <span class="n">url</span> <span class="o">=</span> <span class="n">PROPERTIES_URL</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;%20&#39;</span><span class="p">)</span>
-
+        <span class="c1"># Get contents to optimize times</span>
+        <span class="n">contents</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
         <span class="c1"># Sources</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">physical_properties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_physical_props</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_prop_sources</span><span class="p">(</span><span class="n">url</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">physical_properties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_physical_props</span><span class="p">(</span><span class="n">contents</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_prop_sources</span><span class="p">(</span><span class="n">contents</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="AsteroidObservations"><a class="viewcode-back" href="../../index.html#ESANEOCC.tabs.AsteroidObservations">[docs]</a><span class="k">class</span> <span class="nc">AsteroidObservations</span><span class="p">:</span>
@@ -1289,15 +1288,15 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">df_p</span><span class="p">,</span> <span class="s1">&#39;! Object&#39;</span><span class="p">):</span>
             <span class="c1"># Set length of asteriod observations to zero</span>
             <span class="n">diff</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="c1"># Get observations</span>
+            <span class="n">total_observations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_opt_info</span><span class="p">(</span><span class="n">data_obj</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span>
+                                                    <span class="n">head</span><span class="p">)</span>
             <span class="c1"># Set attributes</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">optical_observations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_opt_info</span><span class="p">(</span><span class="n">data_obj</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span>
-                                                          <span class="n">head</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">optical_observations</span> <span class="o">=</span> <span class="n">total_observations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">radar_observations</span> <span class="o">=</span> <span class="s1">&#39;There is no relevant radar &#39;</span>\
                                       <span class="s1">&#39;information&#39;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">roving_observations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_opt_info</span><span class="p">(</span><span class="n">data_obj</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span>
-                                                         <span class="n">head</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sat_observations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_opt_info</span><span class="p">(</span><span class="n">data_obj</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span>
-                                                      <span class="n">head</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">roving_observations</span> <span class="o">=</span> <span class="n">total_observations</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sat_observations</span> <span class="o">=</span> <span class="n">total_observations</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># # Decode data for optical and radar observations</span>
@@ -1306,14 +1305,14 @@
             <span class="n">index</span> <span class="o">=</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">df_p</span><span class="p">,</span> <span class="s1">&#39;! Object&#39;</span><span class="p">)</span>
             <span class="c1"># Set lenght of radar obsrevations to remove footer</span>
             <span class="n">diff</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_p</span><span class="p">)</span> <span class="o">-</span> <span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># Get observations</span>
+            <span class="n">total_observations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_opt_info</span><span class="p">(</span><span class="n">data_obj</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span>
+                                                    <span class="n">head</span><span class="p">)</span>
             <span class="c1"># Set attributes</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">optical_observations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_opt_info</span><span class="p">(</span><span class="n">data_obj</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span>
-                                                          <span class="n">head</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">optical_observations</span> <span class="o">=</span> <span class="n">total_observations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">radar_observations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_rad_info</span><span class="p">(</span><span class="n">df_rad</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">roving_observations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_opt_info</span><span class="p">(</span><span class="n">data_obj</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span>
-                                                         <span class="n">head</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sat_observations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_opt_info</span><span class="p">(</span><span class="n">data_obj</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span>
-                                                      <span class="n">head</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">roving_observations</span> <span class="o">=</span> <span class="n">total_observations</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sat_observations</span> <span class="o">=</span> <span class="n">total_observations</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="OrbitProperties"><a class="viewcode-back" href="../../index.html#ESANEOCC.tabs.OrbitProperties">[docs]</a><span class="k">class</span> <span class="nc">OrbitProperties</span><span class="p">:</span>
@@ -1672,13 +1671,14 @@
 
 
 <div class="viewcode-block" id="KeplerianOrbitProperties"><a class="viewcode-back" href="../../index.html#ESANEOCC.tabs.KeplerianOrbitProperties">[docs]</a><span class="k">class</span> <span class="nc">KeplerianOrbitProperties</span><span class="p">(</span><span class="n">OrbitProperties</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;This class contains information of keplerian asteroid orbit</span>
-<span class="sd">    properties. This class inherits the attributes from OrbitProperties.</span>
+    <span class="sd">&quot;&quot;&quot;This class contains information of asteroid orbit</span>
+<span class="sd">    properties in Keplerian reference frame. This class inherits the attributes</span>
+<span class="sd">    from OrbitProperties.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    kep : pandas.DataFrame</span>
-<span class="sd">        Data frame which contains the keplerian elements information.</span>
+<span class="sd">        Data frame which contains the Keplerian elements information.</span>
 <span class="sd">    perihelion : int</span>
 <span class="sd">        Orbit perihelion in au.</span>
 <span class="sd">    aphelion : int</span>
@@ -1698,11 +1698,11 @@
 <span class="sd">    u_par : int</span>
 <span class="sd">        Uncertainty parameter as defined by MPC.</span>
 <span class="sd">    rms : pandas.DataFrame</span>
-<span class="sd">        Root mean square for keplerian elements</span>
+<span class="sd">        Root mean square for Keplerian elements</span>
 <span class="sd">    cov : pandas.DataFrame</span>
-<span class="sd">        Covariance matrix for keplerian elements</span>
+<span class="sd">        Covariance matrix for Keplerian elements</span>
 <span class="sd">    cor : pandas.DataFrame</span>
-<span class="sd">        Correlation matrix for keplerian elements</span>
+<span class="sd">        Correlation matrix for Keplerian elements</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -1833,8 +1833,9 @@
 
 
 <div class="viewcode-block" id="EquinoctialOrbitProperties"><a class="viewcode-back" href="../../index.html#ESANEOCC.tabs.EquinoctialOrbitProperties">[docs]</a><span class="k">class</span> <span class="nc">EquinoctialOrbitProperties</span><span class="p">(</span><span class="n">OrbitProperties</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;This class contains information of equinoctial asteroid orbit</span>
-<span class="sd">    properties. This class inherits the attributes from OrbitProperties.</span>
+    <span class="sd">&quot;&quot;&quot;This class contains information of asteroid orbit</span>
+<span class="sd">    properties in equinoctial reference frame. This class inherits</span>
+<span class="sd">    the attributes from OrbitProperties.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -1997,7 +1998,7 @@
 <span class="sd">        Time step and time unit used during ephemerides calculation.</span>
 <span class="sd">    ephemerides : pandas.DataFrame</span>
 <span class="sd">        Data frame which contains the information of the object</span>
-<span class="sd">        ephemerides</span>
+<span class="sd">        ephemerides.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -2071,9 +2072,9 @@
 <span class="sd">            stop : str</span>
 <span class="sd">                End date from which ephemerides are obtained.</span>
 <span class="sd">            step : str</span>
-<span class="sd">                Value for the time step (e.g. &#39;1&#39;, &#39;0.1&#39;, etc.)</span>
+<span class="sd">                Value for the time step (e.g. &#39;1&#39;, &#39;0.1&#39;, etc.).</span>
 <span class="sd">            step_unit : str</span>
-<span class="sd">                Units of the time step</span>
+<span class="sd">                Units of the time step.</span>
 <span class="sd">            Raises</span>
 <span class="sd">            ------</span>
 <span class="sd">            KeyError</span>
@@ -2176,12 +2177,14 @@
                       <span class="s1">&#39;-The Sky plane error with the long axis (Err1),&#39;</span>
                       <span class="s1">&#39; short axis (Err2) and Position Angle (PA) &#39;</span>
                       <span class="s1">&#39;values&#39;</span><span class="p">)</span>
+        <span class="c1"># Get header data</span>
+        <span class="n">header_date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_head_ephem</span><span class="p">(</span><span class="n">data_obj</span><span class="p">)</span>
         <span class="c1"># Assign attributes</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ephemerides</span> <span class="o">=</span> <span class="n">ephem</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">observatory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_head_ephem</span><span class="p">(</span><span class="n">data_obj</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tinit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_head_ephem</span><span class="p">(</span><span class="n">data_obj</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tfinal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_head_ephem</span><span class="p">(</span><span class="n">data_obj</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tstep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_head_ephem</span><span class="p">(</span><span class="n">data_obj</span><span class="p">)[</span><span class="mi">3</span><span class="p">]</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">observatory</span> <span class="o">=</span> <span class="n">header_date</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tinit</span> <span class="o">=</span> <span class="n">header_date</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tfinal</span> <span class="o">=</span> <span class="n">header_date</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tstep</span> <span class="o">=</span> <span class="n">header_date</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="Summary"><a class="viewcode-back" href="../../index.html#ESANEOCC.tabs.Summary">[docs]</a><span class="k">class</span> <span class="nc">Summary</span><span class="p">:</span>
