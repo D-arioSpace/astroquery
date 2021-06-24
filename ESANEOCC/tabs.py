@@ -534,15 +534,15 @@ class PhysicalProperties:
         # Sources
         self.sources = []
 
-    @staticmethod
-    def _get_prop_sources(url):
+    @staticmethod 
+    def _get_prop_sources(contents):
         """
             Obtain the sources parsed
 
             Parameters
             ----------
-            url : str
-                Complete url for physical properties
+            contents : object
+                Content of the requested url
 
             Returns
             -------
@@ -551,7 +551,7 @@ class PhysicalProperties:
         """
         # Read html for obtaining different tables from the portal
         try:
-            df_p = pd.read_html(url, keep_default_na=False)
+            df_p = pd.read_html(contents, keep_default_na=False)
         except df_p.DoesNotExist as df_not_exist:
             logging.warning('Object not found: the name of the '
                             'object is wrong or misspelt')
@@ -565,14 +565,14 @@ class PhysicalProperties:
         return sources
 
     @staticmethod
-    def _get_property_names(url):
+    def _get_property_names(contents):
         """
             Check and obtain dataframe names
 
             Parameters
             ----------
-            url : str
-                Complete url for physical properties
+            contents : object
+                Content of the requested url
 
             Returns
             -------
@@ -581,8 +581,6 @@ class PhysicalProperties:
             parsed_html : object
                 BeautifulSoup object with the requested information
         """
-        # Get contents from url
-        contents = requests.get(url, timeout=TIMEOUT).content
         # Parse html using BS
         parsed_html = BeautifulSoup(contents, 'lxml')
         # Check if there is a tag sub for term A1 and A2 if so,
@@ -607,7 +605,6 @@ class PhysicalProperties:
                   'object. Re-attempting...')
             # Wait and re-try
             time.sleep(5)
-            contents = requests.get(url, timeout=TIMEOUT).content
             parsed_html = BeautifulSoup(contents, 'lxml')
             for i in range(2):
                 subtag = parsed_html.find('sub')
@@ -634,7 +631,7 @@ class PhysicalProperties:
         return parsed_html, df_names
 
     @staticmethod
-    def _get_physical_props(url):
+    def _get_physical_props(contents):
         """
             Obtain the physical properties from the portal
 
@@ -649,8 +646,9 @@ class PhysicalProperties:
                 Data structure containing the physical properties
         """
         # Obtain DataFrame with the obtained properties and html parsed
-        parsed_html = PhysicalProperties._get_property_names(url)[0]
-        df_names = PhysicalProperties._get_property_names(url)[1]
+        parsed_html, df_names = PhysicalProperties\
+                                ._get_property_names(contents)
+        #df_names = PhysicalProperties._get_property_names(url)[1]
         # Search for property values, units and sources
         props_value = parsed_html.find_all("div",
                                         {"class": "col-12"})
@@ -721,10 +719,11 @@ class PhysicalProperties:
         # Final url = PROPERTIES_URL + desig in which white spaces,
         # if any, are replaced by %20 to complete the designator
         url = PROPERTIES_URL + str(name).replace(' ', '%20')
-
+        # Get contents to optimize times
+        contents = requests.get(url).content
         # Sources
-        self.physical_properties = self._get_physical_props(url)
-        self.sources = self._get_prop_sources(url)
+        self.physical_properties = self._get_physical_props(contents)
+        self.sources = self._get_prop_sources(contents)
 
 
 class AsteroidObservations:
@@ -1135,15 +1134,15 @@ class AsteroidObservations:
         if not get_indexes(df_p, '! Object'):
             # Set length of asteriod observations to zero
             diff = 0
+            # Get observations
+            total_observations = self._get_opt_info(data_obj, diff,
+                                                    head)
             # Set attributes
-            self.optical_observations = self._get_opt_info(data_obj, diff,
-                                                          head)[0]
+            self.optical_observations = total_observations[0]
             self.radar_observations = 'There is no relevant radar '\
                                       'information'
-            self.roving_observations = self._get_opt_info(data_obj, diff,
-                                                         head)[1]
-            self.sat_observations = self._get_opt_info(data_obj, diff,
-                                                      head)[2]
+            self.roving_observations = total_observations[1]
+            self.sat_observations = total_observations[2]
 
         else:
             # # Decode data for optical and radar observations
@@ -1152,14 +1151,14 @@ class AsteroidObservations:
             index = get_indexes(df_p, '! Object')
             # Set lenght of radar obsrevations to remove footer
             diff = len(df_p) - index[0][0]
+            # Get observations
+            total_observations = self._get_opt_info(data_obj, diff,
+                                                    head)
             # Set attributes
-            self.optical_observations = self._get_opt_info(data_obj, diff,
-                                                          head)[0]
+            self.optical_observations = total_observations[0]
             self.radar_observations = self._get_rad_info(df_rad, index)
-            self.roving_observations = self._get_opt_info(data_obj, diff,
-                                                         head)[1]
-            self.sat_observations = self._get_opt_info(data_obj, diff,
-                                                      head)[2]
+            self.roving_observations = total_observations[1]
+            self.sat_observations = total_observations[2]
 
 
 class OrbitProperties:
@@ -2022,12 +2021,14 @@ class Ephemerides:
                       '-The Sky plane error with the long axis (Err1),'
                       ' short axis (Err2) and Position Angle (PA) '
                       'values')
+        # Get header data
+        header_date = self._get_head_ephem(data_obj)
         # Assign attributes
         self.ephemerides = ephem
-        self.observatory = self._get_head_ephem(data_obj)[0]
-        self.tinit = self._get_head_ephem(data_obj)[1]
-        self.tfinal = self._get_head_ephem(data_obj)[2]
-        self.tstep = self._get_head_ephem(data_obj)[3]
+        self.observatory = header_date[0]
+        self.tinit = header_date[1]
+        self.tfinal = header_date[2]
+        self.tstep = header_date[3]
 
 
 class Summary:
