@@ -341,6 +341,15 @@ ESANEOCC Change Log
 ##########################################
 
 ==============================
+Version 1.3.1
+==============================
+
+----------------------
+Bug Fixes
+----------------------
+* Fixed bug where *risk_list* and *risk_list_special* were not displaying Torino Scale and Velocity.
+
+==============================
 Version 1.3
 ==============================
 
