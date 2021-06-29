@@ -37,7 +37,7 @@ Version    Date          Change History
                          Change ephemerides skyfooter to fix bug.\n
                          Change *get_matrix* from *orbit_properties* for
                          objects with 2 non-gravitational parameters.
-1.3.1      29-06-2021   No changes
+1.3.1      29-06-2021    No changes
 ========   ===========   =====================================================
 
 © Copyright [European Space Agency][2021]
