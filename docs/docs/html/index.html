@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>ESA NEOCC Portal Python Interface Library &mdash; ESA NEOCC Python Interface 1.3.0 documentation</title>
+  <title>ESA NEOCC Portal Python Interface Library &mdash; ESA NEOCC Python Interface 1.3.1 documentation</title>
   
 
   
@@ -107,9 +107,13 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#esaneocc-change-log">ESANEOCC Change Log</a><ul>
+<li><a class="reference internal" href="#version-1-3-1">Version 1.3.1</a><ul>
+<li><a class="reference internal" href="#bug-fixes">Bug Fixes</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#version-1-3">Version 1.3</a><ul>
 <li><a class="reference internal" href="#changes">Changes</a></li>
-<li><a class="reference internal" href="#bug-fixes">Bug Fixes</a></li>
+<li><a class="reference internal" href="#id3">Bug Fixes</a></li>
 </ul>
 </li>
 </ul>
@@ -276,8 +280,8 @@ portal: <a class="reference external" href="https://neo.ssa.esa.int/">https://ne
 <li><p>Property: European Space Agency (ESA)</p></li>
 <li><p>Developed by: Elecnor Deimos</p></li>
 <li><p>Author: C. Álvaro Arroyo Parejo</p></li>
-<li><p>Issue: 1.3</p></li>
-<li><p>Date: 16-06-2021</p></li>
+<li><p>Issue: 1.3.1</p></li>
+<li><p>Date: 29-06-2021</p></li>
 <li><p>Purpose: Main module which gets NEAs data from <a class="reference external" href="https://neo.ssa.esa.int/">https://neo.ssa.esa.int/</a></p></li>
 <li><p>Module: core.py</p></li>
 <li><p>History:</p></li>
@@ -321,6 +325,10 @@ changes to <em>orbital_elements</em>.</p>
 implementation.</p>
 <p>Define methods as static.</p>
 </td>
+</tr>
+<tr class="row-even"><td><p>1.3.1</p></td>
+<td><p>29-06-2021</p></td>
+<td><p>No changes</p></td>
 </tr>
 </tbody>
 </table>
@@ -707,8 +715,8 @@ obtain it from the ESA NEOCC portal and parse it to show it properly.</p>
 <li><p>Property: European Space Agency (ESA)</p></li>
 <li><p>Developed by: Elecnor Deimos</p></li>
 <li><p>Author: C. Álvaro Arroyo Parejo</p></li>
-<li><p>Issue: 1.3</p></li>
-<li><p>Date: 16-06-2021</p></li>
+<li><p>Issue: 1.3.1</p></li>
+<li><p>Date: 29-06-2021</p></li>
 <li><p>Purpose: Module which request and parse list data from ESA NEOCC</p></li>
 <li><p>Module: lists.py</p></li>
 <li><p>History:</p></li>
@@ -748,6 +756,10 @@ list.</p>
 for astroquery implementation.</p>
 <p>Change dateformat to datetime ISO format</p>
 </td>
+</tr>
+<tr class="row-even"><td><p>1.3.1</p></td>
+<td><p>29-06-2021</p></td>
+<td><p>Hotfix in Risk list (TS and Velocity)</p></td>
 </tr>
 </tbody>
 </table>
@@ -947,8 +959,8 @@ within this module.</p>
 <li><p>Property: European Space Agency (ESA)</p></li>
 <li><p>Developed by: Elecnor Deimos</p></li>
 <li><p>Author: C. Álvaro Arroyo Parejo</p></li>
-<li><p>Issue: 1.3</p></li>
-<li><p>Date: 16-06-2021</p></li>
+<li><p>Issue: 1.3.1</p></li>
+<li><p>Date: 29-06-2021</p></li>
 <li><p>Purpose: Module which request and parse list data from ESA NEOCC</p></li>
 <li><p>Module: tabs.py</p></li>
 <li><p>History:</p></li>
@@ -997,6 +1009,10 @@ matrices, etc.)</p>
 <p>Change <em>get_matrix</em> from <em>orbit_properties</em> for
 objects with 2 non-gravitational parameters.</p>
 </td>
+</tr>
+<tr class="row-even"><td><p>1.3.1</p></td>
+<td><p>29-06-2021</p></td>
+<td><p>No changes</p></td>
 </tr>
 </tbody>
 </table>
@@ -1964,6 +1980,15 @@ into Astropy library and the developers recommended to use the <a class="referen
 </div>
 <div class="section" id="esaneocc-change-log">
 <h1>ESANEOCC Change Log<a class="headerlink" href="#esaneocc-change-log" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="version-1-3-1">
+<h2>Version 1.3.1<a class="headerlink" href="#version-1-3-1" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="bug-fixes">
+<h3>Bug Fixes<a class="headerlink" href="#bug-fixes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Fixed bug where <em>risk_list</em> and <em>risk_list_special</em> were not displaying Torino Scale and Velocity.</p></li>
+</ul>
+</div>
+</div>
 <div class="section" id="version-1-3">
 <h2>Version 1.3<a class="headerlink" href="#version-1-3" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="changes">
@@ -1978,8 +2003,8 @@ into Astropy library and the developers recommended to use the <a class="referen
 <li><p>Time performance improvenment in obtaining physical properties.</p></li>
 </ul>
 </div>
-<div class="section" id="bug-fixes">
-<h3>Bug Fixes<a class="headerlink" href="#bug-fixes" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id3">
+<h3>Bug Fixes<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Fixed two-points ephemerides generation fails</p></li>
 <li><p>Fixed physical properties generation for objects with Area-to-mass ratio and Yarkovsky parameter.</p></li>
