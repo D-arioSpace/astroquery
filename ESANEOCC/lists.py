@@ -7,8 +7,8 @@ obtain it from the ESA NEOCC portal and parse it to show it properly.
 * Property: European Space Agency (ESA)
 * Developed by: Elecnor Deimos
 * Author: C. Álvaro Arroyo Parejo
-* Issue: 1.3
-* Date: 16-06-2021
+* Issue: 1.3.1
+* Date: 29-06-2021
 * Purpose: Module which request and parse list data from ESA NEOCC
 * Module: lists.py
 * History:
@@ -25,6 +25,7 @@ Version    Date          Change History
 1.3        16-06-2021    URL and Timeout from configuration file
                          for astroquery implementation.\n
                          Change dateformat to datetime ISO format
+1.3.1      29-06-2021    Hotfix in Risk list (TS and Velocity)
 ========   ===========   ==========================================
 
 © Copyright [European Space Agency][2021]
