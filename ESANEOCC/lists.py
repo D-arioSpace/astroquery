@@ -269,9 +269,9 @@ def parse_risk(data_byte_d):
         neocc_lst = neocc_lst.drop(['Years'], axis=1)
         # Reorder columns
         neocc_lst = neocc_lst[['Object Name', 'Diameter in m', '*=Y',
-                            'Date/Time', 'IP max', 'PS max',
-                            'First year', 'Last year', 'IP cum',
-                            'PS cum']]
+                            'Date/Time', 'IP max', 'PS max', 'TS',
+                            'Vel in km/s', 'First year', 'Last year',
+                            'IP cum', 'PS cum']]
 
     # Adding metadata
     neocc_lst.help = ('Risk lists contain a data frame with the '
