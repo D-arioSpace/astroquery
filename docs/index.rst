@@ -363,7 +363,7 @@ Changes
 * Dates/time columns or data have been converted to datetime ISO format.
 * Abbreviations contain now complete expressions (e.g., *close_appr_upcoming* to *close approaches_upcoming*)
 * The documentation explains how to obtain JSON and Table format from data retrieved from the library.
-* Time performance improvenment in obtaining physical properties.
+* Time performance improvement in obtaining physical properties.
 
 ----------------------
 Bug Fixes
