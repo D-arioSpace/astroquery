@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 setup(
     name = 'ESANEOCC',
     packages = find_packages(include=['ESANEOCC']),
-    version = '1.3',
+    version = '1.3.1',
     description = 'NEOCC portal Python interface',
     author = 'C. Álvaro Arroyo Parejo',
     license = 'European Space Agency',
