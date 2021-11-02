@@ -9,8 +9,8 @@ portal: https://neo.ssa.esa.int/.
 * Property: European Space Agency (ESA)
 * Developed by: Elecnor Deimos
 * Author: C. Álvaro Arroyo Parejo
-* Issue: 1.3.1
-* Date: 29-06-2021
+* Issue: 1.4.0
+* Date: 02-11-2021
 * Purpose: Main module which gets NEAs data from https://neo.ssa.esa.int/
 * Module: core.py
 * History:
@@ -32,6 +32,9 @@ Version    Date          Change History
                          implementation.\n
                          Define methods as static.\n
 1.3.1      29-06-2021    No changes
+1.4.0      29-10-2021    Adding new docstrings.\n
+                         Change method for obtaining physical
+                         properties
 ========   ===========   ============================================
 
 
@@ -66,6 +69,8 @@ class ESAneoccClass():
         * Priority list (faint): *priority_list_faint*
         * Close encounter list: *close_encounter*
         * Impacted objects: *impacted_objects*
+        * Catalogue of NEAs (current date): *neo_catalogue_current*
+        * Catalogue of NEAs (middle arc): *neo_catalogue_middle*
 
         These lists are referenced in https://neo.ssa.esa.int/computer-access
 
@@ -75,7 +80,8 @@ class ESAneoccClass():
             Name of the requested list. Valid names are: *nea_list,
             updated_nea, monthly_update, risk_list, risk_list_special,
             close_approaches_upcoming, close_approaches_recent, priority_list,
-            priority_list_faint, close_encounter and impacted_objects*.
+            priority_list_faint, close_encounter, impacted_objects,
+            neo_catalogue_current and neo_catalogue_middle*.
 
         Returns
         -------
@@ -182,7 +188,7 @@ class ESAneoccClass():
 
             return neocc_list
 
-        except ConnectionError:
+        except ConnectionError: # pragma: no cover
             print('Initial attempt to obtain list failed. Reattempting...')
             # Wait 5 seconds
             time.sleep(5)
@@ -315,28 +321,22 @@ class ESAneoccClass():
         >>> properties.<tab>
         properties.physical_properties  properties.sources
         >>> properties.physical_properties
-                        Property     Values Unit Source
-        0           Rotation Period       5.27    h    [4]
-        1                   Quality          4    -    [4]
-        2                 Amplitude  0.04-1.49  mag    [4]
-        3        Rotation Direction        PRO    -    [1]
-        4              Spinvector L         16  deg    [1]
-        5              Spinvector B          9  deg    [1]
-        6                  Taxonomy         Sq    -    [2]
-        7            Taxonomy (all)          S    -    [3]
-        8    Absolute Magnitude (H)      10.31  mag    [5]
-        9       Slope Parameter (G)     0.46**  mag    [6]
-        10                   Albedo       0.24    -    [9]
-        11                 Diameter      23300    m   [10]
-        12  Color Index Information       0.39  R-I   [11]
-        13                Sightings   Visual S    -   [13]
+                        Property                  Value(s)                 Units              Reference(s)
+        0           Rotation Period                      5.27                     h                       [4]
+        1                   Quality                       4.0                     -                       [4]
+        2                 Amplitude                 0.04-1.49                   mag                       [4]
+        3        Rotation Direction                       PRO                     -                       [1]
+        4              Spinvector L                      16.0                   deg                       [1]
+        5              Spinvector B                       9.0                   deg                       [1]
+        6                  Taxonomy                        Sq                     -                       [2]
+        7            Taxonomy (all)                         S                     -                       [3]
+        8    Absolute Magnitude (H)           [10.853, 10.31]            [mag, mag]                [[5], [6]]
+        9       Slope Parameter (G)     [0.46**, 0.2, 0.46**]       [mag, mag, mag]           [[7], [8], [5]]
+        10                   Albedo                      0.24                     -                       [9]
+        11                 Diameter                   23300.0                     m                      [10]
+        12  Color Index Information  [0.85, 0.48, 0.39, 0.52]  [B-V, V-R, R-I, U-B]  [[11], [11], [11], [12]]
+        13                Sightings       [Radar R, Visual S]                [-, -]              [[13], [14]]
 
-        Note
-        ----
-            Some physical properties (e.g. *Absolute Mangnitude (H)*, *Slope
-            Parameter (G)*, etc) may have several values which come from different
-            sources. Currently, the library will only show one value as it is done
-            in the NEOCC portal.
 
         Note
         ----
@@ -400,8 +400,8 @@ class ESAneoccClass():
         >>> ast_orbit_prop = neocc.query_object(name='99942',
         tab='orbit_properties',orbital_elements='keplerian', orbit_epoch='present')
         >>> ast_orbit_prop.<tab>
-        ast_orbit_prop.anode       ast_orbit_prop.moid
-        ast_orbit_prop.aphelion    ast_orbit_prop.ngr
+        ast_orbit_prop.anode       ast_orbit_prop.ngr
+        ast_orbit_prop.aphelion    ast_orbit_prop.orb_type
         ast_orbit_prop.cor         ast_orbit_prop.perihelion
         ast_orbit_prop.cov         ast_orbit_prop.period
         ast_orbit_prop.dnode       ast_orbit_prop.pha
@@ -410,6 +410,7 @@ class ESAneoccClass():
         ast_orbit_prop.kep         ast_orbit_prop.rms
         ast_orbit_prop.lsp         ast_orbit_prop.u_par
         ast_orbit_prop.mag         ast_orbit_prop.vinfty
+        ast_orbit_prop.moid
 
         **Ephemerides:** In order to access ephemerides information, it
         is necessary to provide five additional inputs to *query_object*
@@ -442,7 +443,8 @@ class ESAneoccClass():
         # following different methods. Create "switch" for each case:
 
         # Impacts, close approaches and observations
-        if tab in ('impacts', 'close_approaches', 'observations'):
+        if tab in ('impacts', 'close_approaches', 'observations',
+                   'physical_properties'):
             # Get URL to obtain the data from NEOCC
             url = tabs.get_object_url(name, tab)
 
@@ -450,7 +452,7 @@ class ESAneoccClass():
             try:
                 # Get object data
                 data_obj = tabs.get_object_data(url)
-            except ConnectionError:
+            except ConnectionError: # pragma: no cover
                 print('Initial attempt to obtain object data failed. '
                     'Reattempting...')
                 # Wait 5 seconds
@@ -471,13 +473,11 @@ class ESAneoccClass():
                 neocc_obj = tabs.AsteroidObservations()
                 # Get object with attributes from data
                 neocc_obj._ast_obs_parser(data_obj)
-
-        # Physical properties
-        elif tab == 'physical_properties':
-            # Create empty object with class Physical properties
-            neocc_obj = tabs.PhysicalProperties()
-            # Parse the requested data using Physical properties parser
-            neocc_obj._phys_prop_parser(name)
+            elif tab == 'physical_properties':
+                # Create empty object with class Physical properties
+                neocc_obj = tabs.PhysicalProperties()
+                # Parse the requested data using Physical properties parser
+                neocc_obj._phys_prop_parser(data_obj)
         # Orbit properties
         elif tab == 'orbit_properties':
             # Raise error if no elements are provided
@@ -499,7 +499,7 @@ class ESAneoccClass():
             try:
                 # Get object data
                 data_obj = tabs.get_object_data(url)
-            except ConnectionError:
+            except ConnectionError: # pragma: no cover
                 print('Initial attempt to obtain object data failed. '
                     'Reattempting...')
                 # Wait 5 seconds

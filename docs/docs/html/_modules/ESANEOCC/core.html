@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>ESANEOCC.core &mdash; ESA NEOCC Python Interface 1.3.1 documentation</title>
+  <title>ESANEOCC.core &mdash; ESA NEOCC Python Interface 1.4.0 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.3
+                1.4
               </div>
             
           
@@ -163,8 +163,8 @@
 <span class="sd">* Property: European Space Agency (ESA)</span>
 <span class="sd">* Developed by: Elecnor Deimos</span>
 <span class="sd">* Author: C. Álvaro Arroyo Parejo</span>
-<span class="sd">* Issue: 1.3.1</span>
-<span class="sd">* Date: 29-06-2021</span>
+<span class="sd">* Issue: 1.4.0</span>
+<span class="sd">* Date: 29-10-2021</span>
 <span class="sd">* Purpose: Main module which gets NEAs data from https://neo.ssa.esa.int/</span>
 <span class="sd">* Module: core.py</span>
 <span class="sd">* History:</span>
@@ -186,6 +186,9 @@
 <span class="sd">                         implementation.\n</span>
 <span class="sd">                         Define methods as static.\n</span>
 <span class="sd">1.3.1      29-06-2021    No changes</span>
+<span class="sd">1.4.0      29-10-2021    Adding new docstrings.\n</span>
+<span class="sd">                         Change method for obtaining physical</span>
+<span class="sd">                         properties</span>
 <span class="sd">========   ===========   ============================================</span>
 
 
@@ -220,6 +223,8 @@
 <span class="sd">        * Priority list (faint): *priority_list_faint*</span>
 <span class="sd">        * Close encounter list: *close_encounter*</span>
 <span class="sd">        * Impacted objects: *impacted_objects*</span>
+<span class="sd">        * Catalogue of NEAs (current date): *neo_catalogue_current*</span>
+<span class="sd">        * Catalogue of NEAs (middle arc): *neo_catalogue_middle*</span>
 
 <span class="sd">        These lists are referenced in https://neo.ssa.esa.int/computer-access</span>
 
@@ -229,7 +234,8 @@
 <span class="sd">            Name of the requested list. Valid names are: *nea_list,</span>
 <span class="sd">            updated_nea, monthly_update, risk_list, risk_list_special,</span>
 <span class="sd">            close_approaches_upcoming, close_approaches_recent, priority_list,</span>
-<span class="sd">            priority_list_faint, close_encounter and impacted_objects*.</span>
+<span class="sd">            priority_list_faint, close_encounter, impacted_objects,</span>
+<span class="sd">            neo_catalogue_current and neo_catalogue_middle*.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -336,7 +342,7 @@
 
             <span class="k">return</span> <span class="n">neocc_list</span>
 
-        <span class="k">except</span> <span class="ne">ConnectionError</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">ConnectionError</span><span class="p">:</span> <span class="c1"># pragma: no cover</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Initial attempt to obtain list failed. Reattempting...&#39;</span><span class="p">)</span>
             <span class="c1"># Wait 5 seconds</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
@@ -469,28 +475,22 @@
 <span class="sd">        &gt;&gt;&gt; properties.&lt;tab&gt;</span>
 <span class="sd">        properties.physical_properties  properties.sources</span>
 <span class="sd">        &gt;&gt;&gt; properties.physical_properties</span>
-<span class="sd">                        Property     Values Unit Source</span>
-<span class="sd">        0           Rotation Period       5.27    h    [4]</span>
-<span class="sd">        1                   Quality          4    -    [4]</span>
-<span class="sd">        2                 Amplitude  0.04-1.49  mag    [4]</span>
-<span class="sd">        3        Rotation Direction        PRO    -    [1]</span>
-<span class="sd">        4              Spinvector L         16  deg    [1]</span>
-<span class="sd">        5              Spinvector B          9  deg    [1]</span>
-<span class="sd">        6                  Taxonomy         Sq    -    [2]</span>
-<span class="sd">        7            Taxonomy (all)          S    -    [3]</span>
-<span class="sd">        8    Absolute Magnitude (H)      10.31  mag    [5]</span>
-<span class="sd">        9       Slope Parameter (G)     0.46**  mag    [6]</span>
-<span class="sd">        10                   Albedo       0.24    -    [9]</span>
-<span class="sd">        11                 Diameter      23300    m   [10]</span>
-<span class="sd">        12  Color Index Information       0.39  R-I   [11]</span>
-<span class="sd">        13                Sightings   Visual S    -   [13]</span>
+<span class="sd">                        Property                  Value(s)                 Units              Reference(s)</span>
+<span class="sd">        0           Rotation Period                      5.27                     h                       [4]</span>
+<span class="sd">        1                   Quality                       4.0                     -                       [4]</span>
+<span class="sd">        2                 Amplitude                 0.04-1.49                   mag                       [4]</span>
+<span class="sd">        3        Rotation Direction                       PRO                     -                       [1]</span>
+<span class="sd">        4              Spinvector L                      16.0                   deg                       [1]</span>
+<span class="sd">        5              Spinvector B                       9.0                   deg                       [1]</span>
+<span class="sd">        6                  Taxonomy                        Sq                     -                       [2]</span>
+<span class="sd">        7            Taxonomy (all)                         S                     -                       [3]</span>
+<span class="sd">        8    Absolute Magnitude (H)           [10.853, 10.31]            [mag, mag]                [[5], [6]]</span>
+<span class="sd">        9       Slope Parameter (G)     [0.46**, 0.2, 0.46**]       [mag, mag, mag]           [[7], [8], [5]]</span>
+<span class="sd">        10                   Albedo                      0.24                     -                       [9]</span>
+<span class="sd">        11                 Diameter                   23300.0                     m                      [10]</span>
+<span class="sd">        12  Color Index Information  [0.85, 0.48, 0.39, 0.52]  [B-V, V-R, R-I, U-B]  [[11], [11], [11], [12]]</span>
+<span class="sd">        13                Sightings       [Radar R, Visual S]                [-, -]              [[13], [14]]</span>
 
-<span class="sd">        Note</span>
-<span class="sd">        ----</span>
-<span class="sd">            Some physical properties (e.g. *Absolute Mangnitude (H)*, *Slope</span>
-<span class="sd">            Parameter (G)*, etc) may have several values which come from different</span>
-<span class="sd">            sources. Currently, the library will only show one value as it is done</span>
-<span class="sd">            in the NEOCC portal.</span>
 
 <span class="sd">        Note</span>
 <span class="sd">        ----</span>
@@ -554,8 +554,8 @@
 <span class="sd">        &gt;&gt;&gt; ast_orbit_prop = neocc.query_object(name=&#39;99942&#39;,</span>
 <span class="sd">        tab=&#39;orbit_properties&#39;,orbital_elements=&#39;keplerian&#39;, orbit_epoch=&#39;present&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; ast_orbit_prop.&lt;tab&gt;</span>
-<span class="sd">        ast_orbit_prop.anode       ast_orbit_prop.moid</span>
-<span class="sd">        ast_orbit_prop.aphelion    ast_orbit_prop.ngr</span>
+<span class="sd">        ast_orbit_prop.anode       ast_orbit_prop.ngr</span>
+<span class="sd">        ast_orbit_prop.aphelion    ast_orbit_prop.orb_type</span>
 <span class="sd">        ast_orbit_prop.cor         ast_orbit_prop.perihelion</span>
 <span class="sd">        ast_orbit_prop.cov         ast_orbit_prop.period</span>
 <span class="sd">        ast_orbit_prop.dnode       ast_orbit_prop.pha</span>
@@ -564,6 +564,7 @@
 <span class="sd">        ast_orbit_prop.kep         ast_orbit_prop.rms</span>
 <span class="sd">        ast_orbit_prop.lsp         ast_orbit_prop.u_par</span>
 <span class="sd">        ast_orbit_prop.mag         ast_orbit_prop.vinfty</span>
+<span class="sd">        ast_orbit_prop.moid</span>
 
 <span class="sd">        **Ephemerides:** In order to access ephemerides information, it</span>
 <span class="sd">        is necessary to provide five additional inputs to *query_object*</span>
@@ -596,7 +597,8 @@
         <span class="c1"># following different methods. Create &quot;switch&quot; for each case:</span>
 
         <span class="c1"># Impacts, close approaches and observations</span>
-        <span class="k">if</span> <span class="n">tab</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;impacts&#39;</span><span class="p">,</span> <span class="s1">&#39;close_approaches&#39;</span><span class="p">,</span> <span class="s1">&#39;observations&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">tab</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;impacts&#39;</span><span class="p">,</span> <span class="s1">&#39;close_approaches&#39;</span><span class="p">,</span> <span class="s1">&#39;observations&#39;</span><span class="p">,</span>
+                   <span class="s1">&#39;physical_properties&#39;</span><span class="p">):</span>
             <span class="c1"># Get URL to obtain the data from NEOCC</span>
             <span class="n">url</span> <span class="o">=</span> <span class="n">tabs</span><span class="o">.</span><span class="n">get_object_url</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tab</span><span class="p">)</span>
 
@@ -604,7 +606,7 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="c1"># Get object data</span>
                 <span class="n">data_obj</span> <span class="o">=</span> <span class="n">tabs</span><span class="o">.</span><span class="n">get_object_data</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">ConnectionError</span><span class="p">:</span>
+            <span class="k">except</span> <span class="ne">ConnectionError</span><span class="p">:</span> <span class="c1"># pragma: no cover</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Initial attempt to obtain object data failed. &#39;</span>
                     <span class="s1">&#39;Reattempting...&#39;</span><span class="p">)</span>
                 <span class="c1"># Wait 5 seconds</span>
@@ -625,13 +627,11 @@
                 <span class="n">neocc_obj</span> <span class="o">=</span> <span class="n">tabs</span><span class="o">.</span><span class="n">AsteroidObservations</span><span class="p">()</span>
                 <span class="c1"># Get object with attributes from data</span>
                 <span class="n">neocc_obj</span><span class="o">.</span><span class="n">_ast_obs_parser</span><span class="p">(</span><span class="n">data_obj</span><span class="p">)</span>
-
-        <span class="c1"># Physical properties</span>
-        <span class="k">elif</span> <span class="n">tab</span> <span class="o">==</span> <span class="s1">&#39;physical_properties&#39;</span><span class="p">:</span>
-            <span class="c1"># Create empty object with class Physical properties</span>
-            <span class="n">neocc_obj</span> <span class="o">=</span> <span class="n">tabs</span><span class="o">.</span><span class="n">PhysicalProperties</span><span class="p">()</span>
-            <span class="c1"># Parse the requested data using Physical properties parser</span>
-            <span class="n">neocc_obj</span><span class="o">.</span><span class="n">_phys_prop_parser</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">tab</span> <span class="o">==</span> <span class="s1">&#39;physical_properties&#39;</span><span class="p">:</span>
+                <span class="c1"># Create empty object with class Physical properties</span>
+                <span class="n">neocc_obj</span> <span class="o">=</span> <span class="n">tabs</span><span class="o">.</span><span class="n">PhysicalProperties</span><span class="p">()</span>
+                <span class="c1"># Parse the requested data using Physical properties parser</span>
+                <span class="n">neocc_obj</span><span class="o">.</span><span class="n">_phys_prop_parser</span><span class="p">(</span><span class="n">data_obj</span><span class="p">)</span>
         <span class="c1"># Orbit properties</span>
         <span class="k">elif</span> <span class="n">tab</span> <span class="o">==</span> <span class="s1">&#39;orbit_properties&#39;</span><span class="p">:</span>
             <span class="c1"># Raise error if no elements are provided</span>
@@ -653,7 +653,7 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="c1"># Get object data</span>
                 <span class="n">data_obj</span> <span class="o">=</span> <span class="n">tabs</span><span class="o">.</span><span class="n">get_object_data</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">ConnectionError</span><span class="p">:</span>
+            <span class="k">except</span> <span class="ne">ConnectionError</span><span class="p">:</span> <span class="c1"># pragma: no cover</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Initial attempt to obtain object data failed. &#39;</span>
                     <span class="s1">&#39;Reattempting...&#39;</span><span class="p">)</span>
                 <span class="c1"># Wait 5 seconds</span>

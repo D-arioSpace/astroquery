@@ -7,8 +7,8 @@ obtain it from the ESA NEOCC portal and parse it to show it properly.
 * Property: European Space Agency (ESA)
 * Developed by: Elecnor Deimos
 * Author: C. Álvaro Arroyo Parejo
-* Issue: 1.3.1
-* Date: 29-06-2021
+* Issue: 1.4.0
+* Date: 02-11-2021
 * Purpose: Module which request and parse list data from ESA NEOCC
 * Module: lists.py
 * History:
@@ -26,6 +26,9 @@ Version    Date          Change History
                          for astroquery implementation.\n
                          Change dateformat to datetime ISO format
 1.3.1      29-06-2021    Hotfix in Risk list (TS and Velocity)
+1.4.0      29-10-2021    Adding Catalogue of NEAS (current date
+                         and middle arc).\n
+                         Update docstrings.
 ========   ===========   ==========================================
 
 © Copyright [European Space Agency][2021]
@@ -34,9 +37,8 @@ All rights reserved
 
 import io
 from datetime import timedelta
-from datetime import datetime as dt
-import time
 import pandas as pd
+from parse import parse
 import requests
 from . import conf
 
@@ -53,7 +55,9 @@ def get_list_url(list_name):
     list_name : str
         Name of the requested list. Valid names are: *nea_list,
         risk_list, risk_list_special, close_approaches_upcoming,
-        close_approaches_recent, priority_list, priority_list_faint*.
+        close_approaches_recent, priority_list, priority_list_faint,
+        close_encounter, impacted_objects, neo_catalogue_current and
+        neo_catalogue_middle*.
 
     Returns
     -------
@@ -77,7 +81,9 @@ def get_list_url(list_name):
         "priority_list": 'esa_priority_neo_list',
         "priority_list_faint": 'esa_faint_neo_list',
         "close_encounter" : 'close_encounter2.txt',
-        "impacted_objects" : 'impactedObjectsList.txt'
+        "impacted_objects" : 'impactedObjectsList.txt',
+        "neo_catalogue_current" : 'neo_kc.cat',
+        "neo_catalogue_middle" : 'neo_km.cat'
         }
     # Raise error is input is not in dictionary
     if list_name not in lists_dict:
@@ -85,7 +91,8 @@ def get_list_url(list_name):
                        'monthly_update, risk_list, risk_list_special, '
                        'close_approaches_upcoming, close_approaches_recent, '
                        'priority_list, priority_list_faint, '
-                       'close_encounter and impacted_objects')
+                       'close_encounter, impacted_objects, '
+                       'neo_catalogue_current and neo_catalogue_middle')
     # Get url
     url = lists_dict[list_name]
 
@@ -119,52 +126,6 @@ def get_list_data(url, list_name):
     return neocc_list
 
 
-def get_dec_year(date):
-    """Get decimal year from a date.
-
-    Parameters
-    ----------
-    date : datetime
-        Date in YYYY/MM/DD.dddd format.
-
-    Returns
-    -------
-    decimal_year : float64
-        Date in decimal year format YYYY.yyyyyy.
-    """
-    def since_epoch(date):
-        """Convert time struct to time in seconds passed since epoch in
-        local time
-
-        Parameters
-        ----------
-         date : datetime
-            Name of the requested list.
-
-        Returns
-        -------
-        epoch_seconds : float64
-            Seconds passed since epoch in local time.
-        """
-        epoch_seconds = time.mktime(date.timetuple())
-        return epoch_seconds
-
-    # Get current year and dt from init and end
-    year = date.year
-    year_start = dt(year=year, month=1, day=1)
-    next_year = dt(year=year+1, month=1, day=1)
-
-    # Get fraction of year from time elapsed and year duration
-    year_elapsed = since_epoch(date) - since_epoch(year_start)
-    year_duration = since_epoch(next_year) - since_epoch(year_start)
-    fraction = year_elapsed/year_duration
-
-    # Compute decimal year
-    decimal_year = year + fraction
-
-    return decimal_year
-
-
 def parse_list(list_name, data_byte_d):
     """Switch function to select parse method.
 
@@ -183,20 +144,29 @@ def parse_list(list_name, data_byte_d):
     # Parse data for each type of list
     if list_name in ("nea_list", "updated_nea", "monthly_update"):
         neocc_lst = parse_nea(data_byte_d)
-
     elif list_name in ("risk_list", "risk_list_special"):
         neocc_lst = parse_risk(data_byte_d)
-
     elif list_name in ("close_approaches_upcoming",
                        "close_approaches_recent"):
         neocc_lst = parse_clo(data_byte_d)
-
     elif list_name in ("priority_list", "priority_list_faint"):
         neocc_lst = parse_pri(data_byte_d)
     elif list_name == "close_encounter":
         neocc_lst = parse_encounter(data_byte_d)
     elif list_name == "impacted_objects":
         neocc_lst = parse_impacted(data_byte_d)
+    elif list_name in ('neo_catalogue_current',
+                       'neo_catalogue_middle'):
+        neocc_lst = parse_neo_catalogue(data_byte_d)
+    else:
+        raise KeyError('Valid list names are nea_list, updated_nea, '
+                       'monthly_update, risk_list, risk_list_special, '
+                       'close_approaches_upcoming, '
+                       'close_approaches_recent, '
+                       'priority_list, priority_list_faint, '
+                       'close_encounter, impacted_objects, '
+                       'neo_catalogue_current and '
+                       'neo_catalogue_middle')
 
     return neocc_lst
 
@@ -331,6 +301,8 @@ def parse_clo(data_byte_d):
                          '*=Yes', 'H', 'Max Bright',
                          'Rel. vel in km/s']
 
+    # Assure that column Diameter in m is always a float
+    neocc_lst = neocc_lst.astype({'Diameter in m': float})
     # Convert column with date to datetime variable
     neocc_lst['Date'] = pd.to_datetime(neocc_lst['Date'])
     # Adding metadata
@@ -428,7 +400,8 @@ def parse_encounter(data_byte_d):
         Data frame with close encounter list data parsed.
     """
     # Read data as csv
-    neocc_lst = pd.read_csv(data_byte_d, sep='|', skiprows=[0,2])
+    neocc_lst = pd.read_csv(data_byte_d, sep='|', skiprows=[0,2],
+                            low_memory=False)
     # Check if there is server internal error
     if len(neocc_lst.columns) <= 1:
         raise ConnectionError('Internal Server Error. Please try '
@@ -439,7 +412,8 @@ def parse_encounter(data_byte_d):
     df_obj = neocc_lst.select_dtypes(['object'])
     neocc_lst[df_obj.columns] = df_obj.apply(lambda x:
                                              x.str.strip())
-
+    # Convert designator to str/object type
+    neocc_lst['Name/desig'] = neocc_lst['Name/desig'].astype(str)
     # Convert Date column to datetime format
     # Create auxilary columns
     neocc_lst[['Date1','Date2']] = neocc_lst['Date']\
@@ -500,5 +474,73 @@ def parse_impacted(data_byte_d):
 
     # Convert column with date to datetime variable
     neocc_lst[1] = pd.to_datetime(neocc_lst[1])
+
+    return neocc_lst
+
+
+def parse_neo_catalogue(data_byte_d):
+    """Parse neo catalogues (current or middle arc) lists.
+
+    Parameters
+    ----------
+    data_byte_d : object
+        Decoded StringIO object.
+    Returns
+    -------
+    neocc_lst : *pandas.DataFrame*
+        Data frame with catalogues of NEAs list data parsed.
+    """
+    # Read data as csv
+    neocc_lst = pd.read_csv(data_byte_d, header=None, skiprows=6,
+                            delim_whitespace=True)
+    # Specify file columns
+    neocc_lst.columns = ['Name', 'Epoch (MJD)', 'a', 'e', 'i',
+                  'long. node', 'arg. peric.', 'mean anomaly',
+                  'absolute magnitude', 'slope param.',
+                  'non-grav param.']
+    # Set the reference point at the beginning of the file to parse
+    # the header
+    data_byte_d.seek(0)
+    # Read the header
+    neocc_head = pd.read_fwf(data_byte_d, header=None, nrows=4)
+    # Template for format data
+    parse_format = "format  = '{format}'       ! file format"
+    # Parse required data for attributes
+    format_txt = parse(parse_format, neocc_head.iloc[0][0])
+    neocc_lst.form = format_txt['format']
+    # Template for record type
+    parse_rectype = "rectype = '{rectype}'           !"\
+        " record type (1L/ML)"
+    # Parse required data for attributes
+    rectype = parse(parse_rectype, neocc_head.iloc[1][0])
+    neocc_lst.rectype = rectype['rectype']
+    # Template for type of orbital element
+    parse_elem = "elem    = '{elem}'          ! "\
+                "type of orbital elements"
+    # Parse required data for attributes
+    elem = parse(parse_elem, neocc_head.iloc[2][0])
+    neocc_lst.elem = elem['elem']
+    # Template for reference system
+    parse_refsys = "refsys  = {refsys}     !"\
+        " default reference system"
+    # Parse required data for attributes
+    refsys = parse(parse_refsys, neocc_head.iloc[3][0])
+    neocc_lst.refsys = refsys['refsys']
+    neocc_lst.help = ('These catalogues represent the list of '
+                      'Keplerian orbit for each asteroid in the '
+                      'input list at mean epoch and at current epoch.'
+                      'The following information is contained:\n'
+                      '-Name: designator of the NEA\n'
+                      '-Epoch (MJD): epoch of the orbit'
+                      'involved in the close approach\n'
+                      '-Six orbital elements: semimajor axis (a), '
+                      'eccentricity (e), inclination (i), longitude of'
+                      ' the ascending node (long. node), '
+                      'argument of pericenter (arg. peric) '
+                      'and mean anomaly\n'
+                      '-Slope parameter (slope param.)\n'
+                      '-Number of non-gravitational parameters '
+                      '(non-grav. param.')
+
 
     return neocc_lst

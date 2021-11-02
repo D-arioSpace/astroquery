@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>ESANEOCC.lists &mdash; ESA NEOCC Python Interface 1.3.1 documentation</title>
+  <title>ESANEOCC.lists &mdash; ESA NEOCC Python Interface 1.4.0 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.3
+                1.4
               </div>
             
           
@@ -161,7 +161,7 @@
 <span class="sd">* Property: European Space Agency (ESA)</span>
 <span class="sd">* Developed by: Elecnor Deimos</span>
 <span class="sd">* Author: C. Álvaro Arroyo Parejo</span>
-<span class="sd">* Issue: 1.3.1</span>
+<span class="sd">* Issue: 1.4.0</span>
 <span class="sd">* Date: 29-06-2021</span>
 <span class="sd">* Purpose: Module which request and parse list data from ESA NEOCC</span>
 <span class="sd">* Module: lists.py</span>
@@ -180,6 +180,9 @@
 <span class="sd">                         for astroquery implementation.\n</span>
 <span class="sd">                         Change dateformat to datetime ISO format</span>
 <span class="sd">1.3.1      29-06-2021    Hotfix in Risk list (TS and Velocity)</span>
+<span class="sd">1.4.0      29-10-2021    Adding Catalogue of NEAS (current date</span>
+<span class="sd">                         and middle arc).\n</span>
+<span class="sd">                         Update docstrings.</span>
 <span class="sd">========   ===========   ==========================================</span>
 
 <span class="sd">© Copyright [European Space Agency][2021]</span>
@@ -188,9 +191,8 @@
 
 <span class="kn">import</span> <span class="nn">io</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timedelta</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span> <span class="k">as</span> <span class="n">dt</span>
-<span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">parse</span> <span class="kn">import</span> <span class="n">parse</span>
 <span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">conf</span>
 
@@ -207,7 +209,9 @@
 <span class="sd">    list_name : str</span>
 <span class="sd">        Name of the requested list. Valid names are: *nea_list,</span>
 <span class="sd">        risk_list, risk_list_special, close_approaches_upcoming,</span>
-<span class="sd">        close_approaches_recent, priority_list, priority_list_faint*.</span>
+<span class="sd">        close_approaches_recent, priority_list, priority_list_faint,</span>
+<span class="sd">        close_encounter, impacted_objects, neo_catalogue_current and</span>
+<span class="sd">        neo_catalogue_middle*.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -231,7 +235,9 @@
         <span class="s2">&quot;priority_list&quot;</span><span class="p">:</span> <span class="s1">&#39;esa_priority_neo_list&#39;</span><span class="p">,</span>
         <span class="s2">&quot;priority_list_faint&quot;</span><span class="p">:</span> <span class="s1">&#39;esa_faint_neo_list&#39;</span><span class="p">,</span>
         <span class="s2">&quot;close_encounter&quot;</span> <span class="p">:</span> <span class="s1">&#39;close_encounter2.txt&#39;</span><span class="p">,</span>
-        <span class="s2">&quot;impacted_objects&quot;</span> <span class="p">:</span> <span class="s1">&#39;impactedObjectsList.txt&#39;</span>
+        <span class="s2">&quot;impacted_objects&quot;</span> <span class="p">:</span> <span class="s1">&#39;impactedObjectsList.txt&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;neo_catalogue_current&quot;</span> <span class="p">:</span> <span class="s1">&#39;neo_kc.cat&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;neo_catalogue_middle&quot;</span> <span class="p">:</span> <span class="s1">&#39;neo_km.cat&#39;</span>
         <span class="p">}</span>
     <span class="c1"># Raise error is input is not in dictionary</span>
     <span class="k">if</span> <span class="n">list_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lists_dict</span><span class="p">:</span>
@@ -239,7 +245,8 @@
                        <span class="s1">&#39;monthly_update, risk_list, risk_list_special, &#39;</span>
                        <span class="s1">&#39;close_approaches_upcoming, close_approaches_recent, &#39;</span>
                        <span class="s1">&#39;priority_list, priority_list_faint, &#39;</span>
-                       <span class="s1">&#39;close_encounter and impacted_objects&#39;</span><span class="p">)</span>
+                       <span class="s1">&#39;close_encounter, impacted_objects, &#39;</span>
+                       <span class="s1">&#39;neo_catalogue_current and neo_catalogue_middle&#39;</span><span class="p">)</span>
     <span class="c1"># Get url</span>
     <span class="n">url</span> <span class="o">=</span> <span class="n">lists_dict</span><span class="p">[</span><span class="n">list_name</span><span class="p">]</span>
 
@@ -273,52 +280,6 @@
     <span class="k">return</span> <span class="n">neocc_list</span></div>
 
 
-<div class="viewcode-block" id="get_dec_year"><a class="viewcode-back" href="../../index.html#ESANEOCC.lists.get_dec_year">[docs]</a><span class="k">def</span> <span class="nf">get_dec_year</span><span class="p">(</span><span class="n">date</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Get decimal year from a date.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    date : datetime</span>
-<span class="sd">        Date in YYYY/MM/DD.dddd format.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    decimal_year : float64</span>
-<span class="sd">        Date in decimal year format YYYY.yyyyyy.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">since_epoch</span><span class="p">(</span><span class="n">date</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Convert time struct to time in seconds passed since epoch in</span>
-<span class="sd">        local time</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">         date : datetime</span>
-<span class="sd">            Name of the requested list.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        epoch_seconds : float64</span>
-<span class="sd">            Seconds passed since epoch in local time.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">epoch_seconds</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">mktime</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">timetuple</span><span class="p">())</span>
-        <span class="k">return</span> <span class="n">epoch_seconds</span>
-
-    <span class="c1"># Get current year and dt from init and end</span>
-    <span class="n">year</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">year</span>
-    <span class="n">year_start</span> <span class="o">=</span> <span class="n">dt</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">next_year</span> <span class="o">=</span> <span class="n">dt</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="n">year</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-
-    <span class="c1"># Get fraction of year from time elapsed and year duration</span>
-    <span class="n">year_elapsed</span> <span class="o">=</span> <span class="n">since_epoch</span><span class="p">(</span><span class="n">date</span><span class="p">)</span> <span class="o">-</span> <span class="n">since_epoch</span><span class="p">(</span><span class="n">year_start</span><span class="p">)</span>
-    <span class="n">year_duration</span> <span class="o">=</span> <span class="n">since_epoch</span><span class="p">(</span><span class="n">next_year</span><span class="p">)</span> <span class="o">-</span> <span class="n">since_epoch</span><span class="p">(</span><span class="n">year_start</span><span class="p">)</span>
-    <span class="n">fraction</span> <span class="o">=</span> <span class="n">year_elapsed</span><span class="o">/</span><span class="n">year_duration</span>
-
-    <span class="c1"># Compute decimal year</span>
-    <span class="n">decimal_year</span> <span class="o">=</span> <span class="n">year</span> <span class="o">+</span> <span class="n">fraction</span>
-
-    <span class="k">return</span> <span class="n">decimal_year</span></div>
-
-
 <div class="viewcode-block" id="parse_list"><a class="viewcode-back" href="../../index.html#ESANEOCC.lists.parse_list">[docs]</a><span class="k">def</span> <span class="nf">parse_list</span><span class="p">(</span><span class="n">list_name</span><span class="p">,</span> <span class="n">data_byte_d</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Switch function to select parse method.</span>
 
@@ -337,20 +298,29 @@
     <span class="c1"># Parse data for each type of list</span>
     <span class="k">if</span> <span class="n">list_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;nea_list&quot;</span><span class="p">,</span> <span class="s2">&quot;updated_nea&quot;</span><span class="p">,</span> <span class="s2">&quot;monthly_update&quot;</span><span class="p">):</span>
         <span class="n">neocc_lst</span> <span class="o">=</span> <span class="n">parse_nea</span><span class="p">(</span><span class="n">data_byte_d</span><span class="p">)</span>
-
     <span class="k">elif</span> <span class="n">list_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;risk_list&quot;</span><span class="p">,</span> <span class="s2">&quot;risk_list_special&quot;</span><span class="p">):</span>
         <span class="n">neocc_lst</span> <span class="o">=</span> <span class="n">parse_risk</span><span class="p">(</span><span class="n">data_byte_d</span><span class="p">)</span>
-
     <span class="k">elif</span> <span class="n">list_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;close_approaches_upcoming&quot;</span><span class="p">,</span>
                        <span class="s2">&quot;close_approaches_recent&quot;</span><span class="p">):</span>
         <span class="n">neocc_lst</span> <span class="o">=</span> <span class="n">parse_clo</span><span class="p">(</span><span class="n">data_byte_d</span><span class="p">)</span>
-
     <span class="k">elif</span> <span class="n">list_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;priority_list&quot;</span><span class="p">,</span> <span class="s2">&quot;priority_list_faint&quot;</span><span class="p">):</span>
         <span class="n">neocc_lst</span> <span class="o">=</span> <span class="n">parse_pri</span><span class="p">(</span><span class="n">data_byte_d</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">list_name</span> <span class="o">==</span> <span class="s2">&quot;close_encounter&quot;</span><span class="p">:</span>
         <span class="n">neocc_lst</span> <span class="o">=</span> <span class="n">parse_encounter</span><span class="p">(</span><span class="n">data_byte_d</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">list_name</span> <span class="o">==</span> <span class="s2">&quot;impacted_objects&quot;</span><span class="p">:</span>
         <span class="n">neocc_lst</span> <span class="o">=</span> <span class="n">parse_impacted</span><span class="p">(</span><span class="n">data_byte_d</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">list_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;neo_catalogue_current&#39;</span><span class="p">,</span>
+                       <span class="s1">&#39;neo_catalogue_middle&#39;</span><span class="p">):</span>
+        <span class="n">neocc_lst</span> <span class="o">=</span> <span class="n">parse_neo_catalogue</span><span class="p">(</span><span class="n">data_byte_d</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;Valid list names are nea_list, updated_nea, &#39;</span>
+                       <span class="s1">&#39;monthly_update, risk_list, risk_list_special, &#39;</span>
+                       <span class="s1">&#39;close_approaches_upcoming, &#39;</span>
+                       <span class="s1">&#39;close_approaches_recent, &#39;</span>
+                       <span class="s1">&#39;priority_list, priority_list_faint, &#39;</span>
+                       <span class="s1">&#39;close_encounter, impacted_objects, &#39;</span>
+                       <span class="s1">&#39;neo_catalogue_current and &#39;</span>
+                       <span class="s1">&#39;neo_catalogue_middle&#39;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">neocc_lst</span></div>
 
@@ -485,6 +455,8 @@
                          <span class="s1">&#39;*=Yes&#39;</span><span class="p">,</span> <span class="s1">&#39;H&#39;</span><span class="p">,</span> <span class="s1">&#39;Max Bright&#39;</span><span class="p">,</span>
                          <span class="s1">&#39;Rel. vel in km/s&#39;</span><span class="p">]</span>
 
+    <span class="c1"># Assure that column Diameter in m is always a float</span>
+    <span class="n">neocc_lst</span> <span class="o">=</span> <span class="n">neocc_lst</span><span class="o">.</span><span class="n">astype</span><span class="p">({</span><span class="s1">&#39;Diameter in m&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">})</span>
     <span class="c1"># Convert column with date to datetime variable</span>
     <span class="n">neocc_lst</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">neocc_lst</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">])</span>
     <span class="c1"># Adding metadata</span>
@@ -582,7 +554,8 @@
 <span class="sd">        Data frame with close encounter list data parsed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Read data as csv</span>
-    <span class="n">neocc_lst</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">data_byte_d</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;|&#39;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">neocc_lst</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">data_byte_d</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;|&#39;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span>
+                            <span class="n">low_memory</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="c1"># Check if there is server internal error</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">neocc_lst</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="s1">&#39;Internal Server Error. Please try &#39;</span>
@@ -654,6 +627,74 @@
 
     <span class="c1"># Convert column with date to datetime variable</span>
     <span class="n">neocc_lst</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">neocc_lst</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">neocc_lst</span></div>
+
+
+<div class="viewcode-block" id="parse_neo_catalogue"><a class="viewcode-back" href="../../index.html#ESANEOCC.lists.parse_neo_catalogue">[docs]</a><span class="k">def</span> <span class="nf">parse_neo_catalogue</span><span class="p">(</span><span class="n">data_byte_d</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Parse neo catalogues (current or middle arc) lists.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data_byte_d : object</span>
+<span class="sd">        Decoded StringIO object.</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    neocc_lst : *pandas.DataFrame*</span>
+<span class="sd">        Data frame with catalogues of NEAs list data parsed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Read data as csv</span>
+    <span class="n">neocc_lst</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">data_byte_d</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+                            <span class="n">delim_whitespace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># Specify file columns</span>
+    <span class="n">neocc_lst</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Name&#39;</span><span class="p">,</span> <span class="s1">&#39;Epoch (MJD)&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;long. node&#39;</span><span class="p">,</span> <span class="s1">&#39;arg. peric.&#39;</span><span class="p">,</span> <span class="s1">&#39;mean anomaly&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;absolute magnitude&#39;</span><span class="p">,</span> <span class="s1">&#39;slope param.&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;non-grav param.&#39;</span><span class="p">]</span>
+    <span class="c1"># Set the reference point at the beginning of the file to parse</span>
+    <span class="c1"># the header</span>
+    <span class="n">data_byte_d</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># Read the header</span>
+    <span class="n">neocc_head</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_fwf</span><span class="p">(</span><span class="n">data_byte_d</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+    <span class="c1"># Template for format data</span>
+    <span class="n">parse_format</span> <span class="o">=</span> <span class="s2">&quot;format  = &#39;</span><span class="si">{format}</span><span class="s2">&#39;       ! file format&quot;</span>
+    <span class="c1"># Parse required data for attributes</span>
+    <span class="n">format_txt</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">parse_format</span><span class="p">,</span> <span class="n">neocc_head</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">neocc_lst</span><span class="o">.</span><span class="n">form</span> <span class="o">=</span> <span class="n">format_txt</span><span class="p">[</span><span class="s1">&#39;format&#39;</span><span class="p">]</span>
+    <span class="c1"># Template for record type</span>
+    <span class="n">parse_rectype</span> <span class="o">=</span> <span class="s2">&quot;rectype = &#39;</span><span class="si">{rectype}</span><span class="s2">&#39;           !&quot;</span>\
+        <span class="s2">&quot; record type (1L/ML)&quot;</span>
+    <span class="c1"># Parse required data for attributes</span>
+    <span class="n">rectype</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">parse_rectype</span><span class="p">,</span> <span class="n">neocc_head</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">neocc_lst</span><span class="o">.</span><span class="n">rectype</span> <span class="o">=</span> <span class="n">rectype</span><span class="p">[</span><span class="s1">&#39;rectype&#39;</span><span class="p">]</span>
+    <span class="c1"># Template for type of orbital element</span>
+    <span class="n">parse_elem</span> <span class="o">=</span> <span class="s2">&quot;elem    = &#39;</span><span class="si">{elem}</span><span class="s2">&#39;          ! &quot;</span>\
+                <span class="s2">&quot;type of orbital elements&quot;</span>
+    <span class="c1"># Parse required data for attributes</span>
+    <span class="n">elem</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">parse_elem</span><span class="p">,</span> <span class="n">neocc_head</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">neocc_lst</span><span class="o">.</span><span class="n">elem</span> <span class="o">=</span> <span class="n">elem</span><span class="p">[</span><span class="s1">&#39;elem&#39;</span><span class="p">]</span>
+    <span class="c1"># Template for reference system</span>
+    <span class="n">parse_refsys</span> <span class="o">=</span> <span class="s2">&quot;refsys  = </span><span class="si">{refsys}</span><span class="s2">     !&quot;</span>\
+        <span class="s2">&quot; default reference system&quot;</span>
+    <span class="c1"># Parse required data for attributes</span>
+    <span class="n">refsys</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">parse_refsys</span><span class="p">,</span> <span class="n">neocc_head</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">neocc_lst</span><span class="o">.</span><span class="n">refsys</span> <span class="o">=</span> <span class="n">refsys</span><span class="p">[</span><span class="s1">&#39;refsys&#39;</span><span class="p">]</span>
+    <span class="n">neocc_lst</span><span class="o">.</span><span class="n">help</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;These catalogues represent the list of &#39;</span>
+                      <span class="s1">&#39;Keplerian orbit for each asteroid in the &#39;</span>
+                      <span class="s1">&#39;input list at mean epoch and at current epoch.&#39;</span>
+                      <span class="s1">&#39;The following information is contained:</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Name: designator of the NEA</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Epoch (MJD): epoch of the orbit&#39;</span>
+                      <span class="s1">&#39;involved in the close approach</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Six orbital elements: semimajor axis (a), &#39;</span>
+                      <span class="s1">&#39;eccentricity (e), inclination (i), longitude of&#39;</span>
+                      <span class="s1">&#39; the ascending node (long. node), &#39;</span>
+                      <span class="s1">&#39;argument of pericenter (arg. peric) &#39;</span>
+                      <span class="s1">&#39;and mean anomaly</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Slope parameter (slope param.)</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-Number of non-gravitational parameters &#39;</span>
+                      <span class="s1">&#39;(non-grav. param.&#39;</span><span class="p">)</span>
+
 
     <span class="k">return</span> <span class="n">neocc_lst</span></div>
 </pre></div>

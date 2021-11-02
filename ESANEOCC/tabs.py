@@ -10,8 +10,8 @@ within this module.
 * Property: European Space Agency (ESA)
 * Developed by: Elecnor Deimos
 * Author: C. Álvaro Arroyo Parejo
-* Issue: 1.3.1
-* Date: 29-06-2021
+* Issue: 1.4.0
+* Date: 02-11-2021
 * Purpose: Module which request and parse list data from ESA NEOCC
 * Module: tabs.py
 * History:
@@ -38,6 +38,16 @@ Version    Date          Change History
                          Change *get_matrix* from *orbit_properties* for
                          objects with 2 non-gravitational parameters.
 1.3.1      29-06-2021    No changes
+1.4.0      29-10-2021    Tab physical_properties has been recoded to parse the
+                         information through a request in the portal instead
+                         of parsing the html.\n
+                         Get URL function now contains the file extension for 
+                         physical properties.\n
+                         Parsing of ephemerides has been change to adapt new 
+                         format.\n
+                         Orb_type attribute added in tab *orbit_properties*.\n
+                         Bug fix in tab *observations*.\n
+                         Adding redundancy for tab *summary* parsing.
 ========   ===========   =====================================================
 
 © Copyright [European Space Agency][2021]
@@ -57,7 +67,6 @@ from . import conf
 
 # Import URLs and TIMEOUT
 API_URL = conf.API_URL
-PROPERTIES_URL = conf.PROPERTIES_URL
 EPHEM_URL = conf.EPHEM_URL
 SUMMARY_URL = conf.SUMMARY_URL
 TIMEOUT = conf.TIMEOUT
@@ -105,6 +114,7 @@ def get_object_url(name, tab, **kwargs):
     # Define the parameters of each list
     tab_dict = {"impacts": '.risk',
                 "close_approaches": '.clolin',
+                "physical_properties" : '.phypro',
                 "observations": '.rwo',
                 "orbit_properties": ['.ke0', '.ke1', '.eq0', '.eq1']}
 
@@ -535,196 +545,131 @@ class PhysicalProperties:
         # Sources
         self.sources = []
 
-    @staticmethod 
-    def _get_prop_sources(contents):
+    @staticmethod
+    def _get_prop_sources(data_obj_d, rows):
         """
             Obtain the sources parsed
 
             Parameters
             ----------
-            contents : object
-                Content of the requested url
+            data_obj_d : object
+                Object in byte format decoded.
+            rows : int
+                Index where references start
 
             Returns
             -------
             sources : Data structure
                 Data structure containing all property sources
         """
-        # Read html for obtaining different tables from the portal
-        try:
-            df_p = pd.read_html(contents, keep_default_na=False)
-        except df_p.DoesNotExist as df_not_exist:
-            logging.warning('Object not found: the name of the '
-                            'object is wrong or misspelt')
-            raise ValueError('Object not found: the name of the '
-                             'object is wrong or misspelt') from df_not_exist
-
-        # The obtaining data frame contains a list of different data
-        # frames so the required is extracted
-        sources = pd.DataFrame(df_p[2])
+        # Read as csv to allow delimiter. Since pandas not allow ","
+        # as delimiter (error in parsing columns)
+        sources= pd.read_csv(data_obj_d, header=None, skiprows=rows+2,
+                              engine='python', delimiter='],')
+        # Add the erased bracket
+        sources[0] = sources[0]+']'
+        # Split first column with the first found commar
+        sources[[1, 2]] = sources[1].str.split(r',', 1, expand=True)
+        # Replace whitespace as blank spaces for better reading
+        sources[2] = sources[2].str.replace(r"\s(?=\d\.\))", r"\n",
+                                            regex=True)
+        # Name columns as the portal
+        sources.columns = ['No.', 'Name', 'Additional']
 
         return sources
 
-    @staticmethod
-    def _get_property_names(contents):
-        """
-            Check and obtain dataframe names
-
-            Parameters
-            ----------
-            contents : object
-                Content of the requested url
-
-            Returns
-            -------
-            df_names : Data structure
-                Data structure containing all property names
-            parsed_html : object
-                BeautifulSoup object with the requested information
-        """
-        # Parse html using BS
-        parsed_html = BeautifulSoup(contents, 'lxml')
-        # Check if there is a tag sub for term A1 and A2 if so,
-        # decompose html i.e., remove that properties from parsing
-        for i in range(2):
-            subtag = parsed_html.find('sub')
-            i += 1
-            if subtag:
-                parsed_html.sub.decompose()
-        # Search for property names using div and class
-        props_names = parsed_html.find_all("div",
-                                        {"class":
-                                         "col-lg-3 font-weight-bold"
-                                         " d-none d-lg-block"})
-        # Create DataFrame with the obtained properties
-        df_names = pd.DataFrame(props_names)
-        # Since the parsing gets properties from other tabs it is
-        # necessary to select the properties associated to Physical
-        # Properties tab
-        if df_names.empty:
-            print('Required properties file is not available for this '
-                  'object. Re-attempting...')
-            # Wait and re-try
-            time.sleep(5)
-            parsed_html = BeautifulSoup(contents, 'lxml')
-            for i in range(2):
-                subtag = parsed_html.find('sub')
-                i += 1
-                if subtag:
-                    parsed_html.sub.decompose()
-            props_names = parsed_html.find_all("div",
-                                        {"class":
-                                         "col-lg-3 font-weight-bold"
-                                         " d-none d-lg-block"})
-            if df_names.empty:
-                logging.warning('Required properties file is not '
-                                'found for this object. Check object name.')
-                raise ValueError('Required properties file is not '
-                                'found for this object. '
-                                'Check object name.')
-        # Search for Rotation Period property to define the dataframe
-        property_index = get_indexes(df_names, 'Rotation Period')
-        df_names = df_names[0][property_index[0][0]:
-                               property_index[0][0]+14]
-        # Reindex and drop old indexes
-        df_names = df_names.reset_index(drop=True)
-
-        return parsed_html, df_names
-
-    @staticmethod
-    def _get_physical_props(contents):
-        """
-            Obtain the physical properties from the portal
-
-            Parameters
-            ----------
-            url : str
-                Complete url for physical properties
-
-            Returns
-            -------
-            physical_properties : Data structure
-                Data structure containing the physical properties
-        """
-        # Obtain DataFrame with the obtained properties and html parsed
-        parsed_html, df_names = PhysicalProperties\
-                                ._get_property_names(contents)
-        #df_names = PhysicalProperties._get_property_names(url)[1]
-        # Search for property values, units and sources
-        props_value = parsed_html.find_all("div",
-                                        {"class": "col-12"})
-        # Convert to DataFrame and specify string type to avoid bad
-        # object parsing
-        df_values = pd.DataFrame(props_value, dtype='string')
-        # Since the parsing is not as precises as needed remove/replace
-        # unnecessary data
-        df_values[0] = df_values[0].str.replace('<div class="col-12">',
-                                                '')\
-                    .str.replace('</div>', '').str.replace('\n', '')\
-                    .str.strip()
-        # Since the parsing gets properties from other tabs it is
-        # necessary to select the properties associated to Physical
-        # Properties tab
-        df_values = df_values[0][0:42]
-        # Diameter property is an exception, it is required to
-        # introduce an additional parsing step searching for the
-        # specific property
-        diameter = parsed_html.find_all("span",
-                                        {"id": re.compile("_NEOSearch_WAR_"\
-                                                          "PSDBportlet_"\
-                                                          ".*diameter-value.*"
-                                                          )})
-        # Get the value from BS attribute
-        diameter_parsed = BeautifulSoup(str(diameter), 'html.parser').\
-                          span.text
-        # Drop-down units needs to be specify. It has been chosen the
-        # default unit
-        df_values = df_values.replace(df_values[13], 'deg').\
-                            replace(df_values[16], 'deg').\
-                            replace(df_values[33], diameter_parsed).\
-                            replace(df_values[34], 'm')
-        # Create lists to used as columns for final frame
-        # Initialize list
-        values = []
-        units = []
-        sources = []
-        for i in range(0, len(df_values), 3):
-            # Append values for the lists
-            values.append(df_values[i])
-            units.append(df_values[i+1])
-            sources.append(df_values[i+2])
-        # Create frame structure for pandas
-        frame = {'Property': df_names,
-                'Values': values,
-                'Unit': units,
-                'Source': sources}
-        # Create DataFrame using pandas
-        physical_properties =  pd.DataFrame(frame)
-
-        return physical_properties
-
-    def _phys_prop_parser(self, name):
+    def _phys_prop_parser(self, data_obj):
         """
             Parse and arrange the physical properties data
 
             Parameters
             ----------
-            name : string
-                Object name
+            data_obj : object
+                Object in byte format.
 
             Raises
             ------
             ValueError
                 If the name of the object is not encountered
         """
-        # Final url = PROPERTIES_URL + desig in which white spaces,
-        # if any, are replaced by %20 to complete the designator
-        url = PROPERTIES_URL + str(name).replace(' ', '%20')
-        # Get contents to optimize times
-        contents = requests.get(url).content
+        # Check that there is not additonal note
+        df_check_d = io.StringIO(data_obj.decode('utf-8'))
+        if not df_check_d.getvalue():
+            raise ValueError('Object not found or misspelt')
+        # Read as txt file
+        df_check = pd.read_fwf(df_check_d, header=None,
+                               engine='python')
+        # Get index where references start and count rows
+        ref_index = get_indexes(df_check, "REFERENCES")
+        n_rows = ref_index[0][0]
+        # Set reference point at the begging of the file
+        df_check_d.seek(0)
+        df_check = pd.read_fwf(df_check_d, header=None,
+                               engine='python', nrows=n_rows)
+        # Held exception for Taxonomy (all) property
+        # Split the comple DF to obtain the columns
+        df_check = df_check[0].str.split(',', expand=True)
+        # Initialize index
+        index = 0
+        if len(df_check.columns) > 4:
+            rest = len(df_check.columns) - 4
+            # Iterate over each element in last col to find
+            # rows with additional elements separated by commas
+            for element in df_check.iloc[:, -1]:
+                if isinstance(element, str):
+                    for i in range(2, len(df_check.columns)-2):
+                            df_check.iloc[index, 1] =\
+                                df_check.iloc[index, 1] + ',' +\
+                                      df_check.iloc[index, i]
+                    df_check.iloc[index,2] = df_check.iloc[index,
+                                                len(df_check.columns)-2]
+                    df_check.iloc[index,3] = df_check.iloc[index,
+                                                len(df_check.columns)-1]
+                index += 1
+        # Only get the main columns
+        df_check = df_check.iloc[:, 0:4]
+        # Set reference point at the begging of the file
+        df_check_d.seek(0)
+        # Read as csv for parsing
+        ast_prop = pd.read_csv(df_check_d, header=None, skiprows=0,
+                               nrows=n_rows, delimiter=',',
+                               on_bad_lines='skip')
+        # Create if condition for the exception since Taxonomy (all)
+        # will be skipped. The DF is updated with the values of the
+        # redundant one
+        if not 'Taxonomy (all)' in ast_prop.values:
+             ast_prop.update(df_check)
+        elif not 'Quality' in ast_prop.values:
+             ast_prop.update(df_check)
+        # Rename columns
+        ast_prop.columns = ['Property', 'Value(s)', 'Units',
+                            'Reference(s)']
+        # Group identical properties into one. The values from the
+        # other columns will be group using commas (as a list)
+        phys_prop = ast_prop.groupby(['Property'], as_index=False,
+                                     sort=False)[['Value(s)', 'Units',
+                                                 'Reference(s)']]\
+                            .agg(lambda x: ','.join(x))
+        # Split using commas to create arrays
+        phys_prop['Value(s)'] = phys_prop['Value(s)']\
+                            .apply(lambda x: x.split(',')
+                            if isinstance(x, str) and ',' in x else x)
+        phys_prop['Units'] = phys_prop['Units']\
+                            .apply(lambda x: x.split(',')
+                            if isinstance(x, str) and ',' in x else x)
+        phys_prop['Reference(s)'] = phys_prop['Reference(s)']\
+                            .apply(lambda x: x.split(',')
+                            if isinstance(x, str) and ',' in x else x)
+        # Values need to be converted to numeric type when possible
+        phys_prop['Value(s)'] = phys_prop['Value(s)']\
+                            .apply(lambda x: pd.to_numeric(x,
+                            errors='ignore', downcast='float'))
+        # Properties
+        self.physical_properties = phys_prop
         # Sources
-        self.physical_properties = self._get_physical_props(contents)
-        self.sources = self._get_prop_sources(contents)
+        # Set reference point at the begging of the file
+        df_check_d.seek(0)
+        self.sources = self._get_prop_sources(df_check_d, n_rows)
 
 
 class AsteroidObservations:
@@ -732,7 +677,7 @@ class AsteroidObservations:
 
     Attributes
     ----------
-    version : int
+    version : float
         File version.
     errmod : str
         Error model for the data.
@@ -812,7 +757,7 @@ class AsteroidObservations:
         return ver, err, ast, mag
 
     @staticmethod
-    def _get_opt_info(data_obj, diff, head):
+    def _get_opt_info(data_obj, diff, head, cols_sep):
         """Get optical information from asteroid observation file.
 
         Parameters
@@ -836,21 +781,26 @@ class AsteroidObservations:
         # Decode data for check v and s optical observations
         df_check = io.StringIO(data_obj.decode('utf-8'))
         # Set attributes
-        df_obs = pd.read_fwf(df_check, sep=' ', skiprows=head,
+        df_obs = pd.read_fwf(df_check, colspecs=cols_sep, skiprows=head,
                                engine='python', skipfooter=diff)
         # Check if there are "Roving Observer" observations
         df_index = df_obs.iloc[:,1:4]
         v_indexes = get_indexes(df_index, 'v')
         # Check if there are "Roving Observer" observations
-        s_indexes = get_indexes(df_index, 's')
+        s_index = get_indexes(df_index, 's')
+        # Remove indexes located in 'N' column
+        s_indexes = []
+        for indexes in s_index:
+            if 'T' in indexes:
+                s_indexes = s_indexes + [indexes]
         # Initialization of a list which contain the row indexes
         v_rows = []
         s_rows = []
 
         # Roving Observations
         if not v_indexes:
-            df_roving_obs = 'There are no "Roving Observer"' \
-                            'observartions for this object'
+            df_roving_obs = 'There are no "Roving Observer" '\
+                            'observations for this object'
         else:
             # Save a list with the row indexes that needs to be saved
             for v_index in v_indexes:
@@ -886,7 +836,7 @@ class AsteroidObservations:
 
         # Satellite Observations
         if not s_indexes:
-            df_sat_obs = 'There are no Satellite observartions for '\
+            df_sat_obs = 'There are no Satellite observations for '\
                          'this object'
         else:
             # Save a list with the row indexes that needs to be saved
@@ -928,19 +878,12 @@ class AsteroidObservations:
 
         # Rest of optical observations
         df_opt = io.StringIO(data_obj.decode('utf-8'))
-        # Define colspecs fwf
-        cols = [(0,10), (11,12), (12,15), (15,16), (17,21), (22,24),
-                (25,38), (40,49), (50,52), (53,55), (56,62), (64,73),
-                (76,82), (83,84), (87,93), (96,102), (103,106),
-                (107,109), (110,115), (117,126), (129,135), (136,137),
-                (140,146), (149,155), (156,161), (161,162), (164,168),
-                (170,175), (177,179), (180,183), (188,193), (194,195),
-                (196,197)]
         # Read data using pandas as text, skiping header and footer
         # and v_rows and s_rows if any
-        df_optical_obs = pd.read_fwf(df_opt, skipfooter=diff, colspecs=cols,
-                                      engine='python',
-                                      skiprows=head + v_rows + s_rows)
+        df_optical_obs = pd.read_fwf(df_opt, skipfooter=diff,
+                                     colspecs=cols_sep,
+                                     engine='python',
+                                     skiprows=head + v_rows + s_rows)
         # Replace NaN values for blank values
         df_optical_obs = df_optical_obs.fillna('')
         # Rename Columns as in file
@@ -1129,7 +1072,14 @@ class AsteroidObservations:
         else:
             head = [0, 1, 2, 3, 4, 5]
         # Read data in fixed width format
-        df_p = pd.read_fwf(df_d, delim_whitespace=True,
+        cols = [(0,10), (11,12), (12,15), (15,16), (17,21), (22,24),
+                (25,38), (40,49), (50,52), (53,55), (56,62), (64,73),
+                (76,82), (83,84), (87,93), (96,102), (103,106),
+                (107,109), (110,115), (117,126), (129,135), (136,137),
+                (140,146), (149,155), (156,161), (161,162), (164,168),
+                (170,175), (177,179), (180,183), (188,193), (194,195),
+                (196,197)]
+        df_p = pd.read_fwf(df_d, colspecs=cols,
                            skiprows=head, engine='python')
         # Check if there is radar observations data
         if not get_indexes(df_p, '! Object'):
@@ -1137,7 +1087,7 @@ class AsteroidObservations:
             diff = 0
             # Get observations
             total_observations = self._get_opt_info(data_obj, diff,
-                                                    head)
+                                                    head, cols)
             # Set attributes
             self.optical_observations = total_observations[0]
             self.radar_observations = 'There is no relevant radar '\
@@ -1154,7 +1104,7 @@ class AsteroidObservations:
             diff = len(df_p) - index[0][0]
             # Get observations
             total_observations = self._get_opt_info(data_obj, diff,
-                                                    head)
+                                                    head, cols)
             # Set attributes
             self.optical_observations = total_observations[0]
             self.radar_observations = self._get_rad_info(df_rad, index)
@@ -1372,7 +1322,7 @@ class OrbitProperties:
                         ['Area-to-mass ratio', 'Yarkovsky parameter']
                     # Build the matrix
                     mat = pd.DataFrame(mat_data, index=matrix_indexes)
-        else:
+        else:   # pragma: no cover
             raise ValueError('Valid matrix name are cov, cor and nor')
 
         return mat
@@ -1544,6 +1494,8 @@ class KeplerianOrbitProperties(OrbitProperties):
         Infinite velocity.
     u_par : int
         Uncertainty parameter as defined by MPC.
+    orb_type : string
+        Type of orbit.
     rms : pandas.DataFrame
         Root mean square for Keplerian elements
     cov : pandas.DataFrame
@@ -1569,6 +1521,7 @@ class KeplerianOrbitProperties(OrbitProperties):
         self.pha = []
         self.vinfty = []
         self.u_par = []
+        self.orb_type = []
         self.rms = []
         # Covariance and correlation matrices
         self.cov = []
@@ -1592,12 +1545,6 @@ class KeplerianOrbitProperties(OrbitProperties):
         self._orb_prop_parser(data_obj)
         # Decode data using UTF-8 and store in memory for orb props
         df_orb_d = io.StringIO(data_obj.decode('utf-8'))
-        # Check file exists or is not empty
-        if not df_orb_d.getvalue():
-            logging.warning('Required orbit properties file is '
-                            'empty for this object')
-            raise ValueError('Required orbit properties file is '
-                            'empty for this object')
         # Read data as csv
         df_orb = pd.read_csv(df_orb_d, delim_whitespace=True,
                             skiprows=[0,1,2,3,4,9], engine='python')
@@ -1605,7 +1552,7 @@ class KeplerianOrbitProperties(OrbitProperties):
         keplerian = df_orb.iloc[0:1, 1:7]
         # Kep - Rename columns and indexes
         keplerian.columns = ['a', 'e', 'i', 'long. node',
-                            'arg.s peric.', 'mean anomaly']
+                            'arg. peric.', 'mean anomaly']
         keplerian.index = ['KEP']
         self.kep = keplerian.astype(float)
         # Get perihelion index to provide location for rest of attributes
@@ -1636,6 +1583,8 @@ class KeplerianOrbitProperties(OrbitProperties):
 
         # Get index for RMS
         rms_index = get_indexes(df_orb, 'RMS')[0][0]
+        # Determine Orb Type parameter knowing the RMS index
+        self.orb_type = str(df_orb.iloc[rms_index-1, 2])
         # Check the dimension of the matrix to give complete RMS
         matrix_dimension = int(self.lsp.iloc[0, 2])
         if matrix_dimension == 8:
@@ -1733,12 +1682,6 @@ class EquinoctialOrbitProperties(OrbitProperties):
         self._orb_prop_parser(data_obj)
         # Decode data using UTF-8 and store in memory for orb props
         df_orb_d = io.StringIO(data_obj.decode('utf-8'))
-        # Check file exists or is not empty
-        if not df_orb_d.getvalue():
-            logging.warning('Required orbit properties file is '
-                            'empty for this object')
-            raise ValueError('Required orbit properties file is '
-                            'empty for this object')
         # Check if there is an additional line
         df_check_d = io.StringIO(data_obj.decode('utf-8'))
         # Read as txt file
@@ -1857,7 +1800,7 @@ class Ephemerides:
         self.tinit = []
         self.tfinal = []
         self.tstep = []
-        # Orbit properties
+        # Ephemerides
         self.ephemerides = []
 
     @staticmethod
@@ -1940,7 +1883,7 @@ class Ephemerides:
             # Get object data
             data_obj = requests.get(url_ephe, timeout=TIMEOUT).content
 
-        except ConnectionError:
+        except ConnectionError: # pragma: no cover
             print('Initial attempt to obtain object data failed. '
                   'Reattempting...')
             logging.warning('Initial attempt to obtain object data'
@@ -1961,23 +1904,24 @@ class Ephemerides:
         ephems_d = io.StringIO(data_obj.decode('utf-8'))
         # Since ephemerides col space is fixed, it is defined in order
         # to set the length (number of spaces) for each field
-        col_space = [(1,12), (13,19), (20,32), (34,37), (37,40),
-                     (40,47), (49,52), (52, 55), (55,61), (62,67),
-                     (68,73), (74,82), (83, 89), (90,96), (97,103),
-                     (104,110), (111,116), (116,122), (123,130),
-                     (131,138), (140,148), (150,158), (160,168),
-                     (170,178), (178,184)]
+        col_space = [(1,12), (13,19), (20,32) ,(34,37), (38,40),
+                     (41,47), (49,52), (53,55), (56, 61), (62,67),
+                     (68,73), (74,82), (83, 94), (95,101), (102, 108),
+                     (109,115), (116,121), (122,127), (128,135),
+                     (136,143), (145,153), (155,163), (165,173),
+                     (174,179), (181,188), (191,198), (200,205)]
         # Read pandas as txt
         ephem = pd.read_fwf(ephems_d, header=None, skiprows=9,
                             engine='python', colspecs=col_space)
         # Rename columns
-        ephem.columns = ['Date', 'Hour', 'MJD', 'RA H', 'RA M', 'RA S',
-                         'DEC D', 'DEC \'','DEC "',
-                         'Mag','Alt', 'Airmass', 'Sun elev.',
+        ephem.columns = ['Date', 'Hour', 'MJD in UTC', 'RA h', 'RA m',
+                         'RA s', 'DEC d', 'DEC \'','DEC "', 'Mag',
+                         'Alt (deg)', 'Airmass', 'Sun elev. (deg)',
                          'SolEl (deg)', 'LunEl (deg)', 'Phase (deg)',
                          'Glat (deg)', 'Glon (deg)', 'R (au)',
                          'Delta (au)', 'Ra*cosDE ("/min)',
-                         'DEC ("/min)', 'Err1', 'Err2', 'PA']
+                         'DEC ("/min)', 'Vel ("/min)', 'PA (deg)',
+                         'Err1 (")', 'Err2 (")', 'AngAx (deg)']
         # Convert Date to datetime iso format
         ephem['Date'] = pd.to_datetime(ephem['Date'])
         # Convert Hout column to days
@@ -1988,8 +1932,8 @@ class Ephemerides:
         ephem = ephem.drop(['Hour'], axis=1)
         # Remove mid whitespaces from declination, if any, and apply int
         # format
-        if ephem['DEC D'].dtype == str:
-            ephem['DEC D'] = ephem['DEC D'].str.replace(' ','').astype(int)
+        if isinstance(ephem['DEC d'].dtype, object):
+            ephem['DEC d'] = ephem['DEC d'].str.replace(' ','').astype(int)
         #Adding help to ephemerides data frame
         ephem.help = ('Ephemerides data frame shows:\n'
                       '-The Date and the Hour considered\n'
@@ -2021,9 +1965,14 @@ class Ephemerides:
                       '-The Apparent motion in RA (corrected by '
                       'cos(DEC), which means the real motion on sky), '
                       'and in DEC, in arcsec/min of the object\n'
+                      '-The angular velocity (Vel) in arcsec/min\n'
+                      '-The position Angle (PA) value\n'
                       '-The Sky plane error with the long axis (Err1),'
-                      ' short axis (Err2) and Position Angle (PA) '
-                      'values')
+                      ' short axis (Err2)\n'
+                      '-The uncertainty ellipse position angle, given '
+                      'in degrees. It gives the primary axis '
+                      'orientation of the major axis of the ellipse in'
+                      ' degrees measured from North.')
         # Get header data
         header_date = self._get_head_ephem(data_obj)
         # Assign attributes
@@ -2069,14 +2018,7 @@ class Summary:
         url = SUMMARY_URL + str(name).replace(' ', '%20')
 
         # Read the url as html
-        try:
-            contents = requests.get(url, timeout=TIMEOUT).content
-        except contents.DoesNotExist as contents_not_exist:
-            logging.warning('Object not found: the name of the '
-                            'object is wrong or misspelt')
-            raise ValueError('Object not found: the name of the '
-                             'object is wrong or misspelt') from\
-                                 contents_not_exist
+        contents = requests.get(url, timeout=TIMEOUT).content
         # Parse html using BS
         parsed_html = BeautifulSoup(contents, 'lxml')
         # Summary properties are in </div>. Search for them:
@@ -2097,37 +2039,75 @@ class Summary:
                                                           ".*diameter-value.*"
                                                           )})
         # Obtain the text in the span location. Note that the diameter type
-        # will be str since * can be given in the value
-        diam_p = BeautifulSoup(str(diameter), 'html.parser').span.text
+        # will be str since * can be given in the value. If this field is
+        # not obtain then, there is no object so ValueErro appears
+        try:
+            diam_p = BeautifulSoup(str(diameter), 'html.parser').span.text
+        except :
+            logging.warning('Object not found: the name of the '
+                            'object is wrong or misspelt')
+            raise ValueError('Object not found: the name of the '
+                             'object is wrong or misspelt')
         # Get indexes to locate the required properties.
         # In this code only the location of Absolute Magnitude is obtained
         index = get_indexes(props_df, 'Absolute Magnitude (H)')
-        index = index[0][0]
-        # Adding a second index for Rotation Period since diameter can
-        # change the dimensions of the line
-        red_index = get_indexes(props_df, 'Rotation period (T)')
-        red_index = red_index[0][0]
-        physical_properties = {'Physical Properties':
-                                ['Absolute Magnitude (H)',
-                                 'Diameter', 'Taxonomic Type',
-                                 'Rotation Period (T)'],
-                               'Value': [props_df[0][index+1],
-                                        diam_p,
-                                        props_df[0][index+9],
-                                        props_df[0][red_index+1]],
-                               'Units': [props_df[0][index+2],
-                                        props_df[0][index+7],
-                                        ' ',
-                                        props_df[0][red_index+2]]}
-        # Create DataFrame
-        physical_properties_df = pd.DataFrame(physical_properties)
-        self.physical_properties = physical_properties_df
-        # Assign attributes for discovery date and observatory
-        if not get_indexes(props_df, 'Observatory'):
-            self.discovery_date = 'Discovery date is not available'
-            self.observatory = 'Observatory is not available'
+        if index[0][1] == 0:
+            index = index[0][0]
+            # Adding a second index for Rotation Period since diameter can
+            # change the dimensions of the line
+            red_index = get_indexes(props_df, 'Rotation period (T)')
+            red_index = red_index[0][0]
+            physical_properties = {'Physical Properties':
+                                    ['Absolute Magnitude (H)',
+                                    'Diameter', 'Taxonomic Type',
+                                    'Rotation Period (T)'],
+                                   'Value': [props_df[0][index+1],
+                                            diam_p,
+                                            props_df[0][index+9],
+                                            props_df[0][red_index+1]],
+                                   'Units': [props_df[0][index+2],
+                                            props_df[0][index+7],
+                                            ' ',
+                                            props_df[0][red_index+2]]}
+            # Create DataFrame
+            physical_properties_df = pd.DataFrame(physical_properties)
+            self.physical_properties = physical_properties_df
+            # Assign attributes for discovery date and observatory
+            if not get_indexes(props_df, 'Observatory'):
+                self.discovery_date = 'Discovery date is not available'
+                self.observatory = 'Observatory is not available'
+            else:
+                discovery_date = props_df[0][red_index+4]
+                self.discovery_date = discovery_date
+                observatory = props_df[0][red_index+6]
+                self.observatory = observatory
+
         else:
-            discovery_date = props_df[0][red_index+4]
-            self.discovery_date = discovery_date
-            observatory = props_df[0][red_index+6]
-            self.observatory = observatory
+            index = index[0][0]
+            red_index = get_indexes(props_df, 'Rotation period (T)')
+            red_index = red_index[0][0]
+            physical_properties = {'Physical Properties':
+                                    ['Absolute Magnitude (H)',
+                                    'Diameter', 'Taxonomic Type',
+                                    'Rotation Period (T)'],
+                                   'Value': [props_df[1][index+1],
+                                            diam_p,
+                                            props_df[1][index+7],
+                                            props_df[1][red_index+1]],
+                                   'Units': [props_df[1][index+2],
+                                            props_df[0][index+5],
+                                            ' ',
+                                            props_df[1][red_index+2]]}
+
+            # Create DataFrame
+            physical_properties_df = pd.DataFrame(physical_properties)
+            self.physical_properties = physical_properties_df
+            # Assign attributes for discovery date and observatory
+            if not get_indexes(props_df, 'Observatory'):
+                self.discovery_date = 'Discovery date is not available'
+                self.observatory = 'Observatory is not available'
+            else:
+                discovery_date = props_df[1][red_index+4]
+                self.discovery_date = discovery_date
+                observatory = props_df[1][red_index+6]
+                self.observatory = observatory

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>ESA NEOCC Portal Python Interface Library &mdash; ESA NEOCC Python Interface 1.3.1 documentation</title>
+  <title>ESA NEOCC Portal Python Interface Library &mdash; ESA NEOCC Python Interface 1.4.0 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.3
+                1.4
               </div>
             
           
@@ -107,13 +107,18 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#esaneocc-change-log">ESANEOCC Change Log</a><ul>
-<li><a class="reference internal" href="#version-1-3-1">Version 1.3.1</a><ul>
+<li><a class="reference internal" href="#version-1-4">Version 1.4</a><ul>
+<li><a class="reference internal" href="#changes">Changes</a></li>
 <li><a class="reference internal" href="#bug-fixes">Bug Fixes</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#version-1-3-1">Version 1.3.1</a><ul>
+<li><a class="reference internal" href="#id2">Bug Fixes</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#version-1-3">Version 1.3</a><ul>
-<li><a class="reference internal" href="#changes">Changes</a></li>
-<li><a class="reference internal" href="#id3">Bug Fixes</a></li>
+<li><a class="reference internal" href="#id3">Changes</a></li>
+<li><a class="reference internal" href="#id5">Bug Fixes</a></li>
 </ul>
 </li>
 </ul>
@@ -254,17 +259,18 @@ will not work if the dependencies do not satisfy the Requirements.</p>
 <p>ESA NEOCC Portal Python Interface Library works with Python 3.</p>
 <p>The following packages are required for the library installation &amp; use:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://pypi.org/project/astropy/">astropy</a> = 4.2.1</p></li>
-<li><p><a class="reference external" href="https://pypi.org/project/beautifulsoup4/">beautifulsoup4</a> = 4.9.3</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/astropy/">astropy</a> = 4.3.1</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/beautifulsoup4/">beautifulsoup4</a> = 4.10.0</p></li>
 <li><p><a class="reference external" href="https://pypi.org/project/lxml/">lxml</a> = 4.6.3</p></li>
-<li><p><a class="reference external" href="https://pypi.org/project/pandas/">pandas</a> = 1.2.4</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/pandas/">pandas</a> = 1.3.4</p></li>
 <li><p><a class="reference external" href="https://pypi.org/project/parse/">parse</a> = 1.19.0</p></li>
-<li><p><a class="reference external" href="https://pypi.org/project/requests/">requests</a> = 2.25.1</p></li>
-<li><p><a class="reference external" href="https://pypi.org/project/scipy/">scipy</a> = 1.6.3</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/requests/">requests</a> = 2.26.0</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/scipy/">scipy</a> = 1.7.1</p></li>
 </ul>
 <p>For tests the following packages are required:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://pypi.org/project/pytest/">pytest</a></p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/pytest/">pytest</a> = 6.2.1</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/astroquery/">astroquery</a> = 0.4.3</p></li>
 </ul>
 </div>
 <div class="section" id="modules">
@@ -280,8 +286,8 @@ portal: <a class="reference external" href="https://neo.ssa.esa.int/">https://ne
 <li><p>Property: European Space Agency (ESA)</p></li>
 <li><p>Developed by: Elecnor Deimos</p></li>
 <li><p>Author: C. Álvaro Arroyo Parejo</p></li>
-<li><p>Issue: 1.3.1</p></li>
-<li><p>Date: 29-06-2021</p></li>
+<li><p>Issue: 1.4.0</p></li>
+<li><p>Date: 29-10-2021</p></li>
 <li><p>Purpose: Main module which gets NEAs data from <a class="reference external" href="https://neo.ssa.esa.int/">https://neo.ssa.esa.int/</a></p></li>
 <li><p>Module: core.py</p></li>
 <li><p>History:</p></li>
@@ -330,6 +336,13 @@ implementation.</p>
 <td><p>29-06-2021</p></td>
 <td><p>No changes</p></td>
 </tr>
+<tr class="row-odd"><td><p>1.4.0</p></td>
+<td><p>29-10-2021</p></td>
+<td><p>Adding new docstrings.</p>
+<p>Change method for obtaining physical
+properties</p>
+</td>
+</tr>
 </tbody>
 </table>
 <p>© Copyright [European Space Agency][2021]
@@ -355,6 +368,8 @@ All rights reserved</p>
 <li><p>Priority list (faint): <em>priority_list_faint</em></p></li>
 <li><p>Close encounter list: <em>close_encounter</em></p></li>
 <li><p>Impacted objects: <em>impacted_objects</em></p></li>
+<li><p>Catalogue of NEAs (current date): <em>neo_catalogue_current</em></p></li>
+<li><p>Catalogue of NEAs (middle arc): <em>neo_catalogue_middle</em></p></li>
 </ul>
 <p>These lists are referenced in <a class="reference external" href="https://neo.ssa.esa.int/computer-access">https://neo.ssa.esa.int/computer-access</a></p>
 <dl class="field-list simple">
@@ -362,7 +377,8 @@ All rights reserved</p>
 <dd class="field-odd"><p><strong>list_name</strong> (<em>str</em>) – Name of the requested list. Valid names are: <em>nea_list,
 updated_nea, monthly_update, risk_list, risk_list_special,
 close_approaches_upcoming, close_approaches_recent, priority_list,
-priority_list_faint, close_encounter and impacted_objects</em>.</p>
+priority_list_faint, close_encounter, impacted_objects,
+neo_catalogue_current and neo_catalogue_middle</em>.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>neocc_lst</strong> – Data Frame which contains the information of the requested list</p>
@@ -591,29 +607,22 @@ of the dataframe.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">properties</span><span class="o">.&lt;</span><span class="n">tab</span><span class="o">&gt;</span>
 <span class="go">properties.physical_properties  properties.sources</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">properties</span><span class="o">.</span><span class="n">physical_properties</span>
-<span class="go">                Property     Values Unit Source</span>
-<span class="go">0           Rotation Period       5.27    h    [4]</span>
-<span class="go">1                   Quality          4    -    [4]</span>
-<span class="go">2                 Amplitude  0.04-1.49  mag    [4]</span>
-<span class="go">3        Rotation Direction        PRO    -    [1]</span>
-<span class="go">4              Spinvector L         16  deg    [1]</span>
-<span class="go">5              Spinvector B          9  deg    [1]</span>
-<span class="go">6                  Taxonomy         Sq    -    [2]</span>
-<span class="go">7            Taxonomy (all)          S    -    [3]</span>
-<span class="go">8    Absolute Magnitude (H)      10.31  mag    [5]</span>
-<span class="go">9       Slope Parameter (G)     0.46**  mag    [6]</span>
-<span class="go">10                   Albedo       0.24    -    [9]</span>
-<span class="go">11                 Diameter      23300    m   [10]</span>
-<span class="go">12  Color Index Information       0.39  R-I   [11]</span>
-<span class="go">13                Sightings   Visual S    -   [13]</span>
+<span class="go">                Property                  Value(s)                 Units              Reference(s)</span>
+<span class="go">0           Rotation Period                      5.27                     h                       [4]</span>
+<span class="go">1                   Quality                       4.0                     -                       [4]</span>
+<span class="go">2                 Amplitude                 0.04-1.49                   mag                       [4]</span>
+<span class="go">3        Rotation Direction                       PRO                     -                       [1]</span>
+<span class="go">4              Spinvector L                      16.0                   deg                       [1]</span>
+<span class="go">5              Spinvector B                       9.0                   deg                       [1]</span>
+<span class="go">6                  Taxonomy                        Sq                     -                       [2]</span>
+<span class="go">7            Taxonomy (all)                         S                     -                       [3]</span>
+<span class="go">8    Absolute Magnitude (H)           [10.853, 10.31]            [mag, mag]                [[5], [6]]</span>
+<span class="go">9       Slope Parameter (G)     [0.46**, 0.2, 0.46**]       [mag, mag, mag]           [[7], [8], [5]]</span>
+<span class="go">10                   Albedo                      0.24                     -                       [9]</span>
+<span class="go">11                 Diameter                   23300.0                     m                      [10]</span>
+<span class="go">12  Color Index Information  [0.85, 0.48, 0.39, 0.52]  [B-V, V-R, R-I, U-B]  [[11], [11], [11], [12]]</span>
+<span class="go">13                Sightings       [Radar R, Visual S]                [-, -]              [[13], [14]]</span>
 </pre></div>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Some physical properties (e.g. <em>Absolute Mangnitude (H)</em>, <em>Slope
-Parameter (G)</em>, etc) may have several values which come from different
-sources. Currently, the library will only show one value as it is done
-in the NEOCC portal.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -674,8 +683,8 @@ to make the library works.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ast_orbit_prop</span> <span class="o">=</span> <span class="n">neocc</span><span class="o">.</span><span class="n">query_object</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;99942&#39;</span><span class="p">,</span>
 <span class="go">tab=&#39;orbit_properties&#39;,orbital_elements=&#39;keplerian&#39;, orbit_epoch=&#39;present&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ast_orbit_prop</span><span class="o">.&lt;</span><span class="n">tab</span><span class="o">&gt;</span>
-<span class="go">ast_orbit_prop.anode       ast_orbit_prop.moid</span>
-<span class="go">ast_orbit_prop.aphelion    ast_orbit_prop.ngr</span>
+<span class="go">ast_orbit_prop.anode       ast_orbit_prop.ngr</span>
+<span class="go">ast_orbit_prop.aphelion    ast_orbit_prop.orb_type</span>
 <span class="go">ast_orbit_prop.cor         ast_orbit_prop.perihelion</span>
 <span class="go">ast_orbit_prop.cov         ast_orbit_prop.period</span>
 <span class="go">ast_orbit_prop.dnode       ast_orbit_prop.pha</span>
@@ -684,6 +693,7 @@ to make the library works.</p>
 <span class="go">ast_orbit_prop.kep         ast_orbit_prop.rms</span>
 <span class="go">ast_orbit_prop.lsp         ast_orbit_prop.u_par</span>
 <span class="go">ast_orbit_prop.mag         ast_orbit_prop.vinfty</span>
+<span class="go">ast_orbit_prop.moid</span>
 </pre></div>
 </div>
 <p><strong>Ephemerides:</strong> In order to access ephemerides information, it
@@ -715,7 +725,7 @@ obtain it from the ESA NEOCC portal and parse it to show it properly.</p>
 <li><p>Property: European Space Agency (ESA)</p></li>
 <li><p>Developed by: Elecnor Deimos</p></li>
 <li><p>Author: C. Álvaro Arroyo Parejo</p></li>
-<li><p>Issue: 1.3.1</p></li>
+<li><p>Issue: 1.4.0</p></li>
 <li><p>Date: 29-06-2021</p></li>
 <li><p>Purpose: Module which request and parse list data from ESA NEOCC</p></li>
 <li><p>Module: lists.py</p></li>
@@ -761,27 +771,17 @@ for astroquery implementation.</p>
 <td><p>29-06-2021</p></td>
 <td><p>Hotfix in Risk list (TS and Velocity)</p></td>
 </tr>
+<tr class="row-odd"><td><p>1.4.0</p></td>
+<td><p>29-10-2021</p></td>
+<td><p>Adding Catalogue of NEAS (current date
+and middle arc).</p>
+<p>Update docstrings.</p>
+</td>
+</tr>
 </tbody>
 </table>
 <p>© Copyright [European Space Agency][2021]
 All rights reserved</p>
-<dl class="py function">
-<dt id="ESANEOCC.lists.get_dec_year">
-<code class="sig-prename descclassname">ESANEOCC.lists.</code><code class="sig-name descname">get_dec_year</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">date</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ESANEOCC/lists.html#get_dec_year"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.lists.get_dec_year" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get decimal year from a date.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>date</strong> (<em>datetime</em>) – Date in YYYY/MM/DD.dddd format.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>decimal_year</strong> – Date in decimal year format YYYY.yyyyyy.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>float64</p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py function">
 <dt id="ESANEOCC.lists.get_list_data">
 <code class="sig-prename descclassname">ESANEOCC.lists.</code><code class="sig-name descname">get_list_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">url</span></em>, <em class="sig-param"><span class="n">list_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ESANEOCC/lists.html#get_list_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.lists.get_list_data" title="Permalink to this definition">¶</a></dt>
@@ -810,7 +810,9 @@ All rights reserved</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>list_name</strong> (<em>str</em>) – Name of the requested list. Valid names are: <em>nea_list,
 risk_list, risk_list_special, close_approaches_upcoming,
-close_approaches_recent, priority_list, priority_list_faint</em>.</p>
+close_approaches_recent, priority_list, priority_list_faint,
+close_encounter, impacted_objects, neo_catalogue_current and
+neo_catalogue_middle</em>.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>url</strong> – Final URL string.</p>
@@ -913,6 +915,23 @@ close_approaches_recent, priority_list, priority_list_faint</em>.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="ESANEOCC.lists.parse_neo_catalogue">
+<code class="sig-prename descclassname">ESANEOCC.lists.</code><code class="sig-name descname">parse_neo_catalogue</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_byte_d</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ESANEOCC/lists.html#parse_neo_catalogue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.lists.parse_neo_catalogue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse neo catalogues (current or middle arc) lists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data_byte_d</strong> (<em>object</em>) – Decoded StringIO object.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>neocc_lst</strong> – Data frame with catalogues of NEAs list data parsed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><em>pandas.DataFrame</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="ESANEOCC.lists.parse_pri">
 <code class="sig-prename descclassname">ESANEOCC.lists.</code><code class="sig-name descname">parse_pri</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_byte_d</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ESANEOCC/lists.html#parse_pri"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ESANEOCC.lists.parse_pri" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse and arrange priority lists.</p>
@@ -959,8 +978,8 @@ within this module.</p>
 <li><p>Property: European Space Agency (ESA)</p></li>
 <li><p>Developed by: Elecnor Deimos</p></li>
 <li><p>Author: C. Álvaro Arroyo Parejo</p></li>
-<li><p>Issue: 1.3.1</p></li>
-<li><p>Date: 29-06-2021</p></li>
+<li><p>Issue: 1.4.0</p></li>
+<li><p>Date: 29-10-2021</p></li>
 <li><p>Purpose: Module which request and parse list data from ESA NEOCC</p></li>
 <li><p>Module: tabs.py</p></li>
 <li><p>History:</p></li>
@@ -1014,6 +1033,20 @@ objects with 2 non-gravitational parameters.</p>
 <td><p>29-06-2021</p></td>
 <td><p>No changes</p></td>
 </tr>
+<tr class="row-odd"><td><p>1.4.0</p></td>
+<td><p>29-10-2021</p></td>
+<td><p>Tab physical_properties has been recoded to parse the
+information through a request in the portal instead
+of parsing the html.</p>
+<p>Get URL function now contains the file extension for
+physical properties.</p>
+<p>Parsing of ephemerides has been change to adapt new
+format.</p>
+<p>Orb_type attribute added in tab <em>orbit_properties</em>.</p>
+<p>Bug fix in tab <em>observations</em>.</p>
+<p>Adding redundancy for tab <em>summary</em> parsing.</p>
+</td>
+</tr>
 </tbody>
 </table>
 <p>© Copyright [European Space Agency][2021]
@@ -1028,7 +1061,7 @@ All rights reserved</p>
 <dd><p>File version.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>int</p>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1483,6 +1516,17 @@ from OrbitProperties.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ESANEOCC.tabs.KeplerianOrbitProperties.orb_type">
+<code class="sig-name descname">orb_type</code><a class="headerlink" href="#ESANEOCC.tabs.KeplerianOrbitProperties.orb_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type of orbit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1980,10 +2024,29 @@ into Astropy library and the developers recommended to use the <a class="referen
 </div>
 <div class="section" id="esaneocc-change-log">
 <h1>ESANEOCC Change Log<a class="headerlink" href="#esaneocc-change-log" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="version-1-3-1">
-<h2>Version 1.3.1<a class="headerlink" href="#version-1-3-1" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="version-1-4">
+<h2>Version 1.4<a class="headerlink" href="#version-1-4" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="changes">
+<h3>Changes<a class="headerlink" href="#changes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>The type of the orbit is now obtained as attribute in tab <em>orbit_properties</em>.</p></li>
+<li><p>The format of the ephemerides format has changed according to the one probided by <a class="reference external" href="https://neo.ssa.esa.int/computer-access">NEOCC</a></p></li>
+<li><p>Tab <em>physical_properties</em> now contains all the values (if exist) for the different properties.</p></li>
+<li><p>There are two new lists implemented: Catalogue of NEAs (current date) and Catalogue of NEAs (middle arc).</p></li>
+<li><p>Parsing of tab <em>summary</em> is more robust.</p></li>
+</ul>
+</div>
 <div class="section" id="bug-fixes">
 <h3>Bug Fixes<a class="headerlink" href="#bug-fixes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Fixed tab <em>observations</em> which failed to process the information of some asteroids.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="version-1-3-1">
+<h2>Version 1.3.1<a class="headerlink" href="#version-1-3-1" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id2">
+<h3>Bug Fixes<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Fixed bug where <em>risk_list</em> and <em>risk_list_special</em> were not displaying Torino Scale and Velocity.</p></li>
 </ul>
@@ -1991,8 +2054,8 @@ into Astropy library and the developers recommended to use the <a class="referen
 </div>
 <div class="section" id="version-1-3">
 <h2>Version 1.3<a class="headerlink" href="#version-1-3" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="changes">
-<h3>Changes<a class="headerlink" href="#changes" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id3">
+<h3>Changes<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference external" href="https://pypi.org/project/astropy/">astropy</a> library has been added as required package.</p></li>
 <li><p><em>neocc.py</em> module has been renamed to <em>core.py</em> in order to be consistent with Astroquery.</p></li>
@@ -2003,8 +2066,8 @@ into Astropy library and the developers recommended to use the <a class="referen
 <li><p>Time performance improvement in obtaining physical properties.</p></li>
 </ul>
 </div>
-<div class="section" id="id3">
-<h3>Bug Fixes<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id5">
+<h3>Bug Fixes<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Fixed two-points ephemerides generation fails</p></li>
 <li><p>Fixed physical properties generation for objects with Area-to-mass ratio and Yarkovsky parameter.</p></li>

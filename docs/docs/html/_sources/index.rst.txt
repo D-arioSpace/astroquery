@@ -95,17 +95,18 @@ ESA NEOCC Portal Python Interface Library works with Python 3.
 
 The following packages are required for the library installation & use:
 
-* `astropy <https://pypi.org/project/astropy/>`_ = 4.2.1
-* `beautifulsoup4 <https://pypi.org/project/beautifulsoup4/>`_ = 4.9.3
+* `astropy <https://pypi.org/project/astropy/>`_ = 4.3.1
+* `beautifulsoup4 <https://pypi.org/project/beautifulsoup4/>`_ = 4.10.0
 * `lxml <https://pypi.org/project/lxml/>`_ = 4.6.3
-* `pandas <https://pypi.org/project/pandas/>`_ = 1.2.4
+* `pandas <https://pypi.org/project/pandas/>`_ = 1.3.4
 * `parse <https://pypi.org/project/parse/>`_ = 1.19.0
-* `requests <https://pypi.org/project/requests/>`_ = 2.25.1
-* `scipy <https://pypi.org/project/scipy/>`_ = 1.6.3
+* `requests <https://pypi.org/project/requests/>`_ = 2.26.0
+* `scipy <https://pypi.org/project/scipy/>`_ = 1.7.1
 
 For tests the following packages are required:
 
-* `pytest <https://pypi.org/project/pytest/>`_
+* `pytest <https://pypi.org/project/pytest/>`_ = 6.2.1
+* `astroquery <https://pypi.org/project/astroquery/>`_ = 0.4.3
 
 ===============
 Modules
@@ -339,6 +340,26 @@ Visit `Interfacing with the Pandas Package <https://docs.astropy.org/en/stable/t
 ##########################################
 ESANEOCC Change Log
 ##########################################
+
+==============================
+Version 1.4
+==============================
+
+----------------------
+Changes
+----------------------
+
+* The type of the orbit is now obtained as attribute in tab *orbit_properties*.
+* The format of the ephemerides format has changed according to the one probided by `NEOCC <https://neo.ssa.esa.int/computer-access>`_ 
+* Tab *physical_properties* now contains all the values (if exist) for the different properties.
+* There are two new lists implemented: Catalogue of NEAs (current date) and Catalogue of NEAs (middle arc).
+* Parsing of tab *summary* is more robust.
+
+----------------------
+Bug Fixes
+----------------------
+
+* Fixed tab *observations* which failed to process the information of some asteroids.
 
 ==============================
 Version 1.3.1

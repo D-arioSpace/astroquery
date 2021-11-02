@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>ESANEOCC.tabs &mdash; ESA NEOCC Python Interface 1.3.1 documentation</title>
+  <title>ESANEOCC.tabs &mdash; ESA NEOCC Python Interface 1.4.0 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.3
+                1.4
               </div>
             
           
@@ -164,8 +164,8 @@
 <span class="sd">* Property: European Space Agency (ESA)</span>
 <span class="sd">* Developed by: Elecnor Deimos</span>
 <span class="sd">* Author: C. Álvaro Arroyo Parejo</span>
-<span class="sd">* Issue: 1.3.1</span>
-<span class="sd">* Date: 29-06-2021</span>
+<span class="sd">* Issue: 1.4.0</span>
+<span class="sd">* Date: 29-10-2021</span>
 <span class="sd">* Purpose: Module which request and parse list data from ESA NEOCC</span>
 <span class="sd">* Module: tabs.py</span>
 <span class="sd">* History:</span>
@@ -192,6 +192,16 @@
 <span class="sd">                         Change *get_matrix* from *orbit_properties* for</span>
 <span class="sd">                         objects with 2 non-gravitational parameters.</span>
 <span class="sd">1.3.1      29-06-2021    No changes</span>
+<span class="sd">1.4.0      29-10-2021    Tab physical_properties has been recoded to parse the</span>
+<span class="sd">                         information through a request in the portal instead</span>
+<span class="sd">                         of parsing the html.\n</span>
+<span class="sd">                         Get URL function now contains the file extension for </span>
+<span class="sd">                         physical properties.\n</span>
+<span class="sd">                         Parsing of ephemerides has been change to adapt new </span>
+<span class="sd">                         format.\n</span>
+<span class="sd">                         Orb_type attribute added in tab *orbit_properties*.\n</span>
+<span class="sd">                         Bug fix in tab *observations*.\n</span>
+<span class="sd">                         Adding redundancy for tab *summary* parsing.</span>
 <span class="sd">========   ===========   =====================================================</span>
 
 <span class="sd">© Copyright [European Space Agency][2021]</span>
@@ -211,7 +221,6 @@
 
 <span class="c1"># Import URLs and TIMEOUT</span>
 <span class="n">API_URL</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">API_URL</span>
-<span class="n">PROPERTIES_URL</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">PROPERTIES_URL</span>
 <span class="n">EPHEM_URL</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">EPHEM_URL</span>
 <span class="n">SUMMARY_URL</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">SUMMARY_URL</span>
 <span class="n">TIMEOUT</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">TIMEOUT</span>
@@ -259,6 +268,7 @@
     <span class="c1"># Define the parameters of each list</span>
     <span class="n">tab_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;impacts&quot;</span><span class="p">:</span> <span class="s1">&#39;.risk&#39;</span><span class="p">,</span>
                 <span class="s2">&quot;close_approaches&quot;</span><span class="p">:</span> <span class="s1">&#39;.clolin&#39;</span><span class="p">,</span>
+                <span class="s2">&quot;physical_properties&quot;</span> <span class="p">:</span> <span class="s1">&#39;.phypro&#39;</span><span class="p">,</span>
                 <span class="s2">&quot;observations&quot;</span><span class="p">:</span> <span class="s1">&#39;.rwo&#39;</span><span class="p">,</span>
                 <span class="s2">&quot;orbit_properties&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;.ke0&#39;</span><span class="p">,</span> <span class="s1">&#39;.ke1&#39;</span><span class="p">,</span> <span class="s1">&#39;.eq0&#39;</span><span class="p">,</span> <span class="s1">&#39;.eq1&#39;</span><span class="p">]}</span>
 
@@ -689,196 +699,131 @@
         <span class="c1"># Sources</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="nd">@staticmethod</span> 
-    <span class="k">def</span> <span class="nf">_get_prop_sources</span><span class="p">(</span><span class="n">contents</span><span class="p">):</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_prop_sources</span><span class="p">(</span><span class="n">data_obj_d</span><span class="p">,</span> <span class="n">rows</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Obtain the sources parsed</span>
 
 <span class="sd">            Parameters</span>
 <span class="sd">            ----------</span>
-<span class="sd">            contents : object</span>
-<span class="sd">                Content of the requested url</span>
+<span class="sd">            data_obj_d : object</span>
+<span class="sd">                Object in byte format decoded.</span>
+<span class="sd">            rows : int</span>
+<span class="sd">                Index where references start</span>
 
 <span class="sd">            Returns</span>
 <span class="sd">            -------</span>
 <span class="sd">            sources : Data structure</span>
 <span class="sd">                Data structure containing all property sources</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Read html for obtaining different tables from the portal</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">df_p</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_html</span><span class="p">(</span><span class="n">contents</span><span class="p">,</span> <span class="n">keep_default_na</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">df_p</span><span class="o">.</span><span class="n">DoesNotExist</span> <span class="k">as</span> <span class="n">df_not_exist</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Object not found: the name of the &#39;</span>
-                            <span class="s1">&#39;object is wrong or misspelt&#39;</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Object not found: the name of the &#39;</span>
-                             <span class="s1">&#39;object is wrong or misspelt&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">df_not_exist</span>
-
-        <span class="c1"># The obtaining data frame contains a list of different data</span>
-        <span class="c1"># frames so the required is extracted</span>
-        <span class="n">sources</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">df_p</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="c1"># Read as csv to allow delimiter. Since pandas not allow &quot;,&quot;</span>
+        <span class="c1"># as delimiter (error in parsing columns)</span>
+        <span class="n">sources</span><span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">data_obj_d</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="n">rows</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span>
+                              <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;python&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;],&#39;</span><span class="p">)</span>
+        <span class="c1"># Add the erased bracket</span>
+        <span class="n">sources</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">sources</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;]&#39;</span>
+        <span class="c1"># Split first column with the first found commar</span>
+        <span class="n">sources</span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="n">sources</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># Replace whitespace as blank spaces for better reading</span>
+        <span class="n">sources</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">sources</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s(?=\d\.\))&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\n&quot;</span><span class="p">,</span>
+                                            <span class="n">regex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># Name columns as the portal</span>
+        <span class="n">sources</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;No.&#39;</span><span class="p">,</span> <span class="s1">&#39;Name&#39;</span><span class="p">,</span> <span class="s1">&#39;Additional&#39;</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="n">sources</span>
 
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_property_names</span><span class="p">(</span><span class="n">contents</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Check and obtain dataframe names</span>
-
-<span class="sd">            Parameters</span>
-<span class="sd">            ----------</span>
-<span class="sd">            contents : object</span>
-<span class="sd">                Content of the requested url</span>
-
-<span class="sd">            Returns</span>
-<span class="sd">            -------</span>
-<span class="sd">            df_names : Data structure</span>
-<span class="sd">                Data structure containing all property names</span>
-<span class="sd">            parsed_html : object</span>
-<span class="sd">                BeautifulSoup object with the requested information</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Parse html using BS</span>
-        <span class="n">parsed_html</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">contents</span><span class="p">,</span> <span class="s1">&#39;lxml&#39;</span><span class="p">)</span>
-        <span class="c1"># Check if there is a tag sub for term A1 and A2 if so,</span>
-        <span class="c1"># decompose html i.e., remove that properties from parsing</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
-            <span class="n">subtag</span> <span class="o">=</span> <span class="n">parsed_html</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;sub&#39;</span><span class="p">)</span>
-            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="k">if</span> <span class="n">subtag</span><span class="p">:</span>
-                <span class="n">parsed_html</span><span class="o">.</span><span class="n">sub</span><span class="o">.</span><span class="n">decompose</span><span class="p">()</span>
-        <span class="c1"># Search for property names using div and class</span>
-        <span class="n">props_names</span> <span class="o">=</span> <span class="n">parsed_html</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">,</span>
-                                        <span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span>
-                                         <span class="s2">&quot;col-lg-3 font-weight-bold&quot;</span>
-                                         <span class="s2">&quot; d-none d-lg-block&quot;</span><span class="p">})</span>
-        <span class="c1"># Create DataFrame with the obtained properties</span>
-        <span class="n">df_names</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">props_names</span><span class="p">)</span>
-        <span class="c1"># Since the parsing gets properties from other tabs it is</span>
-        <span class="c1"># necessary to select the properties associated to Physical</span>
-        <span class="c1"># Properties tab</span>
-        <span class="k">if</span> <span class="n">df_names</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Required properties file is not available for this &#39;</span>
-                  <span class="s1">&#39;object. Re-attempting...&#39;</span><span class="p">)</span>
-            <span class="c1"># Wait and re-try</span>
-            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-            <span class="n">parsed_html</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">contents</span><span class="p">,</span> <span class="s1">&#39;lxml&#39;</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
-                <span class="n">subtag</span> <span class="o">=</span> <span class="n">parsed_html</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;sub&#39;</span><span class="p">)</span>
-                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="k">if</span> <span class="n">subtag</span><span class="p">:</span>
-                    <span class="n">parsed_html</span><span class="o">.</span><span class="n">sub</span><span class="o">.</span><span class="n">decompose</span><span class="p">()</span>
-            <span class="n">props_names</span> <span class="o">=</span> <span class="n">parsed_html</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">,</span>
-                                        <span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span>
-                                         <span class="s2">&quot;col-lg-3 font-weight-bold&quot;</span>
-                                         <span class="s2">&quot; d-none d-lg-block&quot;</span><span class="p">})</span>
-            <span class="k">if</span> <span class="n">df_names</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Required properties file is not &#39;</span>
-                                <span class="s1">&#39;found for this object. Check object name.&#39;</span><span class="p">)</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Required properties file is not &#39;</span>
-                                <span class="s1">&#39;found for this object. &#39;</span>
-                                <span class="s1">&#39;Check object name.&#39;</span><span class="p">)</span>
-        <span class="c1"># Search for Rotation Period property to define the dataframe</span>
-        <span class="n">property_index</span> <span class="o">=</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">df_names</span><span class="p">,</span> <span class="s1">&#39;Rotation Period&#39;</span><span class="p">)</span>
-        <span class="n">df_names</span> <span class="o">=</span> <span class="n">df_names</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">property_index</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
-                               <span class="n">property_index</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">14</span><span class="p">]</span>
-        <span class="c1"># Reindex and drop old indexes</span>
-        <span class="n">df_names</span> <span class="o">=</span> <span class="n">df_names</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">parsed_html</span><span class="p">,</span> <span class="n">df_names</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_physical_props</span><span class="p">(</span><span class="n">contents</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Obtain the physical properties from the portal</span>
-
-<span class="sd">            Parameters</span>
-<span class="sd">            ----------</span>
-<span class="sd">            url : str</span>
-<span class="sd">                Complete url for physical properties</span>
-
-<span class="sd">            Returns</span>
-<span class="sd">            -------</span>
-<span class="sd">            physical_properties : Data structure</span>
-<span class="sd">                Data structure containing the physical properties</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Obtain DataFrame with the obtained properties and html parsed</span>
-        <span class="n">parsed_html</span><span class="p">,</span> <span class="n">df_names</span> <span class="o">=</span> <span class="n">PhysicalProperties</span>\
-                                <span class="o">.</span><span class="n">_get_property_names</span><span class="p">(</span><span class="n">contents</span><span class="p">)</span>
-        <span class="c1">#df_names = PhysicalProperties._get_property_names(url)[1]</span>
-        <span class="c1"># Search for property values, units and sources</span>
-        <span class="n">props_value</span> <span class="o">=</span> <span class="n">parsed_html</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">,</span>
-                                        <span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;col-12&quot;</span><span class="p">})</span>
-        <span class="c1"># Convert to DataFrame and specify string type to avoid bad</span>
-        <span class="c1"># object parsing</span>
-        <span class="n">df_values</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">props_value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;string&#39;</span><span class="p">)</span>
-        <span class="c1"># Since the parsing is not as precises as needed remove/replace</span>
-        <span class="c1"># unnecessary data</span>
-        <span class="n">df_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&lt;div class=&quot;col-12&quot;&gt;&#39;</span><span class="p">,</span>
-                                                <span class="s1">&#39;&#39;</span><span class="p">)</span>\
-                    <span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&lt;/div&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>\
-                    <span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="c1"># Since the parsing gets properties from other tabs it is</span>
-        <span class="c1"># necessary to select the properties associated to Physical</span>
-        <span class="c1"># Properties tab</span>
-        <span class="n">df_values</span> <span class="o">=</span> <span class="n">df_values</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="mi">42</span><span class="p">]</span>
-        <span class="c1"># Diameter property is an exception, it is required to</span>
-        <span class="c1"># introduce an additional parsing step searching for the</span>
-        <span class="c1"># specific property</span>
-        <span class="n">diameter</span> <span class="o">=</span> <span class="n">parsed_html</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;span&quot;</span><span class="p">,</span>
-                                        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;_NEOSearch_WAR_&quot;</span>\
-                                                          <span class="s2">&quot;PSDBportlet_&quot;</span>\
-                                                          <span class="s2">&quot;.*diameter-value.*&quot;</span>
-                                                          <span class="p">)})</span>
-        <span class="c1"># Get the value from BS attribute</span>
-        <span class="n">diameter_parsed</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">diameter</span><span class="p">),</span> <span class="s1">&#39;html.parser&#39;</span><span class="p">)</span><span class="o">.</span>\
-                          <span class="n">span</span><span class="o">.</span><span class="n">text</span>
-        <span class="c1"># Drop-down units needs to be specify. It has been chosen the</span>
-        <span class="c1"># default unit</span>
-        <span class="n">df_values</span> <span class="o">=</span> <span class="n">df_values</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">df_values</span><span class="p">[</span><span class="mi">13</span><span class="p">],</span> <span class="s1">&#39;deg&#39;</span><span class="p">)</span><span class="o">.</span>\
-                            <span class="n">replace</span><span class="p">(</span><span class="n">df_values</span><span class="p">[</span><span class="mi">16</span><span class="p">],</span> <span class="s1">&#39;deg&#39;</span><span class="p">)</span><span class="o">.</span>\
-                            <span class="n">replace</span><span class="p">(</span><span class="n">df_values</span><span class="p">[</span><span class="mi">33</span><span class="p">],</span> <span class="n">diameter_parsed</span><span class="p">)</span><span class="o">.</span>\
-                            <span class="n">replace</span><span class="p">(</span><span class="n">df_values</span><span class="p">[</span><span class="mi">34</span><span class="p">],</span> <span class="s1">&#39;m&#39;</span><span class="p">)</span>
-        <span class="c1"># Create lists to used as columns for final frame</span>
-        <span class="c1"># Initialize list</span>
-        <span class="n">values</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">units</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">sources</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_values</span><span class="p">),</span> <span class="mi">3</span><span class="p">):</span>
-            <span class="c1"># Append values for the lists</span>
-            <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df_values</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-            <span class="n">units</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df_values</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
-            <span class="n">sources</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df_values</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="p">])</span>
-        <span class="c1"># Create frame structure for pandas</span>
-        <span class="n">frame</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Property&#39;</span><span class="p">:</span> <span class="n">df_names</span><span class="p">,</span>
-                <span class="s1">&#39;Values&#39;</span><span class="p">:</span> <span class="n">values</span><span class="p">,</span>
-                <span class="s1">&#39;Unit&#39;</span><span class="p">:</span> <span class="n">units</span><span class="p">,</span>
-                <span class="s1">&#39;Source&#39;</span><span class="p">:</span> <span class="n">sources</span><span class="p">}</span>
-        <span class="c1"># Create DataFrame using pandas</span>
-        <span class="n">physical_properties</span> <span class="o">=</span>  <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">physical_properties</span>
-
-    <span class="k">def</span> <span class="nf">_phys_prop_parser</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_phys_prop_parser</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Parse and arrange the physical properties data</span>
 
 <span class="sd">            Parameters</span>
 <span class="sd">            ----------</span>
-<span class="sd">            name : string</span>
-<span class="sd">                Object name</span>
+<span class="sd">            data_obj : object</span>
+<span class="sd">                Object in byte format.</span>
 
 <span class="sd">            Raises</span>
 <span class="sd">            ------</span>
 <span class="sd">            ValueError</span>
 <span class="sd">                If the name of the object is not encountered</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Final url = PROPERTIES_URL + desig in which white spaces,</span>
-        <span class="c1"># if any, are replaced by %20 to complete the designator</span>
-        <span class="n">url</span> <span class="o">=</span> <span class="n">PROPERTIES_URL</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;%20&#39;</span><span class="p">)</span>
-        <span class="c1"># Get contents to optimize times</span>
-        <span class="n">contents</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
+        <span class="c1"># Check that there is not additonal note</span>
+        <span class="n">df_check_d</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">data_obj</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">df_check_d</span><span class="o">.</span><span class="n">getvalue</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Object not found or misspelt&#39;</span><span class="p">)</span>
+        <span class="c1"># Read as txt file</span>
+        <span class="n">df_check</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_fwf</span><span class="p">(</span><span class="n">df_check_d</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                               <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;python&#39;</span><span class="p">)</span>
+        <span class="c1"># Get index where references start and count rows</span>
+        <span class="n">ref_index</span> <span class="o">=</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">df_check</span><span class="p">,</span> <span class="s2">&quot;REFERENCES&quot;</span><span class="p">)</span>
+        <span class="n">n_rows</span> <span class="o">=</span> <span class="n">ref_index</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># Set reference point at the begging of the file</span>
+        <span class="n">df_check_d</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">df_check</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_fwf</span><span class="p">(</span><span class="n">df_check_d</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                               <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;python&#39;</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="n">n_rows</span><span class="p">)</span>
+        <span class="c1"># Held exception for Taxonomy (all) property</span>
+        <span class="c1"># Split the comple DF to obtain the columns</span>
+        <span class="n">df_check</span> <span class="o">=</span> <span class="n">df_check</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># Initialize index</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_check</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">rest</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_check</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">-</span> <span class="mi">4</span>
+            <span class="c1"># Iterate over each element in last col to find</span>
+            <span class="c1"># rows with additional elements separated by commas</span>
+            <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">df_check</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_check</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span><span class="p">):</span>
+                            <span class="n">df_check</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span>\
+                                <span class="n">df_check</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;,&#39;</span> <span class="o">+</span>\
+                                      <span class="n">df_check</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+                    <span class="n">df_check</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">index</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_check</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">index</span><span class="p">,</span>
+                                                <span class="nb">len</span><span class="p">(</span><span class="n">df_check</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+                    <span class="n">df_check</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">index</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_check</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">index</span><span class="p">,</span>
+                                                <span class="nb">len</span><span class="p">(</span><span class="n">df_check</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="c1"># Only get the main columns</span>
+        <span class="n">df_check</span> <span class="o">=</span> <span class="n">df_check</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
+        <span class="c1"># Set reference point at the begging of the file</span>
+        <span class="n">df_check_d</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># Read as csv for parsing</span>
+        <span class="n">ast_prop</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">df_check_d</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                               <span class="n">nrows</span><span class="o">=</span><span class="n">n_rows</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">,</span>
+                               <span class="n">on_bad_lines</span><span class="o">=</span><span class="s1">&#39;skip&#39;</span><span class="p">)</span>
+        <span class="c1"># Create if condition for the exception since Taxonomy (all)</span>
+        <span class="c1"># will be skipped. The DF is updated with the values of the</span>
+        <span class="c1"># redundant one</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s1">&#39;Taxonomy (all)&#39;</span> <span class="ow">in</span> <span class="n">ast_prop</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
+             <span class="n">ast_prop</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">df_check</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="s1">&#39;Quality&#39;</span> <span class="ow">in</span> <span class="n">ast_prop</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
+             <span class="n">ast_prop</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">df_check</span><span class="p">)</span>
+        <span class="c1"># Rename columns</span>
+        <span class="n">ast_prop</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Property&#39;</span><span class="p">,</span> <span class="s1">&#39;Value(s)&#39;</span><span class="p">,</span> <span class="s1">&#39;Units&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;Reference(s)&#39;</span><span class="p">]</span>
+        <span class="c1"># Group identical properties into one. The values from the</span>
+        <span class="c1"># other columns will be group using commas (as a list)</span>
+        <span class="n">phys_prop</span> <span class="o">=</span> <span class="n">ast_prop</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;Property&#39;</span><span class="p">],</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                     <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">)[[</span><span class="s1">&#39;Value(s)&#39;</span><span class="p">,</span> <span class="s1">&#39;Units&#39;</span><span class="p">,</span>
+                                                 <span class="s1">&#39;Reference(s)&#39;</span><span class="p">]]</span>\
+                            <span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="c1"># Split using commas to create arrays</span>
+        <span class="n">phys_prop</span><span class="p">[</span><span class="s1">&#39;Value(s)&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phys_prop</span><span class="p">[</span><span class="s1">&#39;Value(s)&#39;</span><span class="p">]</span>\
+                            <span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">&#39;,&#39;</span> <span class="ow">in</span> <span class="n">x</span> <span class="k">else</span> <span class="n">x</span><span class="p">)</span>
+        <span class="n">phys_prop</span><span class="p">[</span><span class="s1">&#39;Units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phys_prop</span><span class="p">[</span><span class="s1">&#39;Units&#39;</span><span class="p">]</span>\
+                            <span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">&#39;,&#39;</span> <span class="ow">in</span> <span class="n">x</span> <span class="k">else</span> <span class="n">x</span><span class="p">)</span>
+        <span class="n">phys_prop</span><span class="p">[</span><span class="s1">&#39;Reference(s)&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phys_prop</span><span class="p">[</span><span class="s1">&#39;Reference(s)&#39;</span><span class="p">]</span>\
+                            <span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">&#39;,&#39;</span> <span class="ow">in</span> <span class="n">x</span> <span class="k">else</span> <span class="n">x</span><span class="p">)</span>
+        <span class="c1"># Values need to be converted to numeric type when possible</span>
+        <span class="n">phys_prop</span><span class="p">[</span><span class="s1">&#39;Value(s)&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">phys_prop</span><span class="p">[</span><span class="s1">&#39;Value(s)&#39;</span><span class="p">]</span>\
+                            <span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">x</span><span class="p">,</span>
+                            <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span> <span class="n">downcast</span><span class="o">=</span><span class="s1">&#39;float&#39;</span><span class="p">))</span>
+        <span class="c1"># Properties</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">physical_properties</span> <span class="o">=</span> <span class="n">phys_prop</span>
         <span class="c1"># Sources</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">physical_properties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_physical_props</span><span class="p">(</span><span class="n">contents</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_prop_sources</span><span class="p">(</span><span class="n">contents</span><span class="p">)</span></div>
+        <span class="c1"># Set reference point at the begging of the file</span>
+        <span class="n">df_check_d</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_prop_sources</span><span class="p">(</span><span class="n">df_check_d</span><span class="p">,</span> <span class="n">n_rows</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="AsteroidObservations"><a class="viewcode-back" href="../../index.html#ESANEOCC.tabs.AsteroidObservations">[docs]</a><span class="k">class</span> <span class="nc">AsteroidObservations</span><span class="p">:</span>
@@ -886,7 +831,7 @@
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    version : int</span>
+<span class="sd">    version : float</span>
 <span class="sd">        File version.</span>
 <span class="sd">    errmod : str</span>
 <span class="sd">        Error model for the data.</span>
@@ -966,7 +911,7 @@
         <span class="k">return</span> <span class="n">ver</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">ast</span><span class="p">,</span> <span class="n">mag</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_opt_info</span><span class="p">(</span><span class="n">data_obj</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span> <span class="n">head</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_opt_info</span><span class="p">(</span><span class="n">data_obj</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span> <span class="n">head</span><span class="p">,</span> <span class="n">cols_sep</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get optical information from asteroid observation file.</span>
 
 <span class="sd">        Parameters</span>
@@ -990,21 +935,26 @@
         <span class="c1"># Decode data for check v and s optical observations</span>
         <span class="n">df_check</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">data_obj</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
         <span class="c1"># Set attributes</span>
-        <span class="n">df_obs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_fwf</span><span class="p">(</span><span class="n">df_check</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="n">head</span><span class="p">,</span>
+        <span class="n">df_obs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_fwf</span><span class="p">(</span><span class="n">df_check</span><span class="p">,</span> <span class="n">colspecs</span><span class="o">=</span><span class="n">cols_sep</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="n">head</span><span class="p">,</span>
                                <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;python&#39;</span><span class="p">,</span> <span class="n">skipfooter</span><span class="o">=</span><span class="n">diff</span><span class="p">)</span>
         <span class="c1"># Check if there are &quot;Roving Observer&quot; observations</span>
         <span class="n">df_index</span> <span class="o">=</span> <span class="n">df_obs</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span>
         <span class="n">v_indexes</span> <span class="o">=</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">df_index</span><span class="p">,</span> <span class="s1">&#39;v&#39;</span><span class="p">)</span>
         <span class="c1"># Check if there are &quot;Roving Observer&quot; observations</span>
-        <span class="n">s_indexes</span> <span class="o">=</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">df_index</span><span class="p">,</span> <span class="s1">&#39;s&#39;</span><span class="p">)</span>
+        <span class="n">s_index</span> <span class="o">=</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">df_index</span><span class="p">,</span> <span class="s1">&#39;s&#39;</span><span class="p">)</span>
+        <span class="c1"># Remove indexes located in &#39;N&#39; column</span>
+        <span class="n">s_indexes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">indexes</span> <span class="ow">in</span> <span class="n">s_index</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;T&#39;</span> <span class="ow">in</span> <span class="n">indexes</span><span class="p">:</span>
+                <span class="n">s_indexes</span> <span class="o">=</span> <span class="n">s_indexes</span> <span class="o">+</span> <span class="p">[</span><span class="n">indexes</span><span class="p">]</span>
         <span class="c1"># Initialization of a list which contain the row indexes</span>
         <span class="n">v_rows</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">s_rows</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="c1"># Roving Observations</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">v_indexes</span><span class="p">:</span>
-            <span class="n">df_roving_obs</span> <span class="o">=</span> <span class="s1">&#39;There are no &quot;Roving Observer&quot;&#39;</span> \
-                            <span class="s1">&#39;observartions for this object&#39;</span>
+            <span class="n">df_roving_obs</span> <span class="o">=</span> <span class="s1">&#39;There are no &quot;Roving Observer&quot; &#39;</span>\
+                            <span class="s1">&#39;observations for this object&#39;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Save a list with the row indexes that needs to be saved</span>
             <span class="k">for</span> <span class="n">v_index</span> <span class="ow">in</span> <span class="n">v_indexes</span><span class="p">:</span>
@@ -1040,7 +990,7 @@
 
         <span class="c1"># Satellite Observations</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">s_indexes</span><span class="p">:</span>
-            <span class="n">df_sat_obs</span> <span class="o">=</span> <span class="s1">&#39;There are no Satellite observartions for &#39;</span>\
+            <span class="n">df_sat_obs</span> <span class="o">=</span> <span class="s1">&#39;There are no Satellite observations for &#39;</span>\
                          <span class="s1">&#39;this object&#39;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Save a list with the row indexes that needs to be saved</span>
@@ -1082,19 +1032,12 @@
 
         <span class="c1"># Rest of optical observations</span>
         <span class="n">df_opt</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">data_obj</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
-        <span class="c1"># Define colspecs fwf</span>
-        <span class="n">cols</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">),</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">15</span><span class="p">),</span> <span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">16</span><span class="p">),</span> <span class="p">(</span><span class="mi">17</span><span class="p">,</span><span class="mi">21</span><span class="p">),</span> <span class="p">(</span><span class="mi">22</span><span class="p">,</span><span class="mi">24</span><span class="p">),</span>
-                <span class="p">(</span><span class="mi">25</span><span class="p">,</span><span class="mi">38</span><span class="p">),</span> <span class="p">(</span><span class="mi">40</span><span class="p">,</span><span class="mi">49</span><span class="p">),</span> <span class="p">(</span><span class="mi">50</span><span class="p">,</span><span class="mi">52</span><span class="p">),</span> <span class="p">(</span><span class="mi">53</span><span class="p">,</span><span class="mi">55</span><span class="p">),</span> <span class="p">(</span><span class="mi">56</span><span class="p">,</span><span class="mi">62</span><span class="p">),</span> <span class="p">(</span><span class="mi">64</span><span class="p">,</span><span class="mi">73</span><span class="p">),</span>
-                <span class="p">(</span><span class="mi">76</span><span class="p">,</span><span class="mi">82</span><span class="p">),</span> <span class="p">(</span><span class="mi">83</span><span class="p">,</span><span class="mi">84</span><span class="p">),</span> <span class="p">(</span><span class="mi">87</span><span class="p">,</span><span class="mi">93</span><span class="p">),</span> <span class="p">(</span><span class="mi">96</span><span class="p">,</span><span class="mi">102</span><span class="p">),</span> <span class="p">(</span><span class="mi">103</span><span class="p">,</span><span class="mi">106</span><span class="p">),</span>
-                <span class="p">(</span><span class="mi">107</span><span class="p">,</span><span class="mi">109</span><span class="p">),</span> <span class="p">(</span><span class="mi">110</span><span class="p">,</span><span class="mi">115</span><span class="p">),</span> <span class="p">(</span><span class="mi">117</span><span class="p">,</span><span class="mi">126</span><span class="p">),</span> <span class="p">(</span><span class="mi">129</span><span class="p">,</span><span class="mi">135</span><span class="p">),</span> <span class="p">(</span><span class="mi">136</span><span class="p">,</span><span class="mi">137</span><span class="p">),</span>
-                <span class="p">(</span><span class="mi">140</span><span class="p">,</span><span class="mi">146</span><span class="p">),</span> <span class="p">(</span><span class="mi">149</span><span class="p">,</span><span class="mi">155</span><span class="p">),</span> <span class="p">(</span><span class="mi">156</span><span class="p">,</span><span class="mi">161</span><span class="p">),</span> <span class="p">(</span><span class="mi">161</span><span class="p">,</span><span class="mi">162</span><span class="p">),</span> <span class="p">(</span><span class="mi">164</span><span class="p">,</span><span class="mi">168</span><span class="p">),</span>
-                <span class="p">(</span><span class="mi">170</span><span class="p">,</span><span class="mi">175</span><span class="p">),</span> <span class="p">(</span><span class="mi">177</span><span class="p">,</span><span class="mi">179</span><span class="p">),</span> <span class="p">(</span><span class="mi">180</span><span class="p">,</span><span class="mi">183</span><span class="p">),</span> <span class="p">(</span><span class="mi">188</span><span class="p">,</span><span class="mi">193</span><span class="p">),</span> <span class="p">(</span><span class="mi">194</span><span class="p">,</span><span class="mi">195</span><span class="p">),</span>
-                <span class="p">(</span><span class="mi">196</span><span class="p">,</span><span class="mi">197</span><span class="p">)]</span>
         <span class="c1"># Read data using pandas as text, skiping header and footer</span>
         <span class="c1"># and v_rows and s_rows if any</span>
-        <span class="n">df_optical_obs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_fwf</span><span class="p">(</span><span class="n">df_opt</span><span class="p">,</span> <span class="n">skipfooter</span><span class="o">=</span><span class="n">diff</span><span class="p">,</span> <span class="n">colspecs</span><span class="o">=</span><span class="n">cols</span><span class="p">,</span>
-                                      <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;python&#39;</span><span class="p">,</span>
-                                      <span class="n">skiprows</span><span class="o">=</span><span class="n">head</span> <span class="o">+</span> <span class="n">v_rows</span> <span class="o">+</span> <span class="n">s_rows</span><span class="p">)</span>
+        <span class="n">df_optical_obs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_fwf</span><span class="p">(</span><span class="n">df_opt</span><span class="p">,</span> <span class="n">skipfooter</span><span class="o">=</span><span class="n">diff</span><span class="p">,</span>
+                                     <span class="n">colspecs</span><span class="o">=</span><span class="n">cols_sep</span><span class="p">,</span>
+                                     <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;python&#39;</span><span class="p">,</span>
+                                     <span class="n">skiprows</span><span class="o">=</span><span class="n">head</span> <span class="o">+</span> <span class="n">v_rows</span> <span class="o">+</span> <span class="n">s_rows</span><span class="p">)</span>
         <span class="c1"># Replace NaN values for blank values</span>
         <span class="n">df_optical_obs</span> <span class="o">=</span> <span class="n">df_optical_obs</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
         <span class="c1"># Rename Columns as in file</span>
@@ -1283,7 +1226,14 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">head</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
         <span class="c1"># Read data in fixed width format</span>
-        <span class="n">df_p</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_fwf</span><span class="p">(</span><span class="n">df_d</span><span class="p">,</span> <span class="n">delim_whitespace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">cols</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">),</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">15</span><span class="p">),</span> <span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">16</span><span class="p">),</span> <span class="p">(</span><span class="mi">17</span><span class="p">,</span><span class="mi">21</span><span class="p">),</span> <span class="p">(</span><span class="mi">22</span><span class="p">,</span><span class="mi">24</span><span class="p">),</span>
+                <span class="p">(</span><span class="mi">25</span><span class="p">,</span><span class="mi">38</span><span class="p">),</span> <span class="p">(</span><span class="mi">40</span><span class="p">,</span><span class="mi">49</span><span class="p">),</span> <span class="p">(</span><span class="mi">50</span><span class="p">,</span><span class="mi">52</span><span class="p">),</span> <span class="p">(</span><span class="mi">53</span><span class="p">,</span><span class="mi">55</span><span class="p">),</span> <span class="p">(</span><span class="mi">56</span><span class="p">,</span><span class="mi">62</span><span class="p">),</span> <span class="p">(</span><span class="mi">64</span><span class="p">,</span><span class="mi">73</span><span class="p">),</span>
+                <span class="p">(</span><span class="mi">76</span><span class="p">,</span><span class="mi">82</span><span class="p">),</span> <span class="p">(</span><span class="mi">83</span><span class="p">,</span><span class="mi">84</span><span class="p">),</span> <span class="p">(</span><span class="mi">87</span><span class="p">,</span><span class="mi">93</span><span class="p">),</span> <span class="p">(</span><span class="mi">96</span><span class="p">,</span><span class="mi">102</span><span class="p">),</span> <span class="p">(</span><span class="mi">103</span><span class="p">,</span><span class="mi">106</span><span class="p">),</span>
+                <span class="p">(</span><span class="mi">107</span><span class="p">,</span><span class="mi">109</span><span class="p">),</span> <span class="p">(</span><span class="mi">110</span><span class="p">,</span><span class="mi">115</span><span class="p">),</span> <span class="p">(</span><span class="mi">117</span><span class="p">,</span><span class="mi">126</span><span class="p">),</span> <span class="p">(</span><span class="mi">129</span><span class="p">,</span><span class="mi">135</span><span class="p">),</span> <span class="p">(</span><span class="mi">136</span><span class="p">,</span><span class="mi">137</span><span class="p">),</span>
+                <span class="p">(</span><span class="mi">140</span><span class="p">,</span><span class="mi">146</span><span class="p">),</span> <span class="p">(</span><span class="mi">149</span><span class="p">,</span><span class="mi">155</span><span class="p">),</span> <span class="p">(</span><span class="mi">156</span><span class="p">,</span><span class="mi">161</span><span class="p">),</span> <span class="p">(</span><span class="mi">161</span><span class="p">,</span><span class="mi">162</span><span class="p">),</span> <span class="p">(</span><span class="mi">164</span><span class="p">,</span><span class="mi">168</span><span class="p">),</span>
+                <span class="p">(</span><span class="mi">170</span><span class="p">,</span><span class="mi">175</span><span class="p">),</span> <span class="p">(</span><span class="mi">177</span><span class="p">,</span><span class="mi">179</span><span class="p">),</span> <span class="p">(</span><span class="mi">180</span><span class="p">,</span><span class="mi">183</span><span class="p">),</span> <span class="p">(</span><span class="mi">188</span><span class="p">,</span><span class="mi">193</span><span class="p">),</span> <span class="p">(</span><span class="mi">194</span><span class="p">,</span><span class="mi">195</span><span class="p">),</span>
+                <span class="p">(</span><span class="mi">196</span><span class="p">,</span><span class="mi">197</span><span class="p">)]</span>
+        <span class="n">df_p</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_fwf</span><span class="p">(</span><span class="n">df_d</span><span class="p">,</span> <span class="n">colspecs</span><span class="o">=</span><span class="n">cols</span><span class="p">,</span>
                            <span class="n">skiprows</span><span class="o">=</span><span class="n">head</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;python&#39;</span><span class="p">)</span>
         <span class="c1"># Check if there is radar observations data</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">df_p</span><span class="p">,</span> <span class="s1">&#39;! Object&#39;</span><span class="p">):</span>
@@ -1291,7 +1241,7 @@
             <span class="n">diff</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="c1"># Get observations</span>
             <span class="n">total_observations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_opt_info</span><span class="p">(</span><span class="n">data_obj</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span>
-                                                    <span class="n">head</span><span class="p">)</span>
+                                                    <span class="n">head</span><span class="p">,</span> <span class="n">cols</span><span class="p">)</span>
             <span class="c1"># Set attributes</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">optical_observations</span> <span class="o">=</span> <span class="n">total_observations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">radar_observations</span> <span class="o">=</span> <span class="s1">&#39;There is no relevant radar &#39;</span>\
@@ -1308,7 +1258,7 @@
             <span class="n">diff</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_p</span><span class="p">)</span> <span class="o">-</span> <span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
             <span class="c1"># Get observations</span>
             <span class="n">total_observations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_opt_info</span><span class="p">(</span><span class="n">data_obj</span><span class="p">,</span> <span class="n">diff</span><span class="p">,</span>
-                                                    <span class="n">head</span><span class="p">)</span>
+                                                    <span class="n">head</span><span class="p">,</span> <span class="n">cols</span><span class="p">)</span>
             <span class="c1"># Set attributes</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">optical_observations</span> <span class="o">=</span> <span class="n">total_observations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">radar_observations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_rad_info</span><span class="p">(</span><span class="n">df_rad</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
@@ -1526,7 +1476,7 @@
                         <span class="p">[</span><span class="s1">&#39;Area-to-mass ratio&#39;</span><span class="p">,</span> <span class="s1">&#39;Yarkovsky parameter&#39;</span><span class="p">]</span>
                     <span class="c1"># Build the matrix</span>
                     <span class="n">mat</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">mat_data</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">matrix_indexes</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">else</span><span class="p">:</span>   <span class="c1"># pragma: no cover</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Valid matrix name are cov, cor and nor&#39;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">mat</span>
@@ -1698,6 +1648,8 @@
 <span class="sd">        Infinite velocity.</span>
 <span class="sd">    u_par : int</span>
 <span class="sd">        Uncertainty parameter as defined by MPC.</span>
+<span class="sd">    orb_type : string</span>
+<span class="sd">        Type of orbit.</span>
 <span class="sd">    rms : pandas.DataFrame</span>
 <span class="sd">        Root mean square for Keplerian elements</span>
 <span class="sd">    cov : pandas.DataFrame</span>
@@ -1723,6 +1675,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">pha</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">vinfty</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">u_par</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orb_type</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rms</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="c1"># Covariance and correlation matrices</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cov</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1746,12 +1699,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_orb_prop_parser</span><span class="p">(</span><span class="n">data_obj</span><span class="p">)</span>
         <span class="c1"># Decode data using UTF-8 and store in memory for orb props</span>
         <span class="n">df_orb_d</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">data_obj</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
-        <span class="c1"># Check file exists or is not empty</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">df_orb_d</span><span class="o">.</span><span class="n">getvalue</span><span class="p">():</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Required orbit properties file is &#39;</span>
-                            <span class="s1">&#39;empty for this object&#39;</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Required orbit properties file is &#39;</span>
-                            <span class="s1">&#39;empty for this object&#39;</span><span class="p">)</span>
         <span class="c1"># Read data as csv</span>
         <span class="n">df_orb</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">df_orb_d</span><span class="p">,</span> <span class="n">delim_whitespace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                             <span class="n">skiprows</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">9</span><span class="p">],</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;python&#39;</span><span class="p">)</span>
@@ -1759,7 +1706,7 @@
         <span class="n">keplerian</span> <span class="o">=</span> <span class="n">df_orb</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">7</span><span class="p">]</span>
         <span class="c1"># Kep - Rename columns and indexes</span>
         <span class="n">keplerian</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="s1">&#39;long. node&#39;</span><span class="p">,</span>
-                            <span class="s1">&#39;arg.s peric.&#39;</span><span class="p">,</span> <span class="s1">&#39;mean anomaly&#39;</span><span class="p">]</span>
+                            <span class="s1">&#39;arg. peric.&#39;</span><span class="p">,</span> <span class="s1">&#39;mean anomaly&#39;</span><span class="p">]</span>
         <span class="n">keplerian</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;KEP&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kep</span> <span class="o">=</span> <span class="n">keplerian</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
         <span class="c1"># Get perihelion index to provide location for rest of attributes</span>
@@ -1790,6 +1737,8 @@
 
         <span class="c1"># Get index for RMS</span>
         <span class="n">rms_index</span> <span class="o">=</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">df_orb</span><span class="p">,</span> <span class="s1">&#39;RMS&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># Determine Orb Type parameter knowing the RMS index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orb_type</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">df_orb</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">rms_index</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
         <span class="c1"># Check the dimension of the matrix to give complete RMS</span>
         <span class="n">matrix_dimension</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lsp</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
         <span class="k">if</span> <span class="n">matrix_dimension</span> <span class="o">==</span> <span class="mi">8</span><span class="p">:</span>
@@ -1887,12 +1836,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_orb_prop_parser</span><span class="p">(</span><span class="n">data_obj</span><span class="p">)</span>
         <span class="c1"># Decode data using UTF-8 and store in memory for orb props</span>
         <span class="n">df_orb_d</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">data_obj</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
-        <span class="c1"># Check file exists or is not empty</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">df_orb_d</span><span class="o">.</span><span class="n">getvalue</span><span class="p">():</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Required orbit properties file is &#39;</span>
-                            <span class="s1">&#39;empty for this object&#39;</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Required orbit properties file is &#39;</span>
-                            <span class="s1">&#39;empty for this object&#39;</span><span class="p">)</span>
         <span class="c1"># Check if there is an additional line</span>
         <span class="n">df_check_d</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">data_obj</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
         <span class="c1"># Read as txt file</span>
@@ -2011,7 +1954,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tinit</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tfinal</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tstep</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="c1"># Orbit properties</span>
+        <span class="c1"># Ephemerides</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ephemerides</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="nd">@staticmethod</span>
@@ -2094,7 +2037,7 @@
             <span class="c1"># Get object data</span>
             <span class="n">data_obj</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url_ephe</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
 
-        <span class="k">except</span> <span class="ne">ConnectionError</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">ConnectionError</span><span class="p">:</span> <span class="c1"># pragma: no cover</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Initial attempt to obtain object data failed. &#39;</span>
                   <span class="s1">&#39;Reattempting...&#39;</span><span class="p">)</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Initial attempt to obtain object data&#39;</span>
@@ -2115,23 +2058,24 @@
         <span class="n">ephems_d</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">data_obj</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
         <span class="c1"># Since ephemerides col space is fixed, it is defined in order</span>
         <span class="c1"># to set the length (number of spaces) for each field</span>
-        <span class="n">col_space</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">12</span><span class="p">),</span> <span class="p">(</span><span class="mi">13</span><span class="p">,</span><span class="mi">19</span><span class="p">),</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">32</span><span class="p">),</span> <span class="p">(</span><span class="mi">34</span><span class="p">,</span><span class="mi">37</span><span class="p">),</span> <span class="p">(</span><span class="mi">37</span><span class="p">,</span><span class="mi">40</span><span class="p">),</span>
-                     <span class="p">(</span><span class="mi">40</span><span class="p">,</span><span class="mi">47</span><span class="p">),</span> <span class="p">(</span><span class="mi">49</span><span class="p">,</span><span class="mi">52</span><span class="p">),</span> <span class="p">(</span><span class="mi">52</span><span class="p">,</span> <span class="mi">55</span><span class="p">),</span> <span class="p">(</span><span class="mi">55</span><span class="p">,</span><span class="mi">61</span><span class="p">),</span> <span class="p">(</span><span class="mi">62</span><span class="p">,</span><span class="mi">67</span><span class="p">),</span>
-                     <span class="p">(</span><span class="mi">68</span><span class="p">,</span><span class="mi">73</span><span class="p">),</span> <span class="p">(</span><span class="mi">74</span><span class="p">,</span><span class="mi">82</span><span class="p">),</span> <span class="p">(</span><span class="mi">83</span><span class="p">,</span> <span class="mi">89</span><span class="p">),</span> <span class="p">(</span><span class="mi">90</span><span class="p">,</span><span class="mi">96</span><span class="p">),</span> <span class="p">(</span><span class="mi">97</span><span class="p">,</span><span class="mi">103</span><span class="p">),</span>
-                     <span class="p">(</span><span class="mi">104</span><span class="p">,</span><span class="mi">110</span><span class="p">),</span> <span class="p">(</span><span class="mi">111</span><span class="p">,</span><span class="mi">116</span><span class="p">),</span> <span class="p">(</span><span class="mi">116</span><span class="p">,</span><span class="mi">122</span><span class="p">),</span> <span class="p">(</span><span class="mi">123</span><span class="p">,</span><span class="mi">130</span><span class="p">),</span>
-                     <span class="p">(</span><span class="mi">131</span><span class="p">,</span><span class="mi">138</span><span class="p">),</span> <span class="p">(</span><span class="mi">140</span><span class="p">,</span><span class="mi">148</span><span class="p">),</span> <span class="p">(</span><span class="mi">150</span><span class="p">,</span><span class="mi">158</span><span class="p">),</span> <span class="p">(</span><span class="mi">160</span><span class="p">,</span><span class="mi">168</span><span class="p">),</span>
-                     <span class="p">(</span><span class="mi">170</span><span class="p">,</span><span class="mi">178</span><span class="p">),</span> <span class="p">(</span><span class="mi">178</span><span class="p">,</span><span class="mi">184</span><span class="p">)]</span>
+        <span class="n">col_space</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span><span class="mi">12</span><span class="p">),</span> <span class="p">(</span><span class="mi">13</span><span class="p">,</span><span class="mi">19</span><span class="p">),</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">32</span><span class="p">)</span> <span class="p">,(</span><span class="mi">34</span><span class="p">,</span><span class="mi">37</span><span class="p">),</span> <span class="p">(</span><span class="mi">38</span><span class="p">,</span><span class="mi">40</span><span class="p">),</span>
+                     <span class="p">(</span><span class="mi">41</span><span class="p">,</span><span class="mi">47</span><span class="p">),</span> <span class="p">(</span><span class="mi">49</span><span class="p">,</span><span class="mi">52</span><span class="p">),</span> <span class="p">(</span><span class="mi">53</span><span class="p">,</span><span class="mi">55</span><span class="p">),</span> <span class="p">(</span><span class="mi">56</span><span class="p">,</span> <span class="mi">61</span><span class="p">),</span> <span class="p">(</span><span class="mi">62</span><span class="p">,</span><span class="mi">67</span><span class="p">),</span>
+                     <span class="p">(</span><span class="mi">68</span><span class="p">,</span><span class="mi">73</span><span class="p">),</span> <span class="p">(</span><span class="mi">74</span><span class="p">,</span><span class="mi">82</span><span class="p">),</span> <span class="p">(</span><span class="mi">83</span><span class="p">,</span> <span class="mi">94</span><span class="p">),</span> <span class="p">(</span><span class="mi">95</span><span class="p">,</span><span class="mi">101</span><span class="p">),</span> <span class="p">(</span><span class="mi">102</span><span class="p">,</span> <span class="mi">108</span><span class="p">),</span>
+                     <span class="p">(</span><span class="mi">109</span><span class="p">,</span><span class="mi">115</span><span class="p">),</span> <span class="p">(</span><span class="mi">116</span><span class="p">,</span><span class="mi">121</span><span class="p">),</span> <span class="p">(</span><span class="mi">122</span><span class="p">,</span><span class="mi">127</span><span class="p">),</span> <span class="p">(</span><span class="mi">128</span><span class="p">,</span><span class="mi">135</span><span class="p">),</span>
+                     <span class="p">(</span><span class="mi">136</span><span class="p">,</span><span class="mi">143</span><span class="p">),</span> <span class="p">(</span><span class="mi">145</span><span class="p">,</span><span class="mi">153</span><span class="p">),</span> <span class="p">(</span><span class="mi">155</span><span class="p">,</span><span class="mi">163</span><span class="p">),</span> <span class="p">(</span><span class="mi">165</span><span class="p">,</span><span class="mi">173</span><span class="p">),</span>
+                     <span class="p">(</span><span class="mi">174</span><span class="p">,</span><span class="mi">179</span><span class="p">),</span> <span class="p">(</span><span class="mi">181</span><span class="p">,</span><span class="mi">188</span><span class="p">),</span> <span class="p">(</span><span class="mi">191</span><span class="p">,</span><span class="mi">198</span><span class="p">),</span> <span class="p">(</span><span class="mi">200</span><span class="p">,</span><span class="mi">205</span><span class="p">)]</span>
         <span class="c1"># Read pandas as txt</span>
         <span class="n">ephem</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_fwf</span><span class="p">(</span><span class="n">ephems_d</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
                             <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;python&#39;</span><span class="p">,</span> <span class="n">colspecs</span><span class="o">=</span><span class="n">col_space</span><span class="p">)</span>
         <span class="c1"># Rename columns</span>
-        <span class="n">ephem</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">,</span> <span class="s1">&#39;Hour&#39;</span><span class="p">,</span> <span class="s1">&#39;MJD&#39;</span><span class="p">,</span> <span class="s1">&#39;RA H&#39;</span><span class="p">,</span> <span class="s1">&#39;RA M&#39;</span><span class="p">,</span> <span class="s1">&#39;RA S&#39;</span><span class="p">,</span>
-                         <span class="s1">&#39;DEC D&#39;</span><span class="p">,</span> <span class="s1">&#39;DEC </span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;DEC &quot;&#39;</span><span class="p">,</span>
-                         <span class="s1">&#39;Mag&#39;</span><span class="p">,</span><span class="s1">&#39;Alt&#39;</span><span class="p">,</span> <span class="s1">&#39;Airmass&#39;</span><span class="p">,</span> <span class="s1">&#39;Sun elev.&#39;</span><span class="p">,</span>
+        <span class="n">ephem</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">,</span> <span class="s1">&#39;Hour&#39;</span><span class="p">,</span> <span class="s1">&#39;MJD in UTC&#39;</span><span class="p">,</span> <span class="s1">&#39;RA h&#39;</span><span class="p">,</span> <span class="s1">&#39;RA m&#39;</span><span class="p">,</span>
+                         <span class="s1">&#39;RA s&#39;</span><span class="p">,</span> <span class="s1">&#39;DEC d&#39;</span><span class="p">,</span> <span class="s1">&#39;DEC </span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;DEC &quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;Mag&#39;</span><span class="p">,</span>
+                         <span class="s1">&#39;Alt (deg)&#39;</span><span class="p">,</span> <span class="s1">&#39;Airmass&#39;</span><span class="p">,</span> <span class="s1">&#39;Sun elev. (deg)&#39;</span><span class="p">,</span>
                          <span class="s1">&#39;SolEl (deg)&#39;</span><span class="p">,</span> <span class="s1">&#39;LunEl (deg)&#39;</span><span class="p">,</span> <span class="s1">&#39;Phase (deg)&#39;</span><span class="p">,</span>
                          <span class="s1">&#39;Glat (deg)&#39;</span><span class="p">,</span> <span class="s1">&#39;Glon (deg)&#39;</span><span class="p">,</span> <span class="s1">&#39;R (au)&#39;</span><span class="p">,</span>
                          <span class="s1">&#39;Delta (au)&#39;</span><span class="p">,</span> <span class="s1">&#39;Ra*cosDE (&quot;/min)&#39;</span><span class="p">,</span>
-                         <span class="s1">&#39;DEC (&quot;/min)&#39;</span><span class="p">,</span> <span class="s1">&#39;Err1&#39;</span><span class="p">,</span> <span class="s1">&#39;Err2&#39;</span><span class="p">,</span> <span class="s1">&#39;PA&#39;</span><span class="p">]</span>
+                         <span class="s1">&#39;DEC (&quot;/min)&#39;</span><span class="p">,</span> <span class="s1">&#39;Vel (&quot;/min)&#39;</span><span class="p">,</span> <span class="s1">&#39;PA (deg)&#39;</span><span class="p">,</span>
+                         <span class="s1">&#39;Err1 (&quot;)&#39;</span><span class="p">,</span> <span class="s1">&#39;Err2 (&quot;)&#39;</span><span class="p">,</span> <span class="s1">&#39;AngAx (deg)&#39;</span><span class="p">]</span>
         <span class="c1"># Convert Date to datetime iso format</span>
         <span class="n">ephem</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">ephem</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">])</span>
         <span class="c1"># Convert Hout column to days</span>
@@ -2142,8 +2086,8 @@
         <span class="n">ephem</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;Hour&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="c1"># Remove mid whitespaces from declination, if any, and apply int</span>
         <span class="c1"># format</span>
-        <span class="k">if</span> <span class="n">ephem</span><span class="p">[</span><span class="s1">&#39;DEC D&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
-            <span class="n">ephem</span><span class="p">[</span><span class="s1">&#39;DEC D&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ephem</span><span class="p">[</span><span class="s1">&#39;DEC D&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ephem</span><span class="p">[</span><span class="s1">&#39;DEC d&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">object</span><span class="p">):</span>
+            <span class="n">ephem</span><span class="p">[</span><span class="s1">&#39;DEC d&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ephem</span><span class="p">[</span><span class="s1">&#39;DEC d&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
         <span class="c1">#Adding help to ephemerides data frame</span>
         <span class="n">ephem</span><span class="o">.</span><span class="n">help</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Ephemerides data frame shows:</span><span class="se">\n</span><span class="s1">&#39;</span>
                       <span class="s1">&#39;-The Date and the Hour considered</span><span class="se">\n</span><span class="s1">&#39;</span>
@@ -2175,9 +2119,14 @@
                       <span class="s1">&#39;-The Apparent motion in RA (corrected by &#39;</span>
                       <span class="s1">&#39;cos(DEC), which means the real motion on sky), &#39;</span>
                       <span class="s1">&#39;and in DEC, in arcsec/min of the object</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-The angular velocity (Vel) in arcsec/min</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-The position Angle (PA) value</span><span class="se">\n</span><span class="s1">&#39;</span>
                       <span class="s1">&#39;-The Sky plane error with the long axis (Err1),&#39;</span>
-                      <span class="s1">&#39; short axis (Err2) and Position Angle (PA) &#39;</span>
-                      <span class="s1">&#39;values&#39;</span><span class="p">)</span>
+                      <span class="s1">&#39; short axis (Err2)</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;-The uncertainty ellipse position angle, given &#39;</span>
+                      <span class="s1">&#39;in degrees. It gives the primary axis &#39;</span>
+                      <span class="s1">&#39;orientation of the major axis of the ellipse in&#39;</span>
+                      <span class="s1">&#39; degrees measured from North.&#39;</span><span class="p">)</span>
         <span class="c1"># Get header data</span>
         <span class="n">header_date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_head_ephem</span><span class="p">(</span><span class="n">data_obj</span><span class="p">)</span>
         <span class="c1"># Assign attributes</span>
@@ -2223,14 +2172,7 @@
         <span class="n">url</span> <span class="o">=</span> <span class="n">SUMMARY_URL</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;%20&#39;</span><span class="p">)</span>
 
         <span class="c1"># Read the url as html</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">contents</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
-        <span class="k">except</span> <span class="n">contents</span><span class="o">.</span><span class="n">DoesNotExist</span> <span class="k">as</span> <span class="n">contents_not_exist</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Object not found: the name of the &#39;</span>
-                            <span class="s1">&#39;object is wrong or misspelt&#39;</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Object not found: the name of the &#39;</span>
-                             <span class="s1">&#39;object is wrong or misspelt&#39;</span><span class="p">)</span> <span class="kn">from</span>\
-                                 <span class="nn">contents_not_exist</span>
+        <span class="n">contents</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
         <span class="c1"># Parse html using BS</span>
         <span class="n">parsed_html</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">contents</span><span class="p">,</span> <span class="s1">&#39;lxml&#39;</span><span class="p">)</span>
         <span class="c1"># Summary properties are in &lt;/div&gt;. Search for them:</span>
@@ -2251,40 +2193,78 @@
                                                           <span class="s2">&quot;.*diameter-value.*&quot;</span>
                                                           <span class="p">)})</span>
         <span class="c1"># Obtain the text in the span location. Note that the diameter type</span>
-        <span class="c1"># will be str since * can be given in the value</span>
-        <span class="n">diam_p</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">diameter</span><span class="p">),</span> <span class="s1">&#39;html.parser&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">span</span><span class="o">.</span><span class="n">text</span>
+        <span class="c1"># will be str since * can be given in the value. If this field is</span>
+        <span class="c1"># not obtain then, there is no object so ValueErro appears</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">diam_p</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">diameter</span><span class="p">),</span> <span class="s1">&#39;html.parser&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">span</span><span class="o">.</span><span class="n">text</span>
+        <span class="k">except</span> <span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Object not found: the name of the &#39;</span>
+                            <span class="s1">&#39;object is wrong or misspelt&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Object not found: the name of the &#39;</span>
+                             <span class="s1">&#39;object is wrong or misspelt&#39;</span><span class="p">)</span>
         <span class="c1"># Get indexes to locate the required properties.</span>
         <span class="c1"># In this code only the location of Absolute Magnitude is obtained</span>
         <span class="n">index</span> <span class="o">=</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">props_df</span><span class="p">,</span> <span class="s1">&#39;Absolute Magnitude (H)&#39;</span><span class="p">)</span>
-        <span class="n">index</span> <span class="o">=</span> <span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-        <span class="c1"># Adding a second index for Rotation Period since diameter can</span>
-        <span class="c1"># change the dimensions of the line</span>
-        <span class="n">red_index</span> <span class="o">=</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">props_df</span><span class="p">,</span> <span class="s1">&#39;Rotation period (T)&#39;</span><span class="p">)</span>
-        <span class="n">red_index</span> <span class="o">=</span> <span class="n">red_index</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">physical_properties</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Physical Properties&#39;</span><span class="p">:</span>
-                                <span class="p">[</span><span class="s1">&#39;Absolute Magnitude (H)&#39;</span><span class="p">,</span>
-                                 <span class="s1">&#39;Diameter&#39;</span><span class="p">,</span> <span class="s1">&#39;Taxonomic Type&#39;</span><span class="p">,</span>
-                                 <span class="s1">&#39;Rotation Period (T)&#39;</span><span class="p">],</span>
-                               <span class="s1">&#39;Value&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">props_df</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span>
-                                        <span class="n">diam_p</span><span class="p">,</span>
-                                        <span class="n">props_df</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">index</span><span class="o">+</span><span class="mi">9</span><span class="p">],</span>
-                                        <span class="n">props_df</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">red_index</span><span class="o">+</span><span class="mi">1</span><span class="p">]],</span>
-                               <span class="s1">&#39;Units&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">props_df</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">index</span><span class="o">+</span><span class="mi">2</span><span class="p">],</span>
-                                        <span class="n">props_df</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">index</span><span class="o">+</span><span class="mi">7</span><span class="p">],</span>
-                                        <span class="s1">&#39; &#39;</span><span class="p">,</span>
-                                        <span class="n">props_df</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">red_index</span><span class="o">+</span><span class="mi">2</span><span class="p">]]}</span>
-        <span class="c1"># Create DataFrame</span>
-        <span class="n">physical_properties_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">physical_properties</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">physical_properties</span> <span class="o">=</span> <span class="n">physical_properties_df</span>
-        <span class="c1"># Assign attributes for discovery date and observatory</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">props_df</span><span class="p">,</span> <span class="s1">&#39;Observatory&#39;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">discovery_date</span> <span class="o">=</span> <span class="s1">&#39;Discovery date is not available&#39;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">observatory</span> <span class="o">=</span> <span class="s1">&#39;Observatory is not available&#39;</span>
+        <span class="k">if</span> <span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># Adding a second index for Rotation Period since diameter can</span>
+            <span class="c1"># change the dimensions of the line</span>
+            <span class="n">red_index</span> <span class="o">=</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">props_df</span><span class="p">,</span> <span class="s1">&#39;Rotation period (T)&#39;</span><span class="p">)</span>
+            <span class="n">red_index</span> <span class="o">=</span> <span class="n">red_index</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">physical_properties</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Physical Properties&#39;</span><span class="p">:</span>
+                                    <span class="p">[</span><span class="s1">&#39;Absolute Magnitude (H)&#39;</span><span class="p">,</span>
+                                    <span class="s1">&#39;Diameter&#39;</span><span class="p">,</span> <span class="s1">&#39;Taxonomic Type&#39;</span><span class="p">,</span>
+                                    <span class="s1">&#39;Rotation Period (T)&#39;</span><span class="p">],</span>
+                                   <span class="s1">&#39;Value&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">props_df</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span>
+                                            <span class="n">diam_p</span><span class="p">,</span>
+                                            <span class="n">props_df</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">index</span><span class="o">+</span><span class="mi">9</span><span class="p">],</span>
+                                            <span class="n">props_df</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">red_index</span><span class="o">+</span><span class="mi">1</span><span class="p">]],</span>
+                                   <span class="s1">&#39;Units&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">props_df</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">index</span><span class="o">+</span><span class="mi">2</span><span class="p">],</span>
+                                            <span class="n">props_df</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">index</span><span class="o">+</span><span class="mi">7</span><span class="p">],</span>
+                                            <span class="s1">&#39; &#39;</span><span class="p">,</span>
+                                            <span class="n">props_df</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">red_index</span><span class="o">+</span><span class="mi">2</span><span class="p">]]}</span>
+            <span class="c1"># Create DataFrame</span>
+            <span class="n">physical_properties_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">physical_properties</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">physical_properties</span> <span class="o">=</span> <span class="n">physical_properties_df</span>
+            <span class="c1"># Assign attributes for discovery date and observatory</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">props_df</span><span class="p">,</span> <span class="s1">&#39;Observatory&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">discovery_date</span> <span class="o">=</span> <span class="s1">&#39;Discovery date is not available&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">observatory</span> <span class="o">=</span> <span class="s1">&#39;Observatory is not available&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">discovery_date</span> <span class="o">=</span> <span class="n">props_df</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">red_index</span><span class="o">+</span><span class="mi">4</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">discovery_date</span> <span class="o">=</span> <span class="n">discovery_date</span>
+                <span class="n">observatory</span> <span class="o">=</span> <span class="n">props_df</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">red_index</span><span class="o">+</span><span class="mi">6</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">observatory</span> <span class="o">=</span> <span class="n">observatory</span>
+
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">discovery_date</span> <span class="o">=</span> <span class="n">props_df</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">red_index</span><span class="o">+</span><span class="mi">4</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">discovery_date</span> <span class="o">=</span> <span class="n">discovery_date</span>
-            <span class="n">observatory</span> <span class="o">=</span> <span class="n">props_df</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">red_index</span><span class="o">+</span><span class="mi">6</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">observatory</span> <span class="o">=</span> <span class="n">observatory</span></div>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">red_index</span> <span class="o">=</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">props_df</span><span class="p">,</span> <span class="s1">&#39;Rotation period (T)&#39;</span><span class="p">)</span>
+            <span class="n">red_index</span> <span class="o">=</span> <span class="n">red_index</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">physical_properties</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Physical Properties&#39;</span><span class="p">:</span>
+                                    <span class="p">[</span><span class="s1">&#39;Absolute Magnitude (H)&#39;</span><span class="p">,</span>
+                                    <span class="s1">&#39;Diameter&#39;</span><span class="p">,</span> <span class="s1">&#39;Taxonomic Type&#39;</span><span class="p">,</span>
+                                    <span class="s1">&#39;Rotation Period (T)&#39;</span><span class="p">],</span>
+                                   <span class="s1">&#39;Value&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">props_df</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span>
+                                            <span class="n">diam_p</span><span class="p">,</span>
+                                            <span class="n">props_df</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">index</span><span class="o">+</span><span class="mi">7</span><span class="p">],</span>
+                                            <span class="n">props_df</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">red_index</span><span class="o">+</span><span class="mi">1</span><span class="p">]],</span>
+                                   <span class="s1">&#39;Units&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">props_df</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">index</span><span class="o">+</span><span class="mi">2</span><span class="p">],</span>
+                                            <span class="n">props_df</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">index</span><span class="o">+</span><span class="mi">5</span><span class="p">],</span>
+                                            <span class="s1">&#39; &#39;</span><span class="p">,</span>
+                                            <span class="n">props_df</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">red_index</span><span class="o">+</span><span class="mi">2</span><span class="p">]]}</span>
+
+            <span class="c1"># Create DataFrame</span>
+            <span class="n">physical_properties_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">physical_properties</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">physical_properties</span> <span class="o">=</span> <span class="n">physical_properties_df</span>
+            <span class="c1"># Assign attributes for discovery date and observatory</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">get_indexes</span><span class="p">(</span><span class="n">props_df</span><span class="p">,</span> <span class="s1">&#39;Observatory&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">discovery_date</span> <span class="o">=</span> <span class="s1">&#39;Discovery date is not available&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">observatory</span> <span class="o">=</span> <span class="s1">&#39;Observatory is not available&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">discovery_date</span> <span class="o">=</span> <span class="n">props_df</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">red_index</span><span class="o">+</span><span class="mi">4</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">discovery_date</span> <span class="o">=</span> <span class="n">discovery_date</span>
+                <span class="n">observatory</span> <span class="o">=</span> <span class="n">props_df</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">red_index</span><span class="o">+</span><span class="mi">6</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">observatory</span> <span class="o">=</span> <span class="n">observatory</span></div>
 </pre></div>
 
            </div>

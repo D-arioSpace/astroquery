@@ -19,10 +19,6 @@ class Conf(_config.ConfigNamespace):
     API_URL = _config.ConfigItem(BASE_URL +
                                  'PSDB-portlet/download?file=')
 
-    PROPERTIES_URL = _config.ConfigItem(BASE_URL +
-                                        'search-for-asteroids?tab='
-                                        'physprops&des=')
-
     EPHEM_URL = _config.ConfigItem(BASE_URL +
                                    'PSDB-portlet/ephemerides?des=')
 
