@@ -1242,6 +1242,7 @@ def test_tabs_orbit_properties(patch_get):
                         [ 0.644397, -0.741892, -0.867651,  0.763282, -0.820479,  1.000000,  0.727841],
                         [ 0.791761, -0.584125, -0.626448,  0.556761, -0.601952,  0.727841,  1.000000]],
                         index=matrix_idx, columns=matrix_idx)
+    assert_frame_equal(ast1.cov, cov)
     assert_frame_equal(ast1.cor, cor)
     # Check equinoctial orbit properties
     equinoctial_columns = ['a', 'e*sin(LP)', 'e*cos(LP)',
