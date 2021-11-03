@@ -1930,10 +1930,10 @@ class Ephemerides:
         ephem['Date'] = ephem['Date'] + ephem['Hour'].map(timedelta)
         # Remove Hour column
         ephem = ephem.drop(['Hour'], axis=1)
-        # Remove mid whitespaces from declination, if any, and apply int
-        # format
-        if isinstance(ephem['DEC d'].dtype, object):
-            ephem['DEC d'] = ephem['DEC d'].str.replace(' ','').astype(int)
+        # Convert to str type and remove mid whitespaces from declination, 
+        # if any, and apply int format
+        ephem['DEC d'] = ephem['DEC d'].astype(str)
+        ephem['DEC d'] = ephem['DEC d'].str.replace(' ','').astype(int)
         #Adding help to ephemerides data frame
         ephem.help = ('Ephemerides data frame shows:\n'
                       '-The Date and the Hour considered\n'

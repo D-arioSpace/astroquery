@@ -1290,12 +1290,12 @@ def test_tabs_ephemerides(patch_get):
     """Check data: asteroid ephemerides tab
     """
     list_neas = {
-            '99942'          : ['500', '2021-09-01 00:00',
-                                '2021-10-31 00:00', '1', 'days',
+            '99942'          : ['500', '2019-05-08 01:30',
+                                '2019-05-23 00:00', '1', 'days',
                                 '500 - Geocentric',
-                                '2021/09/01 00:00 UTC',
-                                '2021/10/31 00:00 UTC', '1 days',
-                                (61, 26)],
+                                '2019/05/08 01:30 UTC',
+                                '2019/05/23 00:00 UTC', '1 days',
+                                (15, 26)],
             '516976 2012HM1' : ['J75', '2020-09-01 00:00',
                                 '2020-09-02 00:00', '5', 'hours',
                                 'J75 - OAM Observatory, La Sagra',
@@ -1401,7 +1401,8 @@ def test_tabs_ephemerides(patch_get):
                 'R (au)'        : 2.6, 'Delta (au)'     : 3.562,
                 'Ra*cosDE ("/min)'  : 0.9614, 'DEC ("/min)' : -0.33,
                 'Vel ("/min)' : 1.0164, 'PA (deg)' : 108.9,
-                'Err1 (")' : 0.014, 'Err2 (")' : 0.008, 'AngAx (deg)' : 113.4}
+                'Err1 (")' : 0.014, 'Err2 (")' : 0.008,
+                'AngAx (deg)' : 113.4}
     df_eph_test = pd.Series(eph_test)
     df_eph_test['Date'] = pd.to_datetime(df_eph_test['Date'])
     eph = neocc.query_object(name='516976 2012HM1',
@@ -1412,3 +1413,27 @@ def test_tabs_ephemerides(patch_get):
                              step='5', step_unit='hours')
     assert_series_equal(eph.ephemerides.iloc[4],
                          df_eph_test, check_names=False)
+
+    df_eph_test2 = {'Date'  : '2019-05-12 01:30:00',
+                'MJD in UTC'   : 58615.0625,
+                'RA h'  : 6, 'RA m' : 58, 'RA s' : 15.428,
+                'DEC d' : 20, 'DEC \'' : 35, 'DEC "' : 9.86,
+                'Mag'   : 21.6, 'Alt (deg)' : 0.0,
+                'Airmass' : float('INF'),
+                'Sun elev. (deg)' : 0.0, 'SolEl (deg)'  : -52.9,
+                'LunEl (deg)'   : 37.6, 'Phase (deg)'   : 47.1,
+                'Glat (deg)'    : 10.7, 'Glon (deg)'    : 195.1,
+                'R (au)'        : 1.099, 'Delta (au)'   : 1.358,
+                'Ra*cosDE ("/min)'  : 2.1221, 'DEC ("/min)' : -0.1475,
+                'Vel ("/min)' : 2.1273, 'PA (deg)' : 94.0,
+                'Err1 (")' : 0.001, 'Err2 (")' : 0.0,
+                'AngAx (deg)' : 122.9}
+    df_eph_test2 = pd.Series(df_eph_test2)
+    df_eph_test2['Date'] = pd.to_datetime(df_eph_test2['Date'])
+    eph2 = neocc.query_object(name='99942', tab='ephemerides',
+                              observatory='500',
+                              start='2019-05-08 01:30',
+                              stop='2019-05-23 00:00',
+                              step='1', step_unit='days')
+    assert_series_equal(eph2.ephemerides.iloc[4],
+                         df_eph_test2, check_names=False)
