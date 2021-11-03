@@ -16,8 +16,7 @@ class Conf(_config.ConfigNamespace):
     """
     Configuration parameters for 'ESANEOCC'
     """
-    BASE_URL = 'https://' + os.getenv('NEOCC_PORTAL_IP',
-                                      default='neo.ssa.esa.int')
+    BASE_URL = 'https://' + os.getenv('NEOCC_PORTAL_IP')
 
     API_URL = _config.ConfigItem(BASE_URL +
                                  '/PSDB-portlet/download?file=')
