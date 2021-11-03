@@ -6,8 +6,10 @@ python_tests:
     stage: test
     variables: 
         NEOCC_PORTAL_IP: $NEOCC_PORTAL_IP
+        VERIFICATION: $VERIFICATION
 
     script:
+        - echo $VERIFICATION
         - echo $NEOCC_PORTAL_IP
         - python3 -m venv venv
         - source venv/bin/activate ven
