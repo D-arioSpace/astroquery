@@ -4,7 +4,10 @@ stages:
 python_tests:
     image: python:3.8.10
     stage: test
+    variables: NEOCC_PORTAL_IP: $NEOCC_PORTAL_IP
+
     script:
+        - echo $NEOCC_PORTAL_IP
         - python3 -m venv venv
         - source venv/bin/activate ven
         - pip install astroquery # For testing
@@ -13,5 +16,6 @@ python_tests:
         - python setup.py bdist_wheel
         - pip install .
         - pip install -r requirements.txt
+        # test.py $NEOCC_PORTAL_IP
         - coverage run -m pytest -rp test/test*.py
         - coverage report ESANEOCC/*.py
