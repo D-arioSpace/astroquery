@@ -4,7 +4,8 @@ stages:
 python_tests:
     image: python:3.8.10
     stage: test
-    variables: NEOCC_PORTAL_IP: $NEOCC_PORTAL_IP
+    variables: 
+        NEOCC_PORTAL_IP: $NEOCC_PORTAL_IP
 
     script:
         - echo $NEOCC_PORTAL_IP
