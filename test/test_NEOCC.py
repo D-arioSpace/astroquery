@@ -35,6 +35,8 @@ from ESANEOCC import lists, tabs
 # Import BASE URL and TIMEOUT
 API_URL = conf.API_URL
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
+TIMEOUT = conf.TIMEOUT
+VERIFICATION = conf.VERIFICATION
 
 # Disable warning in pylint related to monkeypath functions
 # pylint: disable=W0613, W0621
@@ -81,7 +83,7 @@ def patch_get(request):
     return monkey_p
 
 
-def get_mockreturn(name, timeout=10):
+def get_mockreturn(name, timeout=TIMEOUT, verify=VERIFICATION):
     """Define a function to return the appropriate data stored in the
     data/ directory as a readable object within the MockResponse class.
     """

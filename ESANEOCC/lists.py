@@ -45,6 +45,7 @@ from . import conf
 # Import BASE URL and TIMEOUT
 API_URL = conf.API_URL
 TIMEOUT = conf.TIMEOUT
+VERIFICATION = conf.VERIFICATION
 
 
 def get_list_url(list_name):
@@ -115,7 +116,8 @@ def get_list_data(url, list_name):
         Data frame which contains the data of the requested list.
     """
     # Get data from URL
-    data_list = requests.get(API_URL + url, timeout=TIMEOUT).content
+    data_list = requests.get(API_URL + url, timeout=TIMEOUT,
+                             verify=VERIFICATION).content
 
     # Decode the data using UTF-8
     data_list_d = io.StringIO(data_list.decode('utf-8'))

@@ -30,6 +30,9 @@ class Conf(_config.ConfigNamespace):
 
     TIMEOUT = 60
 
+
+    VERIFICATION = os.getenv('VERIFICATION', default=True)
+
 conf = Conf()
 
 from .core import neocc, ESAneoccClass

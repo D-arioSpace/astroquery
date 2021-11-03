@@ -28,6 +28,8 @@ from ESANEOCC.__init__ import conf
 # Import BASE URL and TIMEOUT
 API_URL = conf.API_URL
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
+TIMEOUT = conf.TIMEOUT
+VERIFICATION = conf.VERIFICATION
 
 class TestLists:
     """Class which contains the unitary tests for lists module.
@@ -98,8 +100,9 @@ class TestLists:
         url_series = ["nea_list", "updated_nea", "monthly_update"]
         for url in url_series:
             # Get data from URL
-            data_list = requests.get(API_URL + self.lists_dict[url]).\
-                        content
+            data_list = requests.get(API_URL + self.lists_dict[url],
+                                     timeout=TIMEOUT,
+                                     verify=VERIFICATION).content
             # Decode the data using UTF-8
             data_list_d = io.StringIO(data_list.decode('utf-8'))
 
@@ -113,8 +116,9 @@ class TestLists:
                    "impacted_objects"]
         for url in url_dfs:
             # Get data from URL
-            data_list = requests.get(API_URL + self.lists_dict[url]).\
-                        content
+            data_list = requests.get(API_URL + self.lists_dict[url],
+                                     timeout=TIMEOUT,
+                                     verify=VERIFICATION).content
             # Decode the data using UTF-8
             data_list_d = io.StringIO(data_list.decode('utf-8'))
 
@@ -134,8 +138,9 @@ class TestLists:
         url_series = ["nea_list", "updated_nea", "monthly_update"]
         for url in url_series:
             # Get data from URL
-            data_list = requests.get(API_URL + self.lists_dict[url]).\
-                        content
+            data_list = requests.get(API_URL + self.lists_dict[url],
+                                     timeout=TIMEOUT, 
+                                     verify=VERIFICATION).content
             # Decode the data using UTF-8
             data_list_d = io.StringIO(data_list.decode('utf-8'))
             # Parse using parse_nea
@@ -177,8 +182,9 @@ class TestLists:
 
         for url in url_risks:
             # Get data from URL
-            data_list = requests.get(API_URL + self.lists_dict[url]).\
-                        content
+            data_list = requests.get(API_URL + self.lists_dict[url],
+                                     timeout=TIMEOUT,
+                                     verify=VERIFICATION).content
             # Decode the data using UTF-8
             data_list_d = io.StringIO(data_list.decode('utf-8'))
             # Parse using parse_nea
@@ -230,8 +236,9 @@ class TestLists:
 
         for url in url_close:
             # Get data from URL
-            data_list = requests.get(API_URL + self.lists_dict[url]).\
-                        content
+            data_list = requests.get(API_URL + self.lists_dict[url],
+                                     timeout=TIMEOUT,
+                                     verify=VERIFICATION).content
             # Decode the data using UTF-8
             data_list_d = io.StringIO(data_list.decode('utf-8'))
             # Parse using parse_nea
@@ -280,8 +287,9 @@ class TestLists:
 
         for url in url_priority:
             # Get data from URL
-            data_list = requests.get(API_URL + self.lists_dict[url]).\
-                        content
+            data_list = requests.get(API_URL + self.lists_dict[url],
+                                     timeout=TIMEOUT,
+                                     verify=VERIFICATION).content
             # Decode the data using UTF-8
             data_list_d = io.StringIO(data_list.decode('utf-8'))
             # Parse using parse_nea
@@ -322,8 +330,9 @@ class TestLists:
                              'Max Mag']
 
         # Get data from URL
-        data_list = requests.get(API_URL + self.lists_dict[url]).\
-                    content
+        data_list = requests.get(API_URL + self.lists_dict[url],
+                                 timeout=TIMEOUT,
+                                 verify=VERIFICATION).content
         # Decode the data using UTF-8
         data_list_d = io.StringIO(data_list.decode('utf-8'))
         # Parse using parse_nea
@@ -360,8 +369,9 @@ class TestLists:
         """
         url = 'impacted_objects'
         # Get data from URL
-        data_list = requests.get(API_URL + self.lists_dict[url]).\
-                    content
+        data_list = requests.get(API_URL + self.lists_dict[url],
+                                 timeout=TIMEOUT,
+                                 verify=VERIFICATION).content
         # Decode the data using UTF-8
         data_list_d = io.StringIO(data_list.decode('utf-8'))
         # Parse using parse_nea
@@ -390,8 +400,9 @@ class TestLists:
                        'non-grav param.']
         for url in url_cat:
             # Get data from URL
-            data_list = requests.get(API_URL + self.lists_dict[url]).\
-                        content
+            data_list = requests.get(API_URL + self.lists_dict[url],
+                                     timeout=TIMEOUT, 
+                                     verify=VERIFICATION).content
             # Decode the data using UTF-8
             data_list_d = io.StringIO(data_list.decode('utf-8'))
             # Parse using parse_nea

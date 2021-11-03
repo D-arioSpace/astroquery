@@ -70,6 +70,7 @@ API_URL = conf.API_URL
 EPHEM_URL = conf.EPHEM_URL
 SUMMARY_URL = conf.SUMMARY_URL
 TIMEOUT = conf.TIMEOUT
+VERIFICATION = conf.VERIFICATION
 
 def get_object_url(name, tab, **kwargs):
     """Get url from requested object and tab name.
@@ -162,7 +163,8 @@ def get_object_data(url):
         Object in byte format.
     """
     # Get data from URL
-    data_obj = requests.get(API_URL + url, timeout=TIMEOUT).content
+    data_obj = requests.get(API_URL + url, timeout=TIMEOUT,
+                            verify=VERIFICATION).content
     # Parse data and assign attributes to object
 
     return data_obj
@@ -1881,7 +1883,8 @@ class Ephemerides:
         # Request data two times if the first attempt fails
         try:
             # Get object data
-            data_obj = requests.get(url_ephe, timeout=TIMEOUT).content
+            data_obj = requests.get(url_ephe, timeout=TIMEOUT,
+                                    verify=VERIFICATION).content
 
         except ConnectionError: # pragma: no cover
             print('Initial attempt to obtain object data failed. '
@@ -1891,7 +1894,8 @@ class Ephemerides:
             # Wait 5 seconds
             time.sleep(5)
             # Get object data
-            data_obj = requests.get(url_ephe, timeout=TIMEOUT).content
+            data_obj = requests.get(url_ephe, timeout=TIMEOUT, 
+                                    verify=VERIFICATION).content
 
         # Check if file contains errors due to bad URL keys
         check = io.StringIO(data_obj.decode('utf-8'))
@@ -2018,7 +2022,8 @@ class Summary:
         url = SUMMARY_URL + str(name).replace(' ', '%20')
 
         # Read the url as html
-        contents = requests.get(url, timeout=TIMEOUT).content
+        contents = requests.get(url, timeout=TIMEOUT,
+                                verify=VERIFICATION).content
         # Parse html using BS
         parsed_html = BeautifulSoup(contents, 'lxml')
         # Summary properties are in </div>. Search for them:
