@@ -29,7 +29,7 @@ from ESANEOCC.__init__ import conf
 API_URL = conf.API_URL
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 TIMEOUT = conf.TIMEOUT
-VERIFICATION = conf.VERIFICATION
+VERIFICATION = conf.SSL_CERT_VERIFICATION
 
 class TestLists:
     """Class which contains the unitary tests for lists module.
@@ -439,22 +439,14 @@ class TestTabs:
         """Test for checking the URL termination for requested object tab.
         Check invalid list name raise KeyError.
         """
-        # Valid object names
-        object_names = ['433', '433 Eros', '99942 Apophis', '1998MR24',
-                        '594936 2021EX2']
         # Dictionary for tabs
         tab_dict = {
                 "impacts": '.risk',
                 "close_approaches": '.clolin',
                 "observations": '.rwo',
+                "physical_properties": '.phypro',
                 "orbit_properties": ['.ke0', '.ke1', '.eq0', '.eq1']
                 }
-        # Valid inputs
-        valid_tabs = ["impacts", "close_approaches", "observations",
-                      "orbit_properties"]
-        # Invalid inputs
-        bad_tabs = ["ASedfe", "%&$", "ÁftR+"]
-
         # Choose a random object from stored nea list
         rnd_object = random.choice(self.nea_list)
         # Tabs to test
@@ -478,7 +470,9 @@ class TestTabs:
                 with pytest.raises(KeyError):
                     tabs.get_object_url(rnd_object, tab)
             else:
-                url = 1
+                assert tabs.get_object_url(rnd_object, tab) ==\
+                    str(rnd_object).replace(' ', '%20') +\
+                    tab_dict[tab]
 
 
     def test_get_object_data(self):
