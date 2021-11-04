@@ -70,7 +70,7 @@ API_URL = conf.API_URL
 EPHEM_URL = conf.EPHEM_URL
 SUMMARY_URL = conf.SUMMARY_URL
 TIMEOUT = conf.TIMEOUT
-VERIFICATION = conf.VERIFICATION
+VERIFICATION = conf.SSL_CERT_VERIFICATION
 
 def get_object_url(name, tab, **kwargs):
     """Get url from requested object and tab name.

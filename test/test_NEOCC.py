@@ -36,7 +36,7 @@ from ESANEOCC import lists, tabs
 API_URL = conf.API_URL
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 TIMEOUT = conf.TIMEOUT
-VERIFICATION = conf.VERIFICATION
+VERIFICATION = conf.SSL_CERT_VERIFICATION
 
 # Disable warning in pylint related to monkeypath functions
 # pylint: disable=W0613, W0621

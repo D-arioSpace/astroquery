@@ -31,7 +31,8 @@ class Conf(_config.ConfigNamespace):
     TIMEOUT = 60
 
 
-    VERIFICATION = bool(int(os.getenv('VERIFICATION', default="1")))
+    SSL_CERT_VERIFICATION = bool(int(os.getenv('SSL_CERT_VERIFICATION',
+                                               default="1")))
 
 conf = Conf()
 

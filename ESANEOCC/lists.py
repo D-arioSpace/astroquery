@@ -45,7 +45,7 @@ from . import conf
 # Import BASE URL and TIMEOUT
 API_URL = conf.API_URL
 TIMEOUT = conf.TIMEOUT
-VERIFICATION = conf.VERIFICATION
+VERIFICATION = conf.SSL_CERT_VERIFICATION
 
 
 def get_list_url(list_name):
