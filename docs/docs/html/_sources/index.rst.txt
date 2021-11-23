@@ -350,7 +350,7 @@ Changes
 ----------------------
 
 * The type of the orbit is now obtained as attribute in tab *orbit_properties*.
-* The format of the ephemerides data has been modified to adapt to the change of format of the ephemerides provided by `NEOCC portal <https://neo.ssa.esa.int/computer-access>`_ . This modification includes new parameters for the columns and also changes the precion of the Magnitude values up to two decimal digits.
+* The format of the ephemerides data has been modified to adapt to the change of format of the ephemerides provided by `NEOCC portal <https://neo.ssa.esa.int/computer-access>`_ . This modification includes new parameters for the columns and also changes the precision of the Magnitude values up to two decimal digits.
 * Tab *physical_properties* now contains all the values (if exist) for the different properties.
 * There are two new lists implemented: Catalogue of NEAs (current date) and Catalogue of NEAs (middle arc).
 * Parsing of tab *summary* is more robust.
