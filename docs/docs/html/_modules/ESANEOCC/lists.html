@@ -162,7 +162,7 @@
 <span class="sd">* Developed by: Elecnor Deimos</span>
 <span class="sd">* Author: C. Álvaro Arroyo Parejo</span>
 <span class="sd">* Issue: 1.4.0</span>
-<span class="sd">* Date: 29-06-2021</span>
+<span class="sd">* Date: 02-11-2021</span>
 <span class="sd">* Purpose: Module which request and parse list data from ESA NEOCC</span>
 <span class="sd">* Module: lists.py</span>
 <span class="sd">* History:</span>
@@ -199,6 +199,7 @@
 <span class="c1"># Import BASE URL and TIMEOUT</span>
 <span class="n">API_URL</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">API_URL</span>
 <span class="n">TIMEOUT</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">TIMEOUT</span>
+<span class="n">VERIFICATION</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">SSL_CERT_VERIFICATION</span>
 
 
 <div class="viewcode-block" id="get_list_url"><a class="viewcode-back" href="../../index.html#ESANEOCC.lists.get_list_url">[docs]</a><span class="k">def</span> <span class="nf">get_list_url</span><span class="p">(</span><span class="n">list_name</span><span class="p">):</span>
@@ -269,7 +270,8 @@
 <span class="sd">        Data frame which contains the data of the requested list.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Get data from URL</span>
-    <span class="n">data_list</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">API_URL</span> <span class="o">+</span> <span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
+    <span class="n">data_list</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">API_URL</span> <span class="o">+</span> <span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">,</span>
+                             <span class="n">verify</span><span class="o">=</span><span class="n">VERIFICATION</span><span class="p">)</span><span class="o">.</span><span class="n">content</span>
 
     <span class="c1"># Decode the data using UTF-8</span>
     <span class="n">data_list_d</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">data_list</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
@@ -566,7 +568,8 @@
     <span class="n">df_obj</span> <span class="o">=</span> <span class="n">neocc_lst</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">([</span><span class="s1">&#39;object&#39;</span><span class="p">])</span>
     <span class="n">neocc_lst</span><span class="p">[</span><span class="n">df_obj</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_obj</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span>
                                              <span class="n">x</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
-
+    <span class="c1"># Convert designator to str/object type</span>
+    <span class="n">neocc_lst</span><span class="p">[</span><span class="s1">&#39;Name/desig&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">neocc_lst</span><span class="p">[</span><span class="s1">&#39;Name/desig&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
     <span class="c1"># Convert Date column to datetime format</span>
     <span class="c1"># Create auxilary columns</span>
     <span class="n">neocc_lst</span><span class="p">[[</span><span class="s1">&#39;Date1&#39;</span><span class="p">,</span><span class="s1">&#39;Date2&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">neocc_lst</span><span class="p">[</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span>\
