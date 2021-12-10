@@ -43,12 +43,16 @@ All rights reserved
 """
 
 import time
-from . import lists
-from . import tabs
+
+from astroquery.query import BaseQuery
+from astroquery.utils import async_to_sync
+
+from astroquery.esa.neocc import lists, tabs
 
 __all__ = ['neocc', 'ESAneoccClass']
 
-class ESAneoccClass():
+@async_to_sync
+class ESAneoccClass(BaseQuery):
     """
     Class to init ESA NEOCC Python interface library
     """
@@ -94,7 +98,7 @@ class ESAneoccClass():
         of this list is a *pandas.Series* which contains the list of all NEAs
         currently considered in the NEOCC system.
 
-        >>> from ESANEOCC import neocc
+        >>> from astroquery.esa.neocc import neocc
         >>> list_data = neocc.query_list(list_name='nea_list')
         >>> list_data
         0            433 Eros
@@ -119,7 +123,7 @@ class ESAneoccClass():
         **Other lists:**  The output of this list is a *pandas.DataFrame* which
         contains the information of the requested list.
 
-        >>> from ESANEOCC import neocc
+        >>> from astroquery.esa.neocc import neocc
         >>> list_data = neocc.query_list(list_name='close_approaches_upcoming')
         >>> list_data
                 Object Name         Date   ...   Rel. vel in km/s
@@ -197,6 +201,8 @@ class ESAneoccClass():
 
             return neocc_list
 
+    # pylint: disable=c0301
+    # pylint: disable=w0212
     @staticmethod
     def query_object(name, tab, **kwargs):
         """Get requested object data from ESA NEOCC.
@@ -243,7 +249,7 @@ class ESAneoccClass():
         the object, but it can be also added from the output of a
         *query_list* search:
 
-        >>> from ESANEOCC import neocc
+        >>> from astroquery.esa.neocc import neocc
         >>> ast_impacts = neocc.query_object(name='1979XB', tab='impacts')
 
         or
@@ -313,7 +319,7 @@ class ESAneoccClass():
 
         Another example is shown to obtain the physical properties:
 
-        >>> from ESANEOCC import neocc
+        >>> from astroquery.esa.neocc import neocc
         >>> properties = neocc.query_object(name='433', tab='physical_properties')
 
         Again, the output provides an object with different attributes:

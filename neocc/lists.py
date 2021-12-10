@@ -40,7 +40,7 @@ from datetime import timedelta
 import pandas as pd
 from parse import parse
 import requests
-from . import conf
+from astroquery.esa.neocc import conf
 
 # Import BASE URL and TIMEOUT
 API_URL = conf.API_URL

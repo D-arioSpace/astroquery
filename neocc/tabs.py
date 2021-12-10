@@ -41,9 +41,9 @@ Version    Date          Change History
 1.4.0      29-10-2021    Tab physical_properties has been recoded to parse the
                          information through a request in the portal instead
                          of parsing the html.\n
-                         Get URL function now contains the file extension for 
+                         Get URL function now contains the file extension for
                          physical properties.\n
-                         Parsing of ephemerides has been change to adapt new 
+                         Parsing of ephemerides has been change to adapt new
                          format.\n
                          Orb_type attribute added in tab *orbit_properties*.\n
                          Bug fix in tab *observations*.\n
@@ -63,7 +63,7 @@ import pandas as pd
 from parse import parse
 import requests
 from bs4 import BeautifulSoup
-from . import conf
+from astroquery.esa.neocc import conf
 
 # Import URLs and TIMEOUT
 API_URL = conf.API_URL
@@ -614,15 +614,15 @@ class PhysicalProperties:
         # Initialize index
         index = 0
         if len(df_check.columns) > 4:
-            rest = len(df_check.columns) - 4
+            # rest = len(df_check.columns) - 4
             # Iterate over each element in last col to find
             # rows with additional elements separated by commas
             for element in df_check.iloc[:, -1]:
                 if isinstance(element, str):
                     for i in range(2, len(df_check.columns)-2):
-                            df_check.iloc[index, 1] =\
-                                df_check.iloc[index, 1] + ',' +\
-                                      df_check.iloc[index, i]
+                        df_check.iloc[index, 1] =\
+                            df_check.iloc[index, 1] + ',' +\
+                            df_check.iloc[index, i]
                     df_check.iloc[index,2] = df_check.iloc[index,
                                                 len(df_check.columns)-2]
                     df_check.iloc[index,3] = df_check.iloc[index,
@@ -640,9 +640,9 @@ class PhysicalProperties:
         # will be skipped. The DF is updated with the values of the
         # redundant one
         if not 'Taxonomy (all)' in ast_prop.values:
-             ast_prop.update(df_check)
+            ast_prop.update(df_check)
         elif not 'Quality' in ast_prop.values:
-             ast_prop.update(df_check)
+            ast_prop.update(df_check)
         # Rename columns
         ast_prop.columns = ['Property', 'Value(s)', 'Units',
                             'Reference(s)']
@@ -651,7 +651,7 @@ class PhysicalProperties:
         phys_prop = ast_prop.groupby(['Property'], as_index=False,
                                      sort=False)[['Value(s)', 'Units',
                                                  'Reference(s)']]\
-                            .agg(lambda x: ','.join(x))
+                            .agg(','.join)
         # Split using commas to create arrays
         phys_prop['Value(s)'] = phys_prop['Value(s)']\
                             .apply(lambda x: x.split(',')
@@ -1455,7 +1455,7 @@ class OrbitProperties:
             ngr = df_new.iloc[lsp_index+3:lsp_index+4, 1:3].astype(float)
             ngr.index = ['NGR']
             ngr.columns = ['Area-to-mass ratio in m^2/ton',
-                           'Yarkov sky parameter in 1E-10au/day^2']
+                           'Yarkovsky parameter in 1E-10au/day^2']
         else:
             lsp = df_new.iloc[lsp_index:lsp_index+1, 1:4]
             lsp.columns = ['model used', 'number of model parameters',
@@ -1894,7 +1894,7 @@ class Ephemerides:
             # Wait 5 seconds
             time.sleep(5)
             # Get object data
-            data_obj = requests.get(url_ephe, timeout=TIMEOUT, 
+            data_obj = requests.get(url_ephe, timeout=TIMEOUT,
                                     verify=VERIFICATION).content
 
         # Check if file contains errors due to bad URL keys
@@ -1934,7 +1934,7 @@ class Ephemerides:
         ephem['Date'] = ephem['Date'] + ephem['Hour'].map(timedelta)
         # Remove Hour column
         ephem = ephem.drop(['Hour'], axis=1)
-        # Convert to str type and remove mid whitespaces from declination, 
+        # Convert to str type and remove mid whitespaces from declination,
         # if any, and apply int format
         ephem['DEC d'] = ephem['DEC d'].astype(str)
         ephem['DEC d'] = ephem['DEC d'].str.replace(' ','').astype(int)
@@ -2048,7 +2048,7 @@ class Summary:
         # not obtain then, there is no object so ValueErro appears
         try:
             diam_p = BeautifulSoup(str(diameter), 'html.parser').span.text
-        except :
+        except:
             logging.warning('Object not found: the name of the '
                             'object is wrong or misspelt')
             raise ValueError('Object not found: the name of the '

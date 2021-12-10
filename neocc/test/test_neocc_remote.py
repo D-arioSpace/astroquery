@@ -13,17 +13,22 @@ tests is requested to ESA NEOCC portal.
 All rights reserved
 """
 
-from ESANEOCC import neocc, core, lists, tabs
+
+import io
+import os
+import re
+
+import random
 import pytest
 import pandas as pd
 import pandas.testing as pdtesting
 import pandas.api.types as ptypes
 import requests
-import io
-import os
-import re
-import random
-from ESANEOCC.__init__ import conf
+
+from astroquery.esa.neocc.__init__ import conf
+from astroquery.esa.neocc import neocc, lists, tabs
+
+import astropy
 
 # Import BASE URL and TIMEOUT
 API_URL = conf.API_URL
@@ -31,6 +36,7 @@ DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 TIMEOUT = conf.TIMEOUT
 VERIFICATION = conf.SSL_CERT_VERIFICATION
 
+@astropy.tests.helper.remote_data
 class TestLists:
     """Class which contains the unitary tests for lists module.
     """
@@ -57,7 +63,7 @@ class TestLists:
         """
         # Valid inputs
         valid_names = ["nea_list", "updated_nea", "monthly_update",
-                       "risk_list", "risk_list_special", 
+                       "risk_list", "risk_list_special",
                        "close_approaches_upcoming",
                        "close_approaches_recent",
                        "priority_list", "priority_list_faint",
@@ -139,7 +145,7 @@ class TestLists:
         for url in url_series:
             # Get data from URL
             data_list = requests.get(API_URL + self.lists_dict[url],
-                                     timeout=TIMEOUT, 
+                                     timeout=TIMEOUT,
                                      verify=VERIFICATION).content
             # Decode the data using UTF-8
             data_list_d = io.StringIO(data_list.decode('utf-8'))
@@ -160,7 +166,7 @@ class TestLists:
                                       .str.replace('# ', '')
                 # Check size of the data frame
                 assert len(new_list.index) > 20000
-                # Check 74 first elements are equal from reference 
+                # Check 74 first elements are equal from reference
                 # data (since provisional designator may change)
                 pdtesting.assert_series_equal(new_list[0:74], nea_list[0:74])
             else:
@@ -191,7 +197,7 @@ class TestLists:
             new_list = lists.parse_risk(data_list_d)
             # Assert is a pandas DataFrame
             assert isinstance(new_list, pd.DataFrame)
-            
+
             if url == 'risk_list':
                 # Assert dataframe is not empty, columns names, length
                 assert not new_list.empty
@@ -222,7 +228,7 @@ class TestLists:
 
 
     def test_parse_clo(self):
-        """Check data: close_approaches_upcoming, 
+        """Check data: close_approaches_upcoming,
         close_approaches_recent
         """
         url_close = ['close_approaches_upcoming',
@@ -260,7 +266,7 @@ class TestLists:
 
             # Assert columns data types
             # Floats
-            float_cols = ['Miss Distance in au', 
+            float_cols = ['Miss Distance in au',
                           'Miss Distance in LD', 'Diameter in m', 'H',
                           'Max Bright', 'Rel. vel in km/s']
             assert all(ptypes.is_float_dtype(new_list[cols1])\
@@ -276,7 +282,7 @@ class TestLists:
 
 
     def test_parse_pri(self):
-        """Check data: priority_list, priority_list_faint 
+        """Check data: priority_list, priority_list_faint
         """
         url_priority = ['priority_list', 'priority_list_faint']
         # Columns of close approaches lists
@@ -318,7 +324,7 @@ class TestLists:
 
 
     def test_parse_encounter(self):
-        """Check data: close_encounter 
+        """Check data: close_encounter
         """
         url = 'close_encounter'
         # Columns of close approaches lists
@@ -365,7 +371,7 @@ class TestLists:
 
 
     def test_parse_impacted(self):
-        """Check data: impacted_objects 
+        """Check data: impacted_objects
         """
         url = 'impacted_objects'
         # Get data from URL
@@ -389,7 +395,7 @@ class TestLists:
 
 
     def test_parse_neo_catalogue(self):
-        """Check data: close_encounter 
+        """Check data: close_encounter
         """
         url_cat = ['neo_catalogue_current',
                    'neo_catalogue_middle']
@@ -401,7 +407,7 @@ class TestLists:
         for url in url_cat:
             # Get data from URL
             data_list = requests.get(API_URL + self.lists_dict[url],
-                                     timeout=TIMEOUT, 
+                                     timeout=TIMEOUT,
                                      verify=VERIFICATION).content
             # Decode the data using UTF-8
             data_list_d = io.StringIO(data_list.decode('utf-8'))
@@ -425,7 +431,7 @@ class TestLists:
             # Int
             assert ptypes.is_int64_dtype(new_list['non-grav param.'])
 
-
+@astropy.tests.helper.remote_data
 class TestTabs:
     """Class which contains the unitary tests for tabs module.
     """
@@ -454,18 +460,14 @@ class TestTabs:
                        'observations', 'orbit_properties', '&cefrgfe',
                        4851]
         # Possible additional argument
-        orbital_element = ['keplerian', 'equinoctial']
         orbit_epoch = ['present', 'middle']
         # Iterate to obtain all possible urls
         for tab in object_tabs:
             if tab == 'orbit_properties':
-                for element in orbital_element:
-                    for epoch in orbit_epoch:
-                        url = tabs.get_object_url(rnd_object, tab,
-                        orbital_elements=element, orbit_epoch=epoch)
-                        with pytest.raises(ValueError):
-                            tabs.get_object_url(rnd_object, tab,
-                            orbital_elements=None, orbit_epoch=epoch)
+                for epoch in orbit_epoch:
+                    with pytest.raises(ValueError):
+                        tabs.get_object_url(rnd_object, tab,
+                        orbital_elements=None, orbit_epoch=epoch)
             elif tab in ['&cefrgfe', 4851]:
                 with pytest.raises(KeyError):
                     tabs.get_object_url(rnd_object, tab)
@@ -500,8 +502,8 @@ class TestTabs:
                 url = tabs.get_object_url(rnd_object, tab)
                 assert isinstance(tabs.get_object_data(url), bytes)
 
-
-    def test_get_indexes(self):
+    @classmethod
+    def test_get_indexess(cls):
         """Test for obtaining the proper indexes of a DataFrame.
         """
         test_data = {'col1': [1, float(2), 'str1', '&'],
@@ -516,8 +518,8 @@ class TestTabs:
         assert tabs.get_indexes(data, 2) == [(1, 'col1'), (2, 3)]
         assert bool(tabs.get_indexes(data, None)) is False
 
-
-    def test_tabs_names(self):
+    @classmethod
+    def test_tabs_names(cls):
         """Test is a invalid name
         """
         # Invalid inputs
@@ -545,7 +547,7 @@ class TestTabs:
         for attribute in dict_attributes:
             # Check attributes exist and their type
             assert hasattr(summary, attribute)
-            # Add type str in tuple for those objects whose 
+            # Add type str in tuple for those objects whose
             # observations are strings
             assert isinstance(getattr(summary, attribute),
                               dict_attributes[attribute])
@@ -569,4 +571,3 @@ class TestTabs:
             'Observatory is not available'
         assert ast_summ2.discovery_date ==\
             'Discovery date is not available'
-

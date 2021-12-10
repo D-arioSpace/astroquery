@@ -25,12 +25,10 @@ from pandas._testing import assert_frame_equal, assert_series_equal
 import pandas.api.types as ptypes
 
 from astroquery.utils.testing_tools import MockResponse
-from astropy import coordinates
-from astropy.table.table import Table
 
-from ESANEOCC.__init__ import conf
-from ESANEOCC.core import neocc
-from ESANEOCC import lists, tabs
+from astroquery.esa.neocc.__init__ import conf
+from astroquery.esa.neocc import lists
+from astroquery.esa.neocc.core import neocc
 
 # Import BASE URL and TIMEOUT
 API_URL = conf.API_URL
@@ -55,20 +53,6 @@ def data_path(filename):
     """
     data_dir = os.path.join(os.path.dirname(__file__), 'data')
     return os.path.join(data_dir, filename)
-
-
-@pytest.fixture
-def patch_get_list(request):
-    """This function, when called, changes the requests.Session’s
-    request method to call the get_mockreturn function, defined below.
-    """
-    try:
-        monkey_p = request.getfixturevalue("monkeypatch")
-    except AttributeError:  # pytest < 3
-        monkey_p = request.getfuncargvalue("monkeypatch")
-    monkey_p.setattr(requests, 'get', get_mockreturn_list)
-    return monkey_p
-
 
 @pytest.fixture
 def patch_get(request):
@@ -642,7 +626,7 @@ def test_tabs_impacts(patch_get):
                 assert ast_impact.observation_rejected ==\
                      list_neas[asteroid][5]
                 assert ast_impact.info == list_neas[asteroid][6]
-                # Assert dataframe is not empty, columns names 
+                # Assert dataframe is not empty, columns names
                 # and length
                 assert not ast_impact.impacts.empty
                 # Check size of the list
@@ -794,7 +778,7 @@ def test_tabs_physical_properties(patch_get):
         for attribute in dict_attributes:
             # Check attributes exist and their type
             assert hasattr(phys_props, attribute)
-            # Add type stre in tuple for those objects whose 
+            # Add type stre in tuple for those objects whose
             # observations are strings
             assert isinstance(getattr(phys_props, attribute),
                             dict_attributes[attribute])
@@ -808,7 +792,7 @@ def test_tabs_physical_properties(patch_get):
             assert (phys_props.sources.columns == \
                         sources_columns).all()
             assert all(ptypes.is_object_dtype(phys_props.\
-                    physical_properties[cols1]) 
+                    physical_properties[cols1])
                     for cols1 in phys_prop_columns) and\
                 all(ptypes.is_object_dtype(phys_props.\
                     sources[cols1]) for cols1 in sources_columns)
@@ -853,7 +837,7 @@ def test_tabs_observations(patch_get):
         for attribute in dict_attributes:
             # Check attributes exist and their type
             assert hasattr(ast_observations, attribute)
-            # Add type stre in tuple for those objects whose 
+            # Add type stre in tuple for those objects whose
             # observations are strings
             assert isinstance(getattr(ast_observations, attribute),
                             (dict_attributes[attribute], str))
@@ -1080,7 +1064,7 @@ def test_tabs_orbit_properties(patch_get):
             for attribute in dict_attributes:
                 # Check attributes exist and their type
                 assert hasattr(orb, attribute)
-                # Add type str in tuple for those objects whose 
+                # Add type str in tuple for those objects whose
                 # observations are strings
                 assert isinstance(getattr(orb, attribute),
                                 (dict_attributes[attribute], str))
@@ -1104,7 +1088,7 @@ def test_tabs_orbit_properties(patch_get):
                 for kep_attribute in kep_attributes:
                     # Check attributes exist and their type
                     assert hasattr(orb, attribute)
-                    # Add type str in tuple for those objects whose 
+                    # Add type str in tuple for those objects whose
                     # observations are strings
                     assert isinstance(getattr(orb, kep_attribute),
                                 (kep_attributes[kep_attribute], str))
@@ -1138,7 +1122,7 @@ def test_tabs_orbit_properties(patch_get):
                 for eq_attribute in eq_attributes:
                     # Check attributes exist and their type
                     assert hasattr(orb, attribute)
-                    # Add type str in tuple for those objects whose 
+                    # Add type str in tuple for those objects whose
                     # observations are strings
                     assert isinstance(getattr(orb, eq_attribute),
                                 (eq_attributes[eq_attribute]))
@@ -1183,10 +1167,10 @@ def test_tabs_orbit_properties(patch_get):
     assert ast1.epoch, ast2.epoch == '59400.000000000 MJD'
     mag1 = pd.DataFrame([[18.937, 0.150]], index=['MAG'],
                         columns=['', ''])
-    mag2 = pd.DataFrame([[28.211, 0.150]], index=['MAG'],
+    mag2 = pd.DataFrame([[28.241, 0.150]], index=['MAG'],
                         columns=['', ''])
-    assert_frame_equal(ast1.mag, mag1) and\
-        assert_frame_equal(ast2.mag, mag2)
+    assert_frame_equal(ast1.mag, mag1)
+    assert_frame_equal(ast2.mag, mag2)
 
     lsp1 = pd.DataFrame([[1, 2, 7, 2]], index=['LSP'],
                 columns=['model used', 'number of model parameters',
@@ -1194,18 +1178,18 @@ def test_tabs_orbit_properties(patch_get):
     lsp2 = pd.DataFrame([[1, 2, 8, 1, 2]], index=['LSP'],
                 columns=['model used', 'number of model parameters',
                 'dimension', 'list of parameters determined', ''])
-    assert_frame_equal(ast1.lsp, lsp1) and\
-        assert_frame_equal(ast2.lsp, lsp2)
+    assert_frame_equal(ast1.lsp, lsp1)
+    assert_frame_equal(ast2.lsp, lsp2)
 
     ngr1 = pd.DataFrame([[0.0, -2.90058798774592e-04]], index=['NGR'],
                         columns=['Area-to-mass ratio in m^2/ton',
                         'Yarkovsky parameter in 1E-10au/day^2'])
-    ngr2 = pd.DataFrame([[2.37035178629626e-01, -1.15784215281726e-02]],
+    ngr2 = pd.DataFrame([[3.92228537753657E-01, -5.47745799289690E-02]],
                         index=['NGR'],
                         columns=['Area-to-mass ratio in m^2/ton',
                         'Yarkovsky parameter in 1E-10au/day^2'])
-    assert_frame_equal(ast1.ngr, ngr1) and\
-        assert_frame_equal(ast2.ngr, ngr2)
+    assert_frame_equal(ast1.ngr, ngr1)
+    assert_frame_equal(ast2.ngr, ngr2)
     # Check keplerian orbit properties
     keplerian_columns = ['a', 'e', 'i', 'long. node',
                          'arg. peric.', 'mean anomaly']
@@ -1226,21 +1210,35 @@ def test_tabs_orbit_properties(patch_get):
     assert ast1.orb_type    == 'Aten'
     matrix_idx = ['a', 'e', 'i', 'long. node', 'arg. peric', 'M',
                   'Yarkovsky parameter']
-    cov = pd.DataFrame([[ 7.333454e-21, -1.072918e-19, -4.176672e-18,  9.884855e-17, -1.661416e-16,  6.524001e-17,  1.597276e-16],
-                        [-1.072918e-19,  2.019718e-18,  7.453443e-17, -2.218919e-15,  3.445852e-15, -1.246500e-15, -1.955611e-15],
-                        [-4.176672e-18,  7.453443e-17,  2.560049e-14, -1.198457e-12,  1.308002e-12, -1.641254e-13, -2.361241e-13],
-                        [ 9.884855e-17, -2.218919e-15, -1.198457e-12,  6.206716e-11, -6.634024e-11,  7.109227e-12,  1.033311e-11],
-                        [-1.661416e-16,  3.445852e-15,  1.308002e-12, -6.634024e-11,  7.155222e-11, -8.205136e-12, -1.199513e-11],
-                        [ 6.524001e-17, -1.246500e-15, -1.641254e-13,  7.109227e-12, -8.205136e-12,  1.397697e-12,  2.027096e-12],
-                        [ 1.597276e-16, -1.955611e-15, -2.361241e-13,  1.033311e-11, -1.199513e-11,  2.027096e-12,  5.549616e-12]],
+    cov = pd.DataFrame([[ 7.333454e-21, -1.072918e-19, -4.176672e-18,
+                          9.884855e-17, -1.661416e-16,  6.524001e-17,  1.597276e-16],
+                        [-1.072918e-19,  2.019718e-18,  7.453443e-17,
+                         -2.218919e-15,  3.445852e-15, -1.246500e-15, -1.955611e-15],
+                        [-4.176672e-18,  7.453443e-17,  2.560049e-14,
+                         -1.198457e-12,  1.308002e-12, -1.641254e-13, -2.361241e-13],
+                        [ 9.884855e-17, -2.218919e-15, -1.198457e-12,
+                          6.206716e-11, -6.634024e-11,  7.109227e-12,  1.033311e-11],
+                        [-1.661416e-16,  3.445852e-15,  1.308002e-12,
+                         -6.634024e-11,  7.155222e-11, -8.205136e-12, -1.199513e-11],
+                        [ 6.524001e-17, -1.246500e-15, -1.641254e-13,
+                          7.109227e-12, -8.205136e-12,  1.397697e-12,  2.027096e-12],
+                        [ 1.597276e-16, -1.955611e-15, -2.361241e-13,
+                          1.033311e-11, -1.199513e-11,  2.027096e-12,  5.549616e-12]],
                         index=matrix_idx, columns=matrix_idx)
-    cor = pd.DataFrame([[ 1.000000, -0.881591, -0.304826,  0.146516, -0.229357,  0.644397,  0.791761],
-                        [-0.881591,  1.000000,  0.327784, -0.198182,  0.286642, -0.741892, -0.584125],
-                        [-0.304826,  0.327784,  1.000000, -0.950752,  0.966435, -0.867651, -0.626448],
-                        [ 0.146516, -0.198182, -0.950752,  1.000000, -0.995485,  0.763282,  0.556761],
-                        [-0.229357,  0.286642,  0.966435, -0.995485,  1.000000, -0.820479, -0.601952],
-                        [ 0.644397, -0.741892, -0.867651,  0.763282, -0.820479,  1.000000,  0.727841],
-                        [ 0.791761, -0.584125, -0.626448,  0.556761, -0.601952,  0.727841,  1.000000]],
+    cor = pd.DataFrame([[ 1.000000, -0.881591, -0.304826,  0.146516,
+                         -0.229357,  0.644397,  0.791761],
+                        [-0.881591,  1.000000,  0.327784, -0.198182,
+                          0.286642, -0.741892, -0.584125],
+                        [-0.304826,  0.327784,  1.000000, -0.950752,
+                          0.966435, -0.867651, -0.626448],
+                        [ 0.146516, -0.198182, -0.950752,  1.000000,
+                         -0.995485,  0.763282,  0.556761],
+                        [-0.229357,  0.286642,  0.966435, -0.995485,
+                          1.000000, -0.820479, -0.601952],
+                        [ 0.644397, -0.741892, -0.867651,  0.763282,
+                         -0.820479,  1.000000,  0.727841],
+                        [ 0.791761, -0.584125, -0.626448,  0.556761,
+                         -0.601952,  0.727841,  1.000000]],
                         index=matrix_idx, columns=matrix_idx)
     assert_frame_equal(ast1.cov, cov)
     assert_frame_equal(ast1.cor, cor)
@@ -1267,24 +1265,40 @@ def test_tabs_orbit_properties(patch_get):
     assert_frame_equal(ast2.eig, eig)
     assert_frame_equal(ast2.wea, wea)
 
-    cov_equ = pd.DataFrame([[9.045991e-15, -4.310036e-15, -3.623923e-15,  7.951277e-16,  2.433447e-16, -4.077556e-11,  1.856604e-09,  1.127419e-10],
-                           [-4.310036e-15,  2.852694e-15,  1.695013e-15, -5.107617e-16, -1.582486e-16,  2.134254e-11, -8.850409e-10, -3.395062e-11],
-                           [-3.623923e-15,  1.695013e-15,  2.002430e-15, -3.168327e-16, -9.416270e-17,  1.919931e-11, -1.458006e-09, -5.214811e-11],
-                           [ 7.951277e-16, -5.107617e-16, -3.168327e-16,  1.218404e-16,  4.220573e-17, -3.756840e-12,  1.121701e-10,  5.572020e-12],
-                           [ 2.433447e-16, -1.582486e-16, -9.416270e-17,  4.220573e-17,  1.540961e-17, -1.111871e-12,  2.171817e-11,  1.460839e-12],
-                           [-4.077556e-11,  2.134254e-11,  1.919931e-11, -3.756840e-12, -1.111871e-12,  2.057036e-07, -1.270112e-05, -5.031737e-07],
-                           [ 1.856604e-09, -8.850409e-10, -1.458006e-09,  1.121701e-10,  2.171817e-11, -1.270112e-05,  1.474738e-03,  3.420817e-05],
-                           [ 1.127419e-10, -3.395062e-11, -5.214811e-11,  5.572020e-12,  1.460839e-12, -5.031737e-07,  3.420817e-05,  2.020746e-06]],
+    cov_equ = pd.DataFrame([[9.045991e-15, -4.310036e-15, -3.623923e-15,  7.951277e-16,
+                             2.433447e-16, -4.077556e-11,  1.856604e-09,  1.127419e-10],
+                           [-4.310036e-15,  2.852694e-15,  1.695013e-15, -5.107617e-16,
+                            -1.582486e-16,  2.134254e-11, -8.850409e-10, -3.395062e-11],
+                           [-3.623923e-15,  1.695013e-15,  2.002430e-15, -3.168327e-16,
+                            -9.416270e-17,  1.919931e-11, -1.458006e-09, -5.214811e-11],
+                           [ 7.951277e-16, -5.107617e-16, -3.168327e-16,  1.218404e-16,
+                             4.220573e-17, -3.756840e-12,  1.121701e-10,  5.572020e-12],
+                           [ 2.433447e-16, -1.582486e-16, -9.416270e-17,  4.220573e-17,
+                             1.540961e-17, -1.111871e-12,  2.171817e-11,  1.460839e-12],
+                           [-4.077556e-11,  2.134254e-11,  1.919931e-11, -3.756840e-12,
+                            -1.111871e-12,  2.057036e-07, -1.270112e-05, -5.031737e-07],
+                           [ 1.856604e-09, -8.850409e-10, -1.458006e-09,  1.121701e-10,
+                             2.171817e-11, -1.270112e-05,  1.474738e-03,  3.420817e-05],
+                           [ 1.127419e-10, -3.395062e-11, -5.214811e-11,  5.572020e-12,
+                             1.460839e-12, -5.031737e-07,  3.420817e-05,  2.020746e-06]],
                             index=eig_wea_name, columns=eig_wea_name)
     assert_frame_equal(ast2.cov, cov_equ)
-    nor = pd.DataFrame([[1.510392e+24,  3.010614e+22, -2.847190e+22, -3.923755e+22,  7.119194e+22,  3.165996e+20,  1.559455e+18, -3.200500e+19],
-                       [ 3.010614e+22,  6.121981e+20, -5.623474e+20, -7.986576e+20,  1.446145e+21,  6.307818e+18,  3.107870e+16, -6.382017e+17],
-                       [-2.847190e+22, -5.623474e+20,  5.389508e+20,  7.325948e+20, -1.330387e+21, -5.969337e+18, -2.939908e+16,  6.032061e+17],
-                       [-3.923755e+22, -7.986576e+20,  7.325948e+20,  1.042952e+21, -1.888458e+21, -8.220830e+18, -4.050471e+16,  8.317909e+17],
-                       [ 7.119194e+22,  1.446145e+21, -1.330387e+21, -1.888458e+21,  3.420540e+21,  1.491642e+19,  7.349240e+16, -1.509124e+18],
-                       [ 3.165996e+20,  6.307818e+18, -5.969337e+18, -8.220830e+18,  1.491642e+19,  6.636445e+16,  3.268853e+14, -6.708642e+15],
-                       [ 1.559455e+18,  3.107870e+16, -2.939908e+16, -4.050471e+16,  7.349240e+16,  3.268853e+14,  1.610115e+12, -3.304453e+13],
-                       [-3.200500e+19, -6.382017e+17,  6.032061e+17,  8.317909e+17, -1.509124e+18, -6.708642e+15, -3.304453e+13,  6.781869e+14]],
+    nor = pd.DataFrame([[1.510392e+24,  3.010614e+22, -2.847190e+22, -3.923755e+22,
+                         7.119194e+22,  3.165996e+20,  1.559455e+18, -3.200500e+19],
+                       [ 3.010614e+22,  6.121981e+20, -5.623474e+20, -7.986576e+20,
+                         1.446145e+21,  6.307818e+18,  3.107870e+16, -6.382017e+17],
+                       [-2.847190e+22, -5.623474e+20,  5.389508e+20,  7.325948e+20,
+                        -1.330387e+21, -5.969337e+18, -2.939908e+16,  6.032061e+17],
+                       [-3.923755e+22, -7.986576e+20,  7.325948e+20,  1.042952e+21,
+                        -1.888458e+21, -8.220830e+18, -4.050471e+16,  8.317909e+17],
+                       [ 7.119194e+22,  1.446145e+21, -1.330387e+21, -1.888458e+21,
+                         3.420540e+21,  1.491642e+19,  7.349240e+16, -1.509124e+18],
+                       [ 3.165996e+20,  6.307818e+18, -5.969337e+18, -8.220830e+18,
+                         1.491642e+19,  6.636445e+16,  3.268853e+14, -6.708642e+15],
+                       [ 1.559455e+18,  3.107870e+16, -2.939908e+16, -4.050471e+16,
+                         7.349240e+16,  3.268853e+14,  1.610115e+12, -3.304453e+13],
+                       [-3.200500e+19, -6.382017e+17,  6.032061e+17,  8.317909e+17,
+                        -1.509124e+18, -6.708642e+15, -3.304453e+13,  6.781869e+14]],
                         index=eig_wea_name, columns=eig_wea_name)
     assert_frame_equal(ast2.nor, nor)
 
@@ -1306,7 +1320,7 @@ def test_tabs_ephemerides(patch_get):
                                 '2020/09/02 00:00 UTC', '5 hours',
                                 (5, 26)]
             }
-    args_list = ['observatory', 'start', 'stop', 'step', 'step_unit']
+
     # Assert blank file
     with pytest.raises(KeyError):
         neocc.query_object(name='foo', tab='ephemerides',
@@ -1349,7 +1363,7 @@ def test_tabs_ephemerides(patch_get):
         for attribute in dict_attributes:
             # Check attributes exist and their type
             assert hasattr(eph, attribute)
-            # Add type str in tuple for those objects whose 
+            # Add type str in tuple for those objects whose
             # observations are strings
             assert isinstance(getattr(eph, attribute),
                               dict_attributes[attribute])
