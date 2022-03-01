@@ -7,8 +7,8 @@ obtain it from the ESA NEOCC portal and parse it to show it properly.
 * Property: European Space Agency (ESA)
 * Developed by: Elecnor Deimos
 * Author: C. Álvaro Arroyo Parejo
-* Issue: 1.4.0
-* Date: 02-11-2021
+* Issue: 2.1.0
+* Date: 01-03-2021
 * Purpose: Module which request and parse list data from ESA NEOCC
 * Module: lists.py
 * History:
@@ -29,16 +29,17 @@ Version    Date          Change History
 1.4.0      29-10-2021    Adding Catalogue of NEAS (current date
                          and middle arc).\n
                          Update docstrings.
+2.0.0      21-01-2022    Prepare module for Astroquery integration
+2.1.0      01-03-2022    Remove *parse* dependency
 ========   ===========   ==========================================
 
-© Copyright [European Space Agency][2021]
+© Copyright [European Space Agency][2022]
 All rights reserved
 """
 
 import io
 from datetime import timedelta
 import pandas as pd
-from parse import parse
 import requests
 from astroquery.esa.neocc import conf
 
@@ -505,29 +506,22 @@ def parse_neo_catalogue(data_byte_d):
     data_byte_d.seek(0)
     # Read the header
     neocc_head = pd.read_fwf(data_byte_d, header=None, nrows=4)
-    # Template for format data
-    parse_format = "format  = '{format}'       ! file format"
-    # Parse required data for attributes
-    format_txt = parse(parse_format, neocc_head.iloc[0][0])
-    neocc_lst.form = format_txt['format']
-    # Template for record type
-    parse_rectype = "rectype = '{rectype}'           !"\
-        " record type (1L/ML)"
-    # Parse required data for attributes
-    rectype = parse(parse_rectype, neocc_head.iloc[1][0])
-    neocc_lst.rectype = rectype['rectype']
+    # Template for format data:
+    # format  = '{format}'       ! file format
+    format_txt = neocc_head.iloc[0][0].split("'")[1].strip()
+    neocc_lst.form = format_txt
+    # Template for record type:
+    # rectype = '{rectype}'           ! record type (1L/ML)
+    rectype = neocc_head.iloc[1][0].split("'")[1].strip()
+    neocc_lst.rectype = rectype
     # Template for type of orbital element
-    parse_elem = "elem    = '{elem}'          ! "\
-                "type of orbital elements"
-    # Parse required data for attributes
-    elem = parse(parse_elem, neocc_head.iloc[2][0])
-    neocc_lst.elem = elem['elem']
+    # elem    = '{elem}'          ! type of orbital elements
+    elem = neocc_head.iloc[2][0].split("'")[1].strip()
+    neocc_lst.elem = elem
     # Template for reference system
-    parse_refsys = "refsys  = {refsys}     !"\
-        " default reference system"
-    # Parse required data for attributes
-    refsys = parse(parse_refsys, neocc_head.iloc[3][0])
-    neocc_lst.refsys = refsys['refsys']
+    # refsys  = {refsys}     ! default reference system
+    refsys = neocc_head.iloc[3][0].split("=")[1].split("!")[0].strip()
+    neocc_lst.refsys = refsys
     neocc_lst.help = ('These catalogues represent the list of '
                       'Keplerian orbit for each asteroid in the '
                       'input list at mean epoch and at current epoch.'
@@ -546,3 +540,4 @@ def parse_neo_catalogue(data_byte_d):
 
 
     return neocc_lst
+
