@@ -36,7 +36,7 @@ DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 TIMEOUT = conf.TIMEOUT
 VERIFICATION = conf.SSL_CERT_VERIFICATION
 
-@astropy.tests.helper.remote_data
+@pytest.mark.remote_data
 class TestLists:
     """Class which contains the unitary tests for lists module.
     """
@@ -431,11 +431,11 @@ class TestLists:
             # Int
             assert ptypes.is_int64_dtype(new_list['non-grav param.'])
 
-@astropy.tests.helper.remote_data
+@pytest.mark.remote_data
 class TestTabs:
     """Class which contains the unitary tests for tabs module.
     """
-    path_nea = 'test/data/allneo.lst'
+    path_nea = os.path.join(DATA_DIR, 'allneo.lst')
     nea_list = pd.read_csv(path_nea, header=None)
     nea_list = nea_list[0].str.strip().replace(r'\s+', ' ',
                                                regex=True)\
