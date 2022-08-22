@@ -10,8 +10,8 @@ within this module.
 * Property: European Space Agency (ESA)
 * Developed by: Elecnor Deimos
 * Author: C. Álvaro Arroyo Parejo
-* Issue: 2.1.0
-* Date: 01-03-2021
+* Issue: 2.2.0
+* Date: 19-08-2022
 * Purpose: Module which request and parse list data from ESA NEOCC
 * Module: tabs.py
 * History:
@@ -50,6 +50,7 @@ Version    Date          Change History
                          Adding redundancy for tab *summary* parsing.
 2.0.0      21-01-2022    Prepare module for Astroquery integration
 2.1.0      01-03-2022    Remove *parse* dependency
+2.2.0      19-08-2022    Minor corrections
 ========   ===========   =====================================================
 
 © Copyright [European Space Agency][2022]
@@ -300,6 +301,7 @@ class Impacts:
 
         # Drop NaN values if necessary
         df_txt = df_txt.dropna(how='all')
+
         # Template for observations data:
         # Based on {total} optical observations (of which {rejected}
         # are rejected as outliers)
@@ -620,7 +622,6 @@ class PhysicalProperties:
         # Initialize index
         index = 0
         if len(df_check.columns) > 4:
-            # rest = len(df_check.columns) - 4
             # Iterate over each element in last col to find
             # rows with additional elements separated by commas
             for element in df_check.iloc[:, -1]:
@@ -752,7 +753,6 @@ class AsteroidObservations:
             mag = 'No data for RMSmag'
         else:
             mag = float(df_head.iloc[3][0].split('=')[1].strip())
-
 
         return ver, err, ast, mag
 
@@ -1828,7 +1828,6 @@ class Ephemerides:
             head_ephe.iloc[3][0].split(':')[2].strip()
         # Template for initial date: Time step: {step}
         tstep = head_ephe.iloc[4][0].split(':')[1].strip()
-
 
         return obs, idate, fdate, tstep
 
