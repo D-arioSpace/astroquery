@@ -552,3 +552,4 @@ def parse_neo_catalogue(data_byte_d):
 
 
     return neocc_lst
+
